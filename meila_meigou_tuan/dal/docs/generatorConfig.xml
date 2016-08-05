@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+
+	<!-- Note that you have to specify the driver location here. The tool does 
+		not appear to use the Eclipse classpath or the project classpath -->
+	<classPathEntry
+		location="d:/dev_tools/maven/m2/repository/mysql/mysql-connector-java/5.1.22/mysql-connector-java-5.1.22.jar" />
+	<context id="context1" targetRuntime="MyBatis3">
+		<plugin type="org.mybatis.generator.plugins.EqualsHashCodePlugin" />
+		<plugin type="org.mybatis.generator.plugins.SerializablePlugin" />
+		<plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
+		<!-- 查询分页 -->
+		<plugin type="com.npc.lottery.dao.plugin.OraclePaginationPlugin" />
+		
+		<commentGenerator>  
+         <!-- 去除自动生成的注释 -->  
+            <property name="suppressAllComments" value="true" />  
+        </commentGenerator>
+		
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://218.17.158.232:6406/vdlm_data_new?autoCommit=true" userId="vdlm"
+			password="vdlm" />
+		
+		<!-- Note that the targetProject refers to the name of the project in your 
+			Eclipse IDE (not the name of the Maven project). If run outside of the IDE 
+			you can specify a path instead, but there doesn't seem to be a nice way to 
+			specify a single path for both usage scenarios. -->
+
+		<!-- Generates the model (the objects that hold the data) -->
+		<javaModelGenerator targetPackage="com.vdlm.dal.model"
+			targetProject="D:/MeilaWorkspace/Meila_Front/Source/meila_meigou_web/dal/src/main/java" />
+
+		<sqlMapGenerator targetPackage="com.vdlm.dal.mapper"
+			targetProject="D:/MeilaWorkspace/Meila_Front/Source/meila_meigou_web/dal/src/main/resources">
+			<!-- <property name="enableSubPackages" value="false" /> -->
+		</sqlMapGenerator>
+
+		<!-- Generates the interfaces used to retrieve data -->
+		<javaClientGenerator targetPackage="com.vdlm.dal.mapper"
+			targetProject="D:/MeilaWorkspace/Meila_Front/Source/meila_meigou_web/dal/src/main/java" type="XMLMAPPER" />
+
+		<!-- List of tables to inspect -->
+		<!-- <table schema="vdlm" tableName="vdlm_order_item_promotion" >
+			<columnOverride column="id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="order_item_id" javaType="String" typeHandler="idHandler"></columnOverride>
+		</table> -->
+		<!--
+		<table schema="vdlm" tableName="vdlm_user_coupon" domainObjectName="UserCoupon">
+			<columnOverride column="id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="user_id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="seller_id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="shop_id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="activity_id" javaType="String" typeHandler="idHandler"></columnOverride>
+		</table>
+		 <table schema="vdlm" tableName="vdlm_order_ext" >
+			<columnOverride column="id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="order_id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="settlement_status" javaType="Integer" jdbcType="SMALLINT"></columnOverride>
+			<columnOverride column="refund_status" javaType="Integer" jdbcType="SMALLINT"></columnOverride>
+		</table> -->
+		<table schema="vdlm" tableName="vdlm_auto_sendvoucher" domainObjectName="AutoSendvoucher" >
+			<columnOverride column="id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="user_id" javaType="String" typeHandler="idHandler"></columnOverride>
+			<columnOverride column="activity_id" javaType="String" typeHandler="idHandler"></columnOverride>
+		</table>
+	</context>
+</generatorConfiguration>

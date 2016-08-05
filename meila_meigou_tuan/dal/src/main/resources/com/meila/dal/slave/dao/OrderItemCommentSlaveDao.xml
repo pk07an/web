@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.OrderItemCommentSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderItemComment" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_item_id" property="orderItemId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="buyer_id" property="buyerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="comment" property="content" jdbcType="VARCHAR" />
+    <result column="reply" property="reply" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT"/>
+    <result column="product_score" property="productScore" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="code" property="code" jdbcType="VARCHAR"/>
+     <result column="sku_str" property="fakeSkuStr" jdbcType="VARCHAR"/>
+     <result column="comment_type" property="commentType" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.model.OrderItemCommentImage" id="commentImageMap">
+  	<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="comment_id" property="commentId" jdbcType="BIGINT" typeHandler="idHandler" />
+  	<result column="img" property="img" jdbcType="VARCHAR"/>
+  	<result column="img_width" property="imgWidth" jdbcType="INTEGER"/>
+  	<result column="img_height" property="imgHeight" jdbcType="INTEGER"/>
+  	<result column="img_order" property="imgOrder" jdbcType="INTEGER"/>
+  	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="AdminMap" type="com.vdlm.dal.vo.OrderItemCommentAdmin" extends="BaseResultMap">
+	<result column="product_name" property="productName" jdbcType="VARCHAR"  />
+	<result column="order_no" property="orderNum" jdbcType="VARCHAR"  />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_id, order_item_id, product_id, seller_id, buyer_id, reply, comment, product_score, created_at, updated_at, archive, code,sku_str,comment_type
+  </sql>
+  
+  <sql id="order_item_comment_image">
+  	id, comment_id, img, img_order,img_width,img_height, created_at
+  </sql>
+  
+  <select id="countByProductId" resultType="Long">
+    select count(1)
+    from vdlm_order_item_comment
+    where product_id = #{productId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectByProductId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where product_id = #{productId,typeHandler=idHandler} and archive=false
+    order by created_at desc
+    limit #{pager.offset}, #{pager.size}
+  </select>
+
+  <select id="selectProcuctScoreAvg" resultType="java.math.BigDecimal">
+    select avg(product_score) from vdlm_order_item_comment where product_id=#{productId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectImageByCommentId" resultMap="commentImageMap">
+    select 
+    <include refid="order_item_comment_image" />
+    from vdlm_order_item_comment_image
+    where comment_id = #{commentId, typeHandler=idHandler}
+    order by img_order
+  </select>
+  
+    <select id="selectLastestNiceCheckByProductId" resultMap="BaseResultMap">
+    select 
+    	<include refid="Base_Column_List" />
+    from 
+    	vdlm_order_item_comment
+    where 
+    	product_id = #{productId,typeHandler=idHandler} 
+    and 
+    	archive=false
+   	order by 
+   		product_score desc,created_at desc
+    limit 1
+  </select>
+  
+</mapper>

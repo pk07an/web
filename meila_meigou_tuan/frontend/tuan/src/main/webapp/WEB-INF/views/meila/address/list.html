@@ -1,0 +1,105 @@
+<th:block layout:decorator="/layout/meila_mobile_base">
+
+    <th:block layout:fragment="page_title">
+        <title>收货地址</title>
+    </th:block>
+
+    <th:block layout:fragment="common_css">
+        <link rel="stylesheet" type="text/css" th:href="${'/ptuan/resources/css/address_new.css'}" />
+    </th:block>
+
+    <th:block layout:fragment="meat">
+        <meta name="keywords" content="美啦 团购 订单 地址" />
+        <meta name="description" content="美啦 团购 订单 地址" />
+    </th:block>
+
+    <th:block layout:fragment="page_header">
+        <div class="new-header" th:if="${not isApp}">
+            <a class="back" th:href="@{${'/ptuan/address/list?skuId='+skuId}}"></a>
+            <span th:text="${title_label}"></span>
+        </div>
+    </th:block>
+
+    <th:block layout:fragment="page_body">
+        <ul class="address">
+            <th:block th:each="address:${addresses}">
+                <li th:attr="data-id=${address.id},id=${'address_li_'+address.id}" class="g-border-tb">
+                	<div class="chooseAddress">
+                   		<span class="g-border addressToselect"></span>
+                   		<!-- <span class="g-border addressToselect"></span> -->
+                   	</div>
+                    <div class="item">
+                        <div class="text_info">
+                            <span class="user_name" th:text="${address.consignee}"></span>
+                            <span class="user_tel" th:text="${address.phone}"></span>
+                            <p class="idCard" th:if="${!#strings.isEmpty(address.idCard)}"><span>身份证 </span><span th:text="${address.idCard}"></span></p>
+                            <p class="user_address"><span class="tag" th:if="${address.common}">【默认】</span><span th:text="${address.details}"></span></p>
+                        </div>
+                    </div>
+                    <a class="choose_btn" ></a>
+
+                    <a class="edit_btn" th:href="@{'/address/' + ${address.id} + '/edit.xhtml?skuId=' + ${skuId}+'&amp;manage='+${is_manage}}+'&amp;needIdCard='+${needIdCard}"><span class="icon">编辑</span></a>
+                </li>
+            </th:block>
+        </ul>
+        <form action="" id="addressForm">
+            <input type="hidden" name="addressId" id="addressId" value=""/>
+            <input type="hidden" name="skuIds" id="skuIds" th:value="${skuIds}"/>
+            <input type="hidden" name="cart" id="cart"  th:value="${cart}"/>
+        </form>
+        <iframe id="app-jump-iframe" style="display:none;"></iframe>
+        <div class="edit_new">
+            <div class="edit_new_wrapper g-border-t">
+                <a class="edit_new_btn" th:href="@{'/address/add.xhtml?skuId='+${skuId}+'&amp;needIdCard='+${needIdCard}}" >
+                    +&nbsp;新建收货地址
+                </a>
+            </div>
+        </div>
+    </th:block>
+
+    <th:block layout:fragment="common_js">
+        <script type="text/javascript" th:src="${'/ptuan/resources/js/wx/jweixin-1.0.0.js'}"></script>
+        <script type="text/javascript" th:src="${'/ptuan/resources/js/utils.js'}"></script>
+        <script type="text/javascript" th:src="${'/ptuan/resources/js/meila_address_new.js'}"></script>
+    </th:block>
+
+    <th:block layout:fragment="page_js">
+        <script type="text/javascript" th:inline="text">
+        /*<![CDATA[*/
+            (function(){
+                if (sessionStorage.addressId){
+                    var selectId = sessionStorage.addressId,
+                        $addressList = $('.address li'),
+                        i, len;
+                    for (i = 0, len = $addressList.length; i < len; i ++){
+                        if ($addressList[i].getAttribute('data-id') === selectId){
+                            $($addressList[i]).find('.chooseAddress span').removeClass('addressToselect').addClass('addressSelected');
+                            break;
+                        }
+                    }
+                }
+            })();
+
+            // 隐藏微信分享按钮
+            M.is.inWechat && wxInit(['hideOptionMenu'], function() {
+                wx.hideOptionMenu();
+            });
+
+            $('.address').on('click', '.choose_btn', function(){
+                sessionStorage.removeItem('addressId');
+            });
+
+            // 拼团处理
+            $(document).on('click', '.address a.choose_btn, .back', function(e) {
+                if (!!localStorage.referer) {
+                    e.preventDefault();
+                    var addressId = $(this).parent().attr('data-id') || M.url.getParam('addressId');
+                    var url = M.url.setParam('addressId', addressId, localStorage.referer);
+                    location.href = url;
+                }
+            });
+        /*]]>*/
+        </script>
+    </th:block>
+
+</th:block>

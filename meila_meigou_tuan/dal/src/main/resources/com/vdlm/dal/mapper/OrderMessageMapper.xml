@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderMessageMapper">
+
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderMessage">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="order_id" property="orderId" typeHandler="idHandler"/>
+		<result column="buyer_id" property="buyerId" typeHandler="idHandler"/>
+		<result column="seller_id" property="sellerId" typeHandler="idHandler"/>
+		<result column="group_id" property="groupId" jdbcType="BIGINT"/>
+		<result column="content" property="content"  jdbcType="VARCHAR"/>
+		<result column="has_read" property="hasRead"  jdbcType="TINYINT"/>
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+		<result column="upload_pic" property="uploadPic" jdbcType="VARCHAR" />
+	</resultMap>
+	
+	<resultMap id="MsgProdInfoMap" type="com.vdlm.dal.vo.MsgProdInfoVO">
+		<result column="product_img" property="prodImg"  jdbcType="VARCHAR"/>
+		<result column="product_name" property="prodName" jdbcType="VARCHAR"/>
+		<result column="spec" property="skuDesc" jdbcType="VARCHAR"/>
+		<result column="paid_at" property="paidAt" jdbcType="TIMESTAMP"/>
+		<result column="paid_fee" property="paidFee"  jdbcType="DECIMAL"/>
+	</resultMap>
+	
+	<sql id="Base_Column_List" >
+    id, order_id, buyer_id, seller_id, group_id, content, has_read, created_at, updated_at, upload_pic
+    </sql>
+	
+    <insert id="insert" parameterType="com.vdlm.dal.model.OrderMessage">
+	    <selectKey resultType="String" keyProperty="id">
+	        SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+	    insert into vdlm_order_message (order_id, buyer_id, seller_id, group_id, content, has_read, created_at, updated_at, upload_pic)
+	    values (#{orderId, typeHandler=idHandler}, #{buyerId, typeHandler=idHandler},  #{sellerId, typeHandler=idHandler},
+	    			#{groupId, jdbcType=BIGINT}, #{content, jdbcType=VARCHAR}, #{hasRead, jdbcType=TINYINT}, now(), now(), #{uploadPic, jdbcType=VARCHAR})
+	</insert>
+	
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where id = #{0}
+    </select>
+    
+    <select id="selectMsgByGroup" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where group_id = #{groupId, typeHandler=idHandler}
+        order by created_at desc
+    </select>
+      
+    <select id="selectRepsMsgBySeller" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where group_id in (select id from vdlm_order_message where  buyer_id = #{buyerId, typeHandler=idHandler} )
+        order by created_at desc
+		limit #{page.offset}, #{page.size}
+    </select>
+	
+    <select id="selectMsgBySeller" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where seller_id = #{sellerId, typeHandler=idHandler}
+    </select>
+    
+    <select id="selectByOrderId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where order_id = #{orderId, typeHandler=idHandler}
+        order by created_at desc
+    </select>
+    
+    <select id="selectOrdersBySeller" resultMap="BaseResultMap">
+		select a.order_id, a.buyer_id, a.seller_id, a.content, a.has_read, a.created_at
+		from vdlm_order_message a,
+			(select order_id,max(created_at) as created_at from vdlm_order_message where seller_id =  #{sellerId, typeHandler=idHandler} and group_id = '0' group by order_id ) b
+		where a.seller_id =  #{sellerId, typeHandler=idHandler}
+		and a.group_id = '0'
+		and a.order_id=b.order_id
+		and a.created_at=b.created_at
+		order by created_at desc
+		limit #{page.offset}, #{page.size}
+    </select>
+    
+   <update id="updateMsgReadByOrderId">
+     update vdlm_order_message
+     set has_read = true, updated_at = now()
+     where order_id = #{orderId,typeHandler=idHandler}
+     and group_id = '0'
+   </update>
+
+    <select id="selectMsgByBuyer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where buyer_id = #{buyerId, typeHandler=idHandler}
+    </select>
+    
+    <select id="selectProdInfoByOrderId" resultMap="MsgProdInfoMap">
+    	select voi.product_img, voi.product_name, vs.spec, vo.paid_at, vo.paid_fee
+		from vdlm.vdlm_sku vs, vdlm.vdlm_order vo, vdlm.vdlm_order_item voi
+		where  vo.id = #{orderId, typeHandler=idHandler} and vo.id = voi.order_id and voi.product_id = vs.product_id 
+		limit 1;
+    </select>
+
+    <select id="selectLatestSellerReplyByOrderId" resultMap="BaseResultMap">
+    	select
+        <include refid="Base_Column_List" />
+        from vdlm_order_message
+        where order_id = #{orderId, typeHandler=idHandler}
+        and group_id != 0
+        order by created_at desc limit 1;
+    </select>
+    
+</mapper>

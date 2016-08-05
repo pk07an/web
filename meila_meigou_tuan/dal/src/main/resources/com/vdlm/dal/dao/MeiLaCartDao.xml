@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vdlm.dal.dao.MeiLaCartDao">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.CartItem">
+		<id column="id" jdbcType="BIGINT" property="id" />
+		<result column="user_id" jdbcType="BIGINT" property="userId" typeHandler="idHandler" />
+		<result column="sku_id" jdbcType="BIGINT" property="skuId" typeHandler="idHandler" />
+		<result column="product_id" jdbcType="BIGINT" property="productId" typeHandler="idHandler" />
+		<result column="shop_id" jdbcType="BIGINT" property="shopId" typeHandler="idHandler" />
+		<result column="seller_id" jdbcType="BIGINT" property="sellerId" typeHandler="idHandler" />
+		<result column="amount" jdbcType="INTEGER" property="amount" />
+		<result column="status" jdbcType="VARCHAR" property="status" />
+		<result column="archive" jdbcType="BIT" property="archive" />
+		<result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+		<result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+	</resultMap>
+	<sql id="Base_Column_List"> id, user_id, sku_id, product_id, shop_id, seller_id, amount, status, archive, created_at, updated_at
+	</sql>
+
+	<update id="deleteByKeyAndUserId">
+		update vdlm_cart_item set archive=true,updated_at = now()
+		where user_id = #{userId,typeHandler=idHandler} and sku_id in
+		<foreach collection="ids" item="id" index="index" open="(" separator="," close=")">#{id,typeHandler=idHandler}</foreach>
+		and status=#{cartType}
+	</update>
+	<update id="updateBySkuSelective">
+		update vdlm_cart_item set updated_at = now(),amount=#{amount}
+		where user_id = #{userId,typeHandler=idHandler} and sku_id=#{skuId,typeHandler=idHandler}
+	</update>
+	<select id="selectByUserIdAndCartType" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_cart_item where user_id = #{userId,typeHandler=idHandler} and archive = 0 and status=#{cartType}
+		<if test="skuIds!=null">
+			and sku_id in
+			<foreach collection="skuIds" item="id" index="index" open="(" separator="," close=")">#{id,typeHandler=idHandler}</foreach>
+		</if>
+		order by updated_at desc
+	</select>
+	<select id="countByUserIdAndCartType" resultType="Integer">
+		select
+			count(1)
+		from 
+			vdlm_cart_item 
+		where 
+			user_id = #{userId,typeHandler=idHandler} 
+		and 
+			archive = 0 
+		and
+			status=#{cartType}
+		<if test="skuId!=null">
+		and 
+			sku_id != #{skuId,typeHandler=idHandler} 
+		</if>
+	</select>
+	<select id="selectByUserIdAndSku" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_cart_item
+		where user_id = #{userId,typeHandler=idHandler}
+		and sku_id = #{skuId,typeHandler=idHandler}
+		and archive = 0
+		and status=#{cartType}
+		limit 0,1;
+	</select>
+	<select id="deleteBySkuAndCartType">
+		update vdlm_cart_item set archive=true,updated_at = now()
+		where user_id = #{userId, typeHandler=idHandler} and sku_id = #{skuId, typeHandler=idHandler} and status=#{cartType}
+	</select>
+	<update id="deleteByUserIdAndSkuId">
+		delete vdlm_cart_item where user_id = #{userId, typeHandler=idHandler} and sku_id = #{skuId, typeHandler=idHandler} and status=#{cartType}
+	</update>
+</mapper>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderItemCommentMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderItemComment" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_item_id" property="orderItemId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="buyer_id" property="buyerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="comment" property="content" jdbcType="VARCHAR" />
+    <result column="reply" property="reply" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT"/>
+    <result column="product_score" property="productScore" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="code" property="code" jdbcType="VARCHAR"/>
+     <result column="sku_str" property="fakeSkuStr" jdbcType="VARCHAR"/>
+     <result column="comment_type" property="commentType" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.model.OrderItemCommentImage" id="commentImageMap">
+  	<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="comment_id" property="commentId" jdbcType="BIGINT" typeHandler="idHandler" />
+  	<result column="img" property="img" jdbcType="VARCHAR"/>
+  	<result column="img_width" property="imgWidth" jdbcType="INTEGER"/>
+  	<result column="img_height" property="imgHeight" jdbcType="INTEGER"/>
+  	<result column="img_order" property="imgOrder" jdbcType="INTEGER"/>
+  	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="AdminMap" type="com.vdlm.dal.vo.OrderItemCommentAdmin" extends="BaseResultMap">
+	<result column="product_name" property="productName" jdbcType="VARCHAR"  />
+	<result column="order_no" property="orderNum" jdbcType="VARCHAR"  />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_id, order_item_id, product_id, seller_id, buyer_id, reply, comment, product_score, created_at, updated_at, archive, code,sku_str,comment_type
+  </sql>
+  
+  <sql id="order_item_comment_image">
+  	id, comment_id, img, img_order,img_width,img_height, created_at
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where id = #{id,typeHandler=idHandler}
+  </select>
+  
+   <select id="selectByCode" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where code = #{code}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    update vdlm_order_item_comment set archive=true
+    where id = #{id,typeHandler=idHandler}
+  </delete>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderItemComment" >
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_order_item_comment (order_id, order_item_id, product_id, seller_id, buyer_id, 
+    	reply, comment, product_score, created_at, updated_at, archive)
+    values (#{orderId,typeHandler=idHandler}, #{orderItemId,typeHandler=idHandler}, #{productId,typeHandler=idHandler}, 
+    	#{sellerId,typeHandler=idHandler}, #{buyerId,typeHandler=idHandler}, #{reply,jdbcType=VARCHAR}, #{content,jdbcType=VARCHAR},
+    	 #{productScore, jdbcType=INTEGER}, now(), now(), false)
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.OrderItemComment" >
+    update vdlm_order_item_comment
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,typeHandler=idHandler},
+      </if>
+      <if test="orderItemId != null" >
+        order_item_id = #{orderItemId,typeHandler=idHandler},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,typeHandler=idHandler},
+      </if>
+      <if test="sellerId != null" >
+        seller_id = #{sellerId,typeHandler=idHandler},
+      </if>
+      <if test="buyerId != null" >
+        buyer_id = #{buyerId,typeHandler=idHandler},
+      </if>
+      <if test="reply != null" >
+        reply = #{reply,jdbcType=VARCHAR},
+      </if>
+      <if test="content != null" >
+        comment = #{content,jdbcType=VARCHAR},
+      </if>
+      <if test="productScore != null" >
+        product_score = #{productScore,jdbcType=INTEGER},
+      </if>
+      <if test="archive != null" >
+        archive = #{archive,jdbcType=BIT},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <select id="selectByProductId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where product_id = #{productId,typeHandler=idHandler} and archive=false
+    order by created_at desc
+	limit #{pager.offset}, #{pager.size}
+  </select>
+  
+  <select id="countByProductId" resultType="Long">
+    select count(1)
+    from vdlm_order_item_comment
+    where product_id = #{productId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectLastestByProductId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where product_id = #{productId,typeHandler=idHandler} and archive=false 
+    order by created_at desc
+    limit 1
+  </select>
+  
+  <select id="countByBuyerIdAndSellerId" resultType="Long">
+    select count(1)
+    from vdlm_order_item_comment
+    where buyer_id = #{buyerId,typeHandler=idHandler} and seller_id = #{sellerId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectByBuyerIdAndSellerId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where buyer_id = #{buyerId,typeHandler=idHandler} and seller_id = #{sellerId,typeHandler=idHandler} and archive=false
+    order by created_at desc
+	limit #{pager.offset}, #{pager.size}
+  </select>
+  
+  <select id="selectUnreadBySellerId" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where seller_id = #{sellerId,typeHandler=idHandler} and archive=false and reply is null
+    order by created_at desc
+	limit #{pager.offset}, #{pager.size}
+  </select>
+  
+  <select id="selectByOrderItemId" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_comment
+    where order_item_id = #{orderItemId,typeHandler=idHandler} and archive=false
+    order by created_at desc
+  </select>
+  
+  <select id="countNewOrderItemcommentBySellerId" resultType="Long">
+  	select count(1) from vdlm_order_item_comment
+  	where seller_id = #{sellerId,typeHandler=idHandler} and created_at>=#{startTime} and archive=false
+  </select>
+  
+  <select id="selectProcuctScoreAvg" resultType="java.math.BigDecimal">
+  	select avg(product_score) from vdlm_order_item_comment where product_id=#{productId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectSumProductScore" resultType="Long">
+  	select sum(product_score) from vdlm_order_item_comment where product_id=#{productId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="checkExistsByOrderId" resultType="Long">
+  	select count(1) from vdlm_order_item_comment where order_id=#{orderId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="checkExistsByOrderItemId" resultType="Long">
+  	select count(1) from vdlm_order_item_comment where order_id=#{orderId,typeHandler=idHandler} 
+  	and order_item_id=#{orderItemId,typeHandler=idHandler} and buyer_id=#{buyerId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="checkExistsByItemId" resultType="Long">
+  	select count(1) from vdlm_order_item_comment where order_id=#{orderId,typeHandler=idHandler} 
+  	and order_item_id=#{orderItemId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <insert id="insertCommentImage">
+  	<selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+  	insert into vdlm_order_item_comment_image(comment_id, img, img_order,img_width,img_height, created_at)
+  	values(#{commentId, typeHandler=idHandler}, #{img}, #{imgOrder},#{imgWidth},#{imgHeight}, now())
+  </insert>
+  
+  <select id="selectImageByCommentId" resultMap="commentImageMap">
+  	select 
+  	<include refid="order_item_comment_image" />
+  	from vdlm_order_item_comment_image
+  	where comment_id = #{commentId, typeHandler=idHandler}
+  	order by img_order
+  </select>
+  
+  <select id="countOrderCommentByAdmin" resultType="java.lang.Long">
+    select count(1) as c
+    from vdlm_order_item_comment vc,vdlm_product vp, vdlm_order vo
+    where 1 = 1
+	and vc.product_id = vp.id
+	and vc.order_id = vo.id
+    and vc.archive = false
+    <if test="params.createdFrom != null">
+		and vc.created_at >= #{params.createdFrom}
+	</if>
+	<if test="params.createdTo != null">
+		<![CDATA[
+		and vc.created_at < #{params.createdTo}
+		]]>
+	</if>
+  </select>
+  <select id="listOrderCommentByAdmin" resultMap="AdminMap">
+    select 
+    c.id, c.order_id, c.order_item_id, c.seller_id, c.buyer_id, c.reply, 
+    c.comment, c.product_score, c.created_at, c.updated_at,
+    p.name as product_name, o.order_no
+    from vdlm_order_item_comment c, vdlm_product p, vdlm_order o
+    where 1 = 1
+	and c.product_id = p.id
+	and c.order_id = o.id
+    and c.archive = false
+    <if test="params.createdFrom != null">
+		and c.created_at >= #{params.createdFrom}
+	</if>
+	<if test="params.createdTo != null">
+		<![CDATA[
+		and c.created_at < #{params.createdTo}
+		]]>
+	</if>
+	order by created_at, updated_at desc
+	<if test="page != null" >
+	   limit #{page.offset}, #{page.size}
+	</if>
+  </select>
+  <update id="deleteByAdmin">
+	update vdlm_order_item_comment set archive=true ,updated_at = now()
+	where id in <foreach collection="ids" item="item" index="index"
+	open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach> 
+  </update>
+  
+  <update id="addCode">
+		update vdlm_order_item_comment set code = #{id, jdbcType=VARCHAR}
+		where id =#{id, typeHandler=idHandler}
+	</update>
+  <select id="countByCommnetAndBuyer" resultType="Integer">
+   		SELECT COUNT(DISTINCT o.id)
+	    FROM vdlm_order o
+	    LEFT JOIN vdlm_order_item oi ON oi.order_id=o.id
+	    WHERE  o.buyer_id=#{buyerId,typeHandler=idHandler} AND o.status='SUCCESS'
+	    AND NOT EXISTS (SELECT 1 FROM vdlm_order_item_comment t WHERE t.`order_item_id`=oi.`id`) 
+  </select>	
+</mapper>

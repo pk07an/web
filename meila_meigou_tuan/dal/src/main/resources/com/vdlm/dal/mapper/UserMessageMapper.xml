@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.UserMessageMapper" >
+
+    <resultMap id="BaseResultMap" type="com.vdlm.dal.model.UserMessage" >
+        <id column="id" property="id" />
+        <result column="from_user_id" property="fromUserId" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="to_user_id" property="toUserId" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="msg_id" property="msgId" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+<!--  
+    <resultMap id="UserMessageVOMap" type="com.vdlm.dal.model.UserMessageVO" extends="BaseResultMap">
+        <association property="message" column="id" resultMap="com.vdlm.dal.mapper.Message.BaseResultMap"></association>
+    </resultMap>
+-->
+
+    <sql id="Base_Column_List">
+        id, from_user_id, to_user_id, msg_id, status, created_at
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_user_message
+        where id = #{id}
+    </select>
+
+    <select id="selectByReceiver" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_user_message
+        where to_user_id = #{userId, typeHandler=idHandler}
+        <![CDATA[ and status <> 'DELETED' ]]>
+    </select>
+
+    <select id="selectBySender" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_user_message
+        where from_user_id = #{userId, typeHandler=idHandler}
+        <![CDATA[ and status <> 'DELETED' ]]>  
+    </select>
+
+    <select id="selectByUser" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_user_message
+        where (from_user_id = #{userId, typeHandler=idHandler}
+        or to_user_id = #{userId, typeHandler=idHandler})
+        <![CDATA[ and status <> 'DELETED' ]]>  
+    </select>
+
+    <insert id="insert" parameterType="com.vdlm.dal.model.UserMessage">
+        <selectKey resultType="String" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into vdlm_user_message (from_user_id, to_user_id, msg_id, status, created_at, updated_at)
+        values (#{fromUserId, typeHandler=idHandler}, #{toUserId, typeHandler=idHandler}, #{msgId, typeHandler=idHandler}, #{status}, now(), now())
+    </insert>
+
+    <update id="updateUserMessageStatus">
+        update vdlm_user_message
+        set status = #{status}, updated_at = now()
+        where id = #{id}
+    </update>
+
+</mapper>

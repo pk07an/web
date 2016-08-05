@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.DealLogMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.DealLog" >
+    <id column="id" property="id" />
+    <result column="deal_id" property="dealId" jdbcType="BIGINT"/>
+    <result column="title" property="title" jdbcType="VARCHAR" />
+    <result column="account_id" property="accountId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="fee" property="fee" jdbcType="DECIMAL" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, deal_id, title, account_id, fee, created_at, updated_at
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.DealLog">
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_deal_log (deal_id, title, account_id, fee, created_at, updated_at)
+    values (#{dealId}, #{title}, #{accountId, typeHandler=idHandler}, #{fee}, now(), now())
+  </insert>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_deal_log
+    where id = #{id}
+  </select>
+  
+  <select id="selectByDealId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_deal_log
+    where deal_id = #{dealId}
+  </select>
+  
+</mapper>

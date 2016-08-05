@@ -1,0 +1,1310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Order" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="buyer_id" property="buyerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="shop_id" property="shopId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="logistics_fee" property="logisticsFee" jdbcType="DECIMAL" />
+    <result column="total_fee" property="totalFee" jdbcType="DECIMAL" />
+    <result column="paid_fee" property="paidFee" jdbcType="DECIMAL" />
+    <result column="discount_fee" property="discountFee" jdbcType="DECIMAL" />
+    <result column="goods_fee" property="goodsFee" jdbcType="DECIMAL" />
+    <result column="refund_fee" property="refundFee" jdbcType="DECIMAL" />
+    <result column="refund_goods_fee" property="refundGoodsFee" jdbcType="DECIMAL" />
+    <result column="refund_logistics_fee" property="refundLogisticsFee" jdbcType="DECIMAL" />
+    <result column="refund_platform_fee" property="refundPlatformFee" jdbcType="DECIMAL" />
+    <result column="paid_at" property="paidAt" jdbcType="TIMESTAMP" />
+    <result column="paid_status" property="paidStatus" jdbcType="VARCHAR" />
+    <result column="shipped_at" property="shippedAt" jdbcType="TIMESTAMP" />
+    <result column="logistics_company" property="logisticsCompany" jdbcType="VARCHAR" />
+    <result column="logistics_order_no" property="logisticsOrderNo" jdbcType="VARCHAR" />
+    <result column="refund_at" property="refundAt" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="remark_admin" property="remarkAdmin" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="TINYINT" />
+    <result column="union_id" property="unionId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="vip" property="vip" jdbcType="TINYINT" />
+    <result column="refund_type" property="refundType" jdbcType="VARCHAR" />
+    <result column="promotion_id" property="promotionId" jdbcType="VARCHAR" />
+    <result column="coupon_id" property="couponId" jdbcType="VARCHAR" />
+    <result column="partner_type" property="partnerType" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="checking_at" property="checkingAt" jdbcType="TIMESTAMP" /> 
+    <result column="cancelled_at" property="cancelledAt" jdbcType="TIMESTAMP" />
+    <result column="succeed_at" property="succeedAt" jdbcType="TIMESTAMP" /> 
+    <result column="latest_sign_at" property="latestSignAt" jdbcType="TIMESTAMP" /> 
+    <result column="remind_ship_at" property="remindShipAt" jdbcType="TIMESTAMP" /> 
+  </resultMap>
+  
+  <resultMap id="OrderVOMap" type="com.vdlm.dal.vo.OrderVO" extends="BaseResultMap">
+  	<result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR"  />
+  	<result column="seller_phone" property="sellerPhone" jdbcType="VARCHAR"  />
+  	<result column="shop_name" property="shopName" jdbcType="VARCHAR"  />
+  	<result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR"  />
+  	<result column="out_id" property="outId" jdbcType="VARCHAR"  />
+  	<result column="payment_channel" property="paymentChannel" jdbcType="VARCHAR"  />
+  	<result column="buyerNickName" property="buyerNickName" jdbcType="VARCHAR"  />
+  	<result column="sellerNickName" property="sellerNickName" jdbcType="VARCHAR"  />
+  	<association property="orderAddress" column="order_id" columnPrefix="oa_" resultMap="com.vdlm.dal.mapper.OrderAddressMapper.BaseResultMap"></association>
+  	<association property="orderExt" column="order_id" columnPrefix="oe_" resultMap="com.vdlm.dal.mapper.OrderExtMapper.BaseResultMap"></association>
+  </resultMap>
+  
+    <resultMap type="com.vdlm.dal.vo.OrderVO" id="OrderVOMap2" extends="OrderVOMap"  >
+       <collection property="orderItems" 
+       ofType="com.vdlm.dal.model.OrderItem" javaType="ArrayList"  columnPrefix="item_"
+       column="order_id" resultMap="com.vdlm.dal.mapper.OrderItemMapper.BaseResultMap"> 
+       </collection>
+    </resultMap>
+  
+   <resultMap id="CustomerMap" type="com.vdlm.dal.vo.Customer" >
+    <result column="buyer_name" property="buyerName" jdbcType="VARCHAR"  />
+    <result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR"  />
+    <result column="order_count" property="orderCount" jdbcType="INTEGER" />
+    <result column="weixin_id" property="wechat"  jdbcType="VARCHAR" />
+    <result column="sum_consumption" property="sumConsumption" jdbcType="DECIMAL" />
+    <result column="last_paid_at" property="lastPaidAt" jdbcType="TIMESTAMP" />
+    <result column="zone_id" property="zoneId" jdbcType="VARCHAR" />
+    <result column="street" property="street" jdbcType="VARCHAR" />
+    <result column="vip" property="vip" jdbcType="TINYINT" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="OrderItemWithOrderVO" type="com.vdlm.dal.vo.OrderItemWithOrderVO">
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="sku_str" property="skuStr" jdbcType="VARCHAR" />
+    <result column="product_img" property="productImg" jdbcType="VARCHAR" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    
+    <result column="o_order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="o_type" property="type" jdbcType="VARCHAR" />
+    <result column="o_pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="o_buyer_id" property="buyerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="o_shop_id" property="shopId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="o_seller_id" property="sellerId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="o_logistics_fee" property="logisticsFee" jdbcType="DECIMAL" />
+    <result column="o_total_fee" property="totalFee" jdbcType="DECIMAL" />
+    <result column="o_paid_fee" property="paidFee" jdbcType="DECIMAL" />
+    <result column="o_discount_fee" property="discountFee" jdbcType="DECIMAL" />
+    <result column="o_goods_fee" property="goodsFee" jdbcType="DECIMAL" />
+    <result column="o_refund_fee" property="refundFee" jdbcType="DECIMAL" />
+    <result column="o_paid_at" property="paidAt" jdbcType="TIMESTAMP" />
+    <result column="o_paid_status" property="paidStatus" jdbcType="VARCHAR" />
+    <result column="o_shipped_at" property="shippedAt" jdbcType="TIMESTAMP" />
+    <result column="o_logistics_company" property="logisticsCompany" jdbcType="VARCHAR" />
+    <result column="o_logistics_order_no" property="logisticsOrderNo" jdbcType="VARCHAR" />
+    <result column="o_refund_at" property="refundAt" jdbcType="TIMESTAMP" />
+    <result column="o_status" property="status" jdbcType="VARCHAR" />
+    <result column="o_remark" property="remark" jdbcType="VARCHAR" />
+    <result column="o_archive" property="archive" jdbcType="TINYINT" />
+    <result column="o_union_id" property="unionId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="o_vip" property="vip" jdbcType="TINYINT" />
+    <result column="o_refund_type" property="refundType" jdbcType="VARCHAR" />
+    <result column="o_promotion_id" property="promotionId" jdbcType="VARCHAR" />
+    <result column="o_coupon_id" property="couponId" jdbcType="VARCHAR" />
+    <result column="o_partner_type" property="partnerType" jdbcType="VARCHAR" />
+    <result column="o_created_at" property="oCreatedAt" jdbcType="TIMESTAMP" />
+    <result column="o_updated_at" property="oUpdatedAt" jdbcType="TIMESTAMP" />
+    <result column="o_checking_at" property="checkingAt" jdbcType="TIMESTAMP" /> 
+    
+    <result column="oa_id" property="orderAddressId" typeHandler="idHandler"/>
+    <result column="oa_zone_id" property="zoneId" jdbcType="BIGINT" />
+    <result column="oa_street" property="street" jdbcType="VARCHAR" />
+    <result column="oa_consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="oa_phone" property="phone" jdbcType="VARCHAR" />
+    <result column="oa_weixin_id" property="weixinId" jdbcType="VARCHAR" />
+    <result column="oa_created_at" property="oaCreatedAt" jdbcType="TIMESTAMP" />
+    <result column="oa_updated_at" property="oaUpdatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+    <resultMap id="OrderExportVO" type="com.vdlm.dal.vo.OrderExportVO" extends="BaseResultMap">
+        <result column="item_id" property="item_id" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="product_id" property="product_id" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="shop_id" property="shop_id" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="addr_id" property="addr_id" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="zone_id" property="zone_id" jdbcType="BIGINT" typeHandler="idHandler" />
+        <result column="buyer_name" property="buyer_name" jdbcType="VARCHAR"  />
+        <result column="seller_name" property="seller_name" jdbcType="VARCHAR"  />
+        <result column="product_name" property="product_name" jdbcType="VARCHAR"  />
+        <result column="shop_name" property="shop_name" jdbcType="VARCHAR"  />
+        <result column="price" property="price" jdbcType="DECIMAL"  />
+        <result column="product_fee" property="product_fee" jdbcType="DECIMAL"  />
+        <result column="amount" property="amount" jdbcType="INTEGER" />
+        <result column="phone" property="phone" jdbcType="VARCHAR"  />
+        <result column="consignee" property="consignee" jdbcType="VARCHAR"  />
+        <result column="full_address" property="full_address" jdbcType="VARCHAR"  />
+        <result column="settlement_status" property="settlement_status" jdbcType="INTEGER"  />
+        <result column="refund_status" property="refund_status" jdbcType="INTEGER"  />
+    </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_no, type, pay_type, buyer_id, pay_no, shop_id, seller_id, logistics_fee, total_fee, paid_fee, discount_fee, goods_fee, 
+    paid_at, paid_status, shipped_at, logistics_company, logistics_order_no, status, remark, archive, union_id, partner_type, 
+    refund_fee, refund_platform_fee, refund_type, promotion_id, created_at, updated_at, checking_at, cancelled_at, succeed_at, 
+    latest_sign_at, remind_ship_at
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where id = #{id,typeHandler=idHandler}
+  </select>
+
+  <select id="selectCustomersByVip" resultMap="CustomerMap">
+    select oa.consignee as buyer_name, oa.phone as buyer_phone, count(1) as order_count, 
+        sum(total_fee) AS sum_consumption, max(paid_at) AS last_paid_at
+    from vdlm_order o 
+    join vdlm_order_address oa ON oa.order_id = o.id
+    where o.shop_id = #{shopId, typeHandler=idHandler} and o.status = 'SUCCESS' 
+    and o.vip = #{value, jdbcType=TINYINT}
+    group by oa.consignee, oa.phone
+    order by oa.updated_at desc
+  </select>   
+
+  <select id="selectByOrderNo" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where order_no = #{0}
+  </select> 
+  
+  <select id="selectByPayNo" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where pay_no = #{payNo}
+    <if test="buyerId!=null">
+    	and buyer_id=#{buyerId,typeHandler=idHandler}
+    </if>
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Order">
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_order (order_no, type, pay_type, buyer_id,
+      shop_id, seller_id, logistics_fee, total_fee, paid_fee, discount_fee, goods_fee,
+      paid_at, shipped_at, status, remark, union_id, promotion_id, coupon_id, partner_type, created_at, updated_at,pay_no)
+    values (#{orderNo,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR}, #{buyerId,typeHandler=idHandler}, 
+      #{shopId,typeHandler=idHandler}, #{sellerId,typeHandler=idHandler}, #{logisticsFee,jdbcType=DECIMAL}, 
+      #{totalFee,jdbcType=DECIMAL}, #{paidFee,jdbcType=DECIMAL}, #{discountFee,jdbcType=DECIMAL}, 
+      #{goodsFee,jdbcType=DECIMAL}, #{paidAt,jdbcType=TIMESTAMP}, #{shippedAt,jdbcType=TIMESTAMP}, #{status,jdbcType=VARCHAR}, #{remark,jdbcType=VARCHAR}, 
+      #{unionId,typeHandler=idHandler}, #{promotionId}, #{couponId}, #{partnerType}, now(), now(),#{payNo,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.Order" >
+    update vdlm_order
+    <set >
+      <if test="orderNo != null" >
+        order_no = #{orderNo},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType},
+      </if>
+      <if test="buyerId != null" >
+        buyer_id = #{buyerId,typeHandler=idHandler},
+      </if>
+      <if test="shopId != null" >
+        shop_id = #{shopId,typeHandler=idHandler},
+      </if>
+      <if test="sellerId != null" >
+        seller_id = #{sellerId,typeHandler=idHandler},
+      </if>
+      <if test="logisticsFee != null" >
+        logistics_fee = #{logisticsFee},
+      </if>
+      <if test="totalFee != null" >
+        total_fee = #{totalFee},
+      </if>
+      <if test="paidFee != null" >
+        paid_fee = #{paidFee},
+      </if>
+      <if test="discountFee != null" >
+        discount_fee = #{discountFee},
+      </if>
+      <if test="goodsFee != null" >
+        goods_fee = #{goodsFee},
+      </if>
+      <if test="paidAt != null" >
+        paid_at = #{paidAt},
+      </if>
+      <if test="refundPlatformFee != null" >
+        refund_platform_fee = #{refundPlatformFee},
+      </if>
+      <if test="refundFee != null" >
+        refund_fee = #{refundFee},
+      </if>      
+      <if test="paidStatus != null" >
+        paid_status = #{paidStatus},
+      </if>
+      <if test="shippedAt != null" >
+        shipped_at = #{shippedAt},
+      </if>
+      <if test="latestSignAt != null" >
+        latest_sign_at = #{latestSignAt},
+      </if>
+      <if test="remindShipAt != null">
+      	remind_ship_at = #{remindShipAt, jdbcType=VARCHAR},
+      </if>
+      <if test="logisticsCompany != null" >
+        logistics_company = #{logisticsCompany},
+      </if>
+      <if test="logisticsOrderNo != null" >
+        logistics_order_no = #{logisticsOrderNo},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="vip != null">
+      	vip = #{vip, jdbcType=TINYINT},
+      </if>
+      <if test="payNo != null">
+      	pay_no = #{payNo, jdbcType=VARCHAR},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateVipByCustomer">
+  update vdlm_order o, vdlm_order_address oa
+  set o.vip = #{vip}
+  where o.id = oa.order_id and oa.consignee = #{consignee} and oa.phone = #{phone} and o.shop_id = #{shopId, typeHandler=idHandler}
+  </update>
+  
+  <select id="selectByBuyerAndStatus" resultMap="OrderVOMap2">
+    <!-- 
+    select o.id, o.order_no, o.type, o.pay_type, o.buyer_id, o.shop_id, o.seller_id, o.logistics_fee, o.total_fee,
+	    o.paid_fee, o.discount_fee, o.goods_fee, o.paid_at, o.paid_status, o.status, o.remark, o.archive, o.created_at, o.updated_at,o.checking_at,
+	    o.latest_sign_at,
+	    oa.id as oa_id, oa.order_id as oa_order_id, oa.zone_id as oa_zone_id, oa.street as oa_street, oa.consignee as oa_consignee, 
+	    oa.phone as oa_phone, oa.created_at as oa_created_at, oa.updated_at as oa_updated_at
+    from vdlm_order o left join vdlm_order_address oa
+    on o.id = oa.order_id
+     -->
+  
+      select o.id, o.order_no, o.type, o.pay_type, o.buyer_id, o.shop_id, o.seller_id, o.logistics_fee, o.total_fee,
+	   o.paid_fee, o.discount_fee, o.goods_fee, o.paid_at, o.paid_status, o.status, o.remark, o.archive, o.created_at, o.updated_at,o.checking_at,
+	   o.latest_sign_at,o.logistics_company,o.logistics_order_no,
+	   o.id as oa_id, oa.order_id as oa_order_id, oa.zone_id as oa_zone_id, oa.street as oa_street, oa.consignee as oa_consignee, 
+	   oa.phone as oa_phone, oa.created_at as oa_created_at, oa.updated_at as oa_updated_at,
+       item.id as item_id , item.order_id as item_order_id  ,item.product_id as  item_product_id,item.sku_id as item_sku_id, item.product_name as item_product_name,    
+       item.sku_str as item_sku_str, item.product_img as item_product_img,item.market_price as item_market_price ,item.price as item_price  ,item.amount as item_amount,
+       item.created_at as  item_created_at,item.updated_at as item_updated_at
+       from vdlm_order o inner JOIN vdlm_order_item  item on o.id= item.order_id 
+       left join vdlm_order_address oa
+       on o.id = oa.order_id
+    where o.buyer_id = #{0,typeHandler=idHandler} 
+    and o.archive = false 
+    <if test="status != null" >
+    and o.status='${status.name()}'
+    </if>
+    <if test="status != null and status.name() == 'SUCCESS'">
+			and o.id not in (select order_id from vdlm_order_item_comment  where buyer_id=#{0,typeHandler=idHandler})
+	</if> 
+    
+    order by created_at desc
+    limit #{pager.offset}, #{pager.size}
+  </select>
+  
+  <select id="selectLatestByBuyerId"  resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from vdlm_order
+  	where shop_id = #{shopId, typeHandler=idHandler}
+  	and buyer_id = #{buyerId, typeHandler=idHandler}
+  	and archive= false
+  	order by updated_at 
+  	limit 1
+  </select>
+  
+  <select id="countByBuyerAndStatus" resultType="Long">
+    <!-- 统计订单数量不需要跟 vdlm_order_address 做关联
+    select count(*) as c
+    from vdlm_order o left join vdlm_order_address oa
+    on o.id = oa.order_id
+    where buyer_id = #{0,typeHandler=idHandler} 
+    <if test="status != null">
+      and o.status = '${status.name()}'
+    </if>
+     -->
+    select count(*) as c from vdlm_order o
+    where o.buyer_id=#{0,typeHandler=idHandler}  
+    <if test="status != null">
+      and o.status = '${status.name()}'
+    </if>
+  </select>
+  
+  <select id="countBySellerAndStatus" resultType="Long">
+    select count(*) as c
+    from vdlm_order o left join vdlm_order_address oa
+	    on o.id=oa.order_id
+	    where seller_id = #{0,typeHandler=idHandler} 
+	    <if test="status != null">
+	    and o.status='${status.name()}'
+	    </if>
+  </select>
+  <!-- add by luojy 20150709 -->
+  <select id="countBySellerAndStatus1" resultType="Long">
+    select count(*) as c
+    from vdlm_order o left join vdlm_order_address oa
+	    on o.id=oa.order_id
+	    where seller_id = #{0,typeHandler=idHandler} 
+	    <if test="status != null and status.length > 0">
+	        and o.status  in 
+	        <foreach collection="status" item="sta" index="index" open="(" separator="," close=")">
+			  '${sta.name()}'
+			</foreach>
+	    </if>
+	    
+	    <if test="key != null">
+		and (
+			oa.phone like #{key,jdbcType=VARCHAR} 
+		 or oa.street like #{key,jdbcType=VARCHAR}
+		 or oa.weixin_id like #{key,jdbcType=VARCHAR} 
+		 or oa.consignee like #{key,jdbcType=VARCHAR}
+		 or o.order_no like #{key,jdbcType=VARCHAR}
+		)
+	</if>
+  </select>
+
+	<select id="selectBySellerAndStatus" resultMap="OrderVOMap">
+		select o.id, o.order_no, o.type, o.pay_type, o.buyer_id, o.shop_id,
+		o.seller_id, o.logistics_fee, o.total_fee,
+		o.paid_fee, o.discount_fee, o.goods_fee, o.paid_at, o.paid_status, o.status,
+		o.remark, o.archive, o.created_at, o.updated_at, o.checking_at, o.cancelled_at, o.succeed_at,
+		o.latest_sign_at,o.logistics_company,o.logistics_order_no,
+		oa.id as oa_id, oa.order_id as oa_order_id, oa.zone_id as oa_zone_id,
+		oa.street as oa_street, oa.consignee as oa_consignee,
+		oa.phone as oa_phone, oa.created_at as oa_created_at, oa.updated_at as
+		oa_updated_at
+		from vdlm_order o left join vdlm_order_address oa
+		on o.id=oa.order_id
+		where seller_id = #{0,typeHandler=idHandler} and o.archive=false 
+		<if test="status != null ">
+			<choose>
+				<when test="status.name() == 'CLOSED'">and o.status in('SUCCESS', 'CANCELLED', 'CLOSED')
+				</when>				
+				<otherwise>and o.status='${status.name()}'</otherwise>
+			</choose>
+		</if>
+		<if test="status != null and status.name() == 'SUCCESS'">
+			and o.id not in (select order_id from vdlm_order_item_comment  where seller_id=#{0,typeHandler=idHandler})
+		</if>  
+		order by created_at desc
+		limit #{pager.offset}, #{pager.size}
+	</select>
+	
+	<select id="selectOrderNoListByStatus" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_order 
+		where archive=false 
+		<if test="status != null ">
+			<choose>
+				<when test="status.name() == 'CLOSED'">and o.status in('SUCCESS', 'CANCELLED', 'CLOSED')
+				</when>
+				<otherwise>and o.status='${status.name()}'</otherwise>
+			</choose>
+		</if>
+		order by created_at desc
+		limit #{pager.offset}, #{pager.size}
+	</select>
+  
+   <select id="selectBySellerAndStatusKey" resultMap="OrderItemWithOrderVO">
+	<!-- select o.id, o.order_no, o.type, o.pay_type, o.buyer_id, o.shop_id, 
+		o.seller_id, o.logistics_fee, o.total_fee, o.paid_fee, o.discount_fee, o.goods_fee, 
+		o.paid_at, o.paid_status, o.status, o.remark, o.archive, o.created_at, o.updated_at,o.checking_at, 
+		oa.id as oa_id, oa.order_id as oa_order_id, oa.zone_id as oa_zone_id, oa.street 
+		as oa_street, oa.consignee as oa_consignee, oa.phone as oa_phone, oa.created_at 
+		as oa_created_at, oa.updated_at as oa_updated_at from vdlm_order o left join 
+		vdlm_order_address oa on o.id=oa.order_id where seller_id = #{0,typeHandler=idHandler} 
+		and o.status='${status.name()}' <if test="key != null" > and ( oa.phone like 
+		#{key,jdbcType=VARCHAR} or oa.street like #{key,jdbcType=VARCHAR} or oa.weixin_id 
+		like #{key,jdbcType=VARCHAR} or oa.consignee like #{key,jdbcType=VARCHAR} 
+		or exists (select 1 from vdlm_order_item m where o.id=m.order_id and m.archive=false 
+		and m.product_name like #{key,jdbcType=VARCHAR}) ) </if> order by created_at 
+		desc -->
+
+	select oi.id, oi.order_id, oi.product_id, oi.sku_id, oi.product_name,
+	oi.sku_str, oi.product_img, oi.price, oi.amount, oi.archive, oi.created_at, oi.updated_at,
+	o.id as
+	o_id, o.order_no as o_order_no, o.type as o_type, o.pay_type as
+	o_pay_type, o.buyer_id as o_buyer_id, o.shop_id as o_shop_id,
+	o.seller_id as o_seller_id, o.logistics_fee as o_logistics_fee,
+	o.total_fee as o_total_fee,
+	o.paid_fee as o_paid_fee, o.discount_fee as o_discount_fee, o.goods_fee as
+	o_goods_fee, o.paid_at as o_paid_at, o.paid_status as o_paid_status,
+	o.status as o_status, o.remark as o_remark, o.archive as o_archive,
+	o.created_at as o_created_at, o.updated_at as
+	o_updated_at,o.checking_at as o_checking_at,o.cancelled_at,o.succeed_at,
+	oa.id as oa_id, oa.order_id as oa_order_id, oa.zone_id as oa_zone_id,
+	oa.street as oa_street, oa.consignee as oa_consignee,
+	oa.phone as oa_phone, oa.created_at as oa_created_at, oa.updated_at as
+	oa_updated_at
+	from vdlm_order_item oi inner join vdlm_order o on
+	o.id=oi.order_id left join vdlm_order_address oa on o.id=oa.order_id
+	where seller_id = #{0,typeHandler=idHandler} and oi.archive=false 
+
+	<if test="status != null ">
+		<choose>
+			<when test="status.name() == 'CLOSED'">and o.status in('SUCCESS', 'CANCELLED', 'CLOSED')
+			</when>
+			<otherwise>and o.status='${status.name()}'</otherwise>
+		</choose>
+	</if>
+	<if test="key != null">
+		and (
+		oa.phone like #{key,jdbcType=VARCHAR} or oa.street like
+		#{key,jdbcType=VARCHAR}
+		or oa.weixin_id like #{key,jdbcType=VARCHAR} or oa.consignee like
+		#{key,jdbcType=VARCHAR}
+		or oi.product_name like #{key,jdbcType=VARCHAR}
+		or o.order_no like #{key,jdbcType=VARCHAR}
+		)
+	</if>
+	order by o.created_at desc
+</select>
+  
+  <select id="selectCustomersByShopId" resultMap="CustomerMap" >
+    select oa.consignee as buyer_name, oa.phone as buyer_phone, count(1) as order_count, 
+        sum(total_fee) AS sum_consumption, max(paid_at) AS last_paid_at
+    from vdlm_order o 
+    join vdlm_order_address oa ON oa.order_id = o.id
+    where o.shop_id = #{shopId, typeHandler=idHandler} and o.status = 'SUCCESS' 
+    group by oa.consignee, oa.phone
+    <if test="sort != null" >
+    order by ${sort}
+    </if>
+    <if test="page != null" >
+    limit #{page.offset}, #{page.size}
+    </if>
+  </select>
+  
+  <select id="selectCustomersByShopIdAndKey" resultMap="CustomerMap" >
+    select oa.consignee as buyer_name, oa.phone as buyer_phone, count(1) as order_count, 
+        sum(total_fee) AS sum_consumption, max(paid_at) AS last_paid_at
+    from vdlm_order o 
+    join vdlm_order_address oa ON oa.order_id = o.id
+    where o.shop_id = #{shopId, typeHandler=idHandler} and o.status = 'SUCCESS' 
+    <if test="key != null" >
+    and (oa.consignee like #{key,jdbcType=VARCHAR} or oa.phone like #{key,jdbcType=VARCHAR})
+    </if>
+    group by oa.consignee, oa.phone
+    <if test="sort != null" >
+    order by ${sort}
+    </if>
+    <if test="page != null" >
+    limit #{page.offset}, #{page.size}
+    </if>
+  </select>
+  
+  <select id="selectCustomerByShopIdAndBuyerId"  resultMap="CustomerMap">
+    select o.buyer_id, u.phone as buyer_phone, count(1) as order_count, sum(total_fee) as sum_consumption
+    from vdlm_order o join vdlm_user u on o.buyer_id = u.id
+    where o.shop_id = #{0,typeHandler=idHandler} and o.status = 'SUCCESS' 
+    and o.buyer_id = #{1,typeHandler=idHandler}
+    group by o.buyer_id, u.phone
+  </select>
+
+  <select id="selectCustomerByShopIdAndConsignee" resultMap="CustomerMap">
+    select  oa.consignee as buyer_name, oa.phone as buyer_phone, o.paid_at AS last_paid_at,
+        oa.weixin_id,  oa.zone_id, oa.street,  o.remark, o.vip, o.total_fee
+    from vdlm_order o 
+    join vdlm_order_address oa ON oa.order_id = o.id
+    where o.shop_id = #{0, typeHandler=idHandler} and o.status = 'SUCCESS'
+        and oa.consignee = #{1} and oa.phone = #{2}
+    order by o.updated_at desc  limit 1
+  </select>
+  
+  <select id="selectByShopIdAndConsignee" resultMap="BaseResultMap">
+    select o.*
+    from vdlm_order o
+    join vdlm_order_address oa on oa.order_id = o.id
+    where o.shop_id = #{0,typeHandler=idHandler} and o.status = 'SUCCESS' 
+        and oa.consignee = #{1} and oa.phone = #{2}
+  </select>
+  
+  <select id="selectByShopIdAndCustomerId" resultMap="OrderVOMap">
+    select o.id, o.order_no, o.type, o.pay_type, o.buyer_id, o.shop_id, o.seller_id, o.logistics_fee, o.total_fee,
+        o.paid_fee, o.discount_fee, o.goods_fee, o.paid_at, o.paid_status, o.status, o.remark, o.archive, o.created_at, o.updated_at,
+        oa.id as oa_id, oa.order_id as oa_order_id, oa.zone_id as oa_zone_id, oa.street as oa_street, oa.consignee as oa_consignee, 
+        oa.phone as oa_phone, oa.created_at as oa_created_at, oa.updated_at as oa_updated_at
+    from vdlm_order o left join vdlm_order_address oa on o.id=oa.order_id
+    where shop_id = #{0,typeHandler=idHandler}
+    and buyer_id = #{1,typeHandler=idHandler}
+  </select>
+  
+  <select id="selectAutoCancel" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where created_at &lt;= DATE_SUB(now(), INTERVAL 30 MINUTE) and status = 'SUBMITTED'
+  </select>
+  
+  <select id="selectAutoSignRemind" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where now() &lt;= DATE_SUB(latest_sign_at, INTERVAL 1 DAY) and now() &gt;= DATE_SUB(latest_sign_at, INTERVAL 2 DAY) and status = 'SHIPPED'
+  </select>
+
+  <select id="selectAutoSign" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    <!-- where shipped_at &lt;= DATE_SUB(now(), INTERVAL 7 DAY) and status = 'SHIPPED'   -->
+    where now() &gt;= latest_sign_at and status = 'SHIPPED'
+  </select>
+  
+  <update id="delete">
+		update vdlm_order set archive=true,updated_at = now()
+		where id in <foreach collection="ids" item="id" index="index"
+		open="(" separator="," close=")">#{id, typeHandler=idHandler}</foreach>
+		and status in ('CANCELLED', 'SUCCESS', 'CLOSED')
+  </update>
+  
+  <select id="countByAdmin" resultType="Long">
+    select count(*) as c
+	from vdlm_order o, vdlm_user u1, vdlm_user u2, vdlm_shop s, vdlm_order_address oa
+	where o.buyer_id=u1.id and o.seller_id=u2.id and o.shop_id=s.id and oa.order_id = o.id
+	and o.archive=false
+    <include refid="condByAdmin" />
+  </select>
+
+  <select id="selectByAdmin" resultMap="OrderVOMap">
+    select o.id, o.order_no, o.pay_no, o.type, o.pay_type, o.buyer_id,
+    	   o.shop_id, o.seller_id, o.logistics_fee, o.total_fee,
+    	   o.paid_fee, o.discount_fee, o.goods_fee, o.paid_at, 
+    	   o.paid_status,o.shipped_at, o.status, o.remark, o.remark_admin, o.archive, o.refund_fee, o.refund_platform_fee, o.refund_type,
+    	   o.refund_goods_fee, o.refund_logistics_fee,o.succeed_at,
+    	   o.logistics_company,o.logistics_order_no,o.refund_type,o.created_at, o.updated_at, o.checking_at, o.refund_at,
+           u1.name as buyerNickName,
+           u2.name as sellerNickName,u2.phone as seller_phone,
+    	   oa.phone as buyer_phone,u2.phone as seller_phone,s.name as shop_name,o.partner_type,
+    	   oa.zone_id as oa_zone_id, oa.street as oa_street, oa.consignee as oa_consignee,oe.settlement_status as oe_settlement_status ,
+           op.trade_no as out_trade_no ,op.out_id as out_id
+	from vdlm_order o join vdlm_user u1 on o.buyer_id=u1.id join vdlm_user u2 on o.seller_id=u2.id 
+	     join vdlm_shop s on o.shop_id=s.id 
+	     left join vdlm_order_address oa on oa.order_id = o.id
+         left join vdlm_order_ext oe on  o.id = oe.order_id
+         left join vdlm_outpay op on o.pay_no = op.bill_no
+      <if test="params.productId != null  " >
+         left join vdlm_order_item om on  o.id = om.order_id
+      </if>
+	where o.archive=false
+    <include refid="condByAdmin"/>
+      <!-- 结算状态 add by reese-->
+      <if test="params.settleType != null  " >
+          and oe.settlement_status = #{params.settleType,jdbcType=TINYINT}
+      </if>
+      <!-- 商品id add by reese-->
+      <if test="params.productId != null  " >
+          and om.id like #{params.productId,jdbcType=BIGINT}
+      </if>
+	order by updated_at desc
+    <if test="page !=null">
+    	limit #{page.offset}, #{page.size} 
+    </if>
+    <if test="page ==null">
+		limit 0, 50000
+	</if>
+  </select>
+  
+  <select id="countMapByAdmin" resultType="HashMap">
+  	select count(*) as totalCount,sum(total_fee) as totalAmount_totalfee,sum(paid_fee) as totalAmount_paidfee 
+	from vdlm_order o join vdlm_user u1 on o.buyer_id=u1.id join vdlm_user u2 on o.seller_id=u2.id
+      join vdlm_shop s on o.shop_id=s.id
+      left join vdlm_order_ext oe on  o.id = oe.order_id
+      left join vdlm_order_address oa on oa.order_id = o.id
+      <if test="params.productId != null  " >
+          left join vdlm_order_item om on  o.id = om.order_id
+      </if>
+	where
+	 o.archive=false
+    <include refid="condByAdmin"/>
+      <!-- 结算状态 add by reese-->
+      <if test="params.settleType != null  " >
+          and oe.settlement_status = #{params.settleType,jdbcType=TINYINT}
+      </if>
+      <!-- 商品id add by reese-->
+      <if test="params.productId != null  " >
+          and om.id like #{params.productId,jdbcType=BIGINT}
+      </if>
+  </select>
+
+  <sql id="condByAdmin">
+  <if test="params.orderNo != null" >
+		and (o.order_no like #{params.orderNo} or o.pay_no like #{params.orderNo})
+	</if>
+     <!-- 收件人电话-->
+	<if test="params.buyerPhone != null" >
+		and oa.phone like #{params.buyerPhone}
+	</if>
+      <!-- 收件人姓名-->
+      <if test="params.consignee != null" >
+          and oa.consignee like #{params.consignee}
+      </if>
+      <!-- 买家昵称-->
+      <if test="params.buyerName != null" >
+          and u1.name like #{params.buyerName}
+      </if>
+      <!-- 卖家昵称-->
+      <if test="params.sellerName != null" >
+          and u2.name like #{params.sellerName}
+      </if>
+	<if test="params.sellerPhone != null" >
+		and u2.phone like #{params.sellerPhone}
+	</if>
+	<if test="params.shopName != null" >
+		and s.name like #{params.shopName}
+	</if>
+	<if test="params.logisticsOrderNo != null" >
+		and o.logistics_order_no like #{params.logisticsOrderNo}
+	</if>
+	<if test="params.type != null" >
+		and o.type = #{params.type}
+	</if>
+	<if test="params.payType != null" >
+		and o.pay_type = #{params.payType}
+	</if>
+	<if test="params.paidStatus != null" >
+		and o.paid_status = #{params.paidStatus}
+	</if>
+	<if test="params.refundType != null">
+		<choose>  
+	        <when test="params.refundType.name() == 'INIT'"> and o.refund_type is null </when>
+	        <otherwise>and o.refund_type = #{params.refundType}</otherwise>
+       </choose>
+	</if>
+	<if test="params.status != null" >
+		and o.status in 
+		<foreach collection="params.status" index="index" item="item" open="(" separator="," close=")">  
+	       #{item}
+	   </foreach>
+	</if>
+  	<if test="params.partnerType != null">
+  		and o.partner_type = #{params.partnerType}
+  	</if>
+  	<if test="params.startDate != null">
+  		<choose>  
+	        <when test="params.dateType=='pay'"> and o.paid_at >= #{params.startDate} </when>
+	        <when test="params.dateType=='checking'">and o.checking_at >= #{params.startDate}</when>
+	        <when test="params.dateType=='shipped'">and o.shipped_at >= #{params.startDate}</when>
+	        <when test="params.dateType=='success'">and o.succeed_at >= #{params.startDate}</when>
+	        <when test="params.dateType=='refund'">and o.refund_type='SUCCESS' and o.updated_at >= #{params.startDate}</when>
+	        <otherwise>and o.created_at >= #{params.startDate}</otherwise>
+       </choose>
+  	</if>
+  	<if test="params.endDate != null">
+  	<choose>  
+  		 <when test="params.dateType=='pay'"><![CDATA[and o.paid_at <= #{params.endDate}]]></when>
+	     <when test="params.dateType=='checking'"><![CDATA[and o.checking_at <= #{params.endDate}]]></when>
+	     <when test="params.dateType=='shipped'"><![CDATA[and o.shipped_at <= #{params.endDate}]]></when>
+	     <when test="params.dateType=='success'"><![CDATA[and o.succeed_at <= #{params.endDate}]]></when>
+	     <when test="params.dateType=='refund'"><![CDATA[and o.refund_type='SUCCESS' and o.updated_at <= #{params.endDate}]]></when>
+	     <otherwise><![CDATA[and o.created_at <= #{params.endDate}]]></otherwise>
+  		</choose>
+  	</if>
+  	
+  <if test="params.feeOperator != null">
+  	and o.total_fee
+  	 <choose>  
+        <when test="params.feeOperator=='gt'"> > </when>
+        <when test="params.feeOperator=='gt='">>=</when>
+        <when test="params.feeOperator=='lt'">&lt;</when>
+        <when test="params.feeOperator=='lt='">&lt;=</when>
+        <otherwise>=</otherwise>
+       </choose>
+  		 #{params.minimumFee,jdbcType=DECIMAL}
+  	</if>
+  	
+  	
+	<if test="params.refundFeeOperator != null">
+  	and o.refund_fee
+  	 <choose>  
+        <when test="params.refundFeeOperator=='gt'"> > </when>
+        <when test="params.refundFeeOperator=='gt='">>=</when>
+        <when test="params.refundFeeOperator=='lt'">&lt;</when>
+        <when test="params.refundFeeOperator=='lt='">&lt;=</when>
+        <otherwise>=</otherwise>
+       </choose>
+  		 #{params.refundFee,jdbcType=DECIMAL}
+  	</if>
+  	
+  	<if test="params.shippedStatus != null">
+  		<choose>
+  			<when test="params.shippedStatus == 'noShipped'">and o.shipped_at is null</when>
+  			<when test="params.shippedStatus == 'shipped'">and o.shipped_at is not null</when>
+  			<otherwise></otherwise>
+  		</choose>
+  	</if>
+  </sql>
+  
+  <update id="updateOrderStatus4Buyer">
+    update vdlm_order
+    set status = #{1,jdbcType=VARCHAR},updated_at = now()
+    where id = #{0,typeHandler=idHandler}
+    and buyer_id = #{2,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateOrderStatus4Seller">
+    update vdlm_order
+    set status = #{1},updated_at = now()
+    where id = #{0,typeHandler=idHandler}
+    and seller_id = #{2,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateOrderStatus">
+    update vdlm_order
+    set status = #{1},updated_at = now()
+    where id = #{0,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateOrderByCancel">
+    update vdlm_order
+    set status = #{order.status},
+      cancelled_at = #{order.cancelledAt},
+      updated_at = now()
+    where id = #{params.id, typeHandler=idHandler}
+      and status = #{params.status}
+  </update>
+  
+  <update id="updateOrderByPay">
+  	update vdlm_order
+    <set>
+      <if test="order.checkingAt != null" >
+        checking_at = #{order.checkingAt},
+      </if>
+      status = #{order.status},
+      paid_fee = #{order.paidFee},
+      paid_at = #{order.paidAt},
+      paid_status = #{order.paidStatus},
+      updated_at = now()
+   	</set>
+    where id = #{params.id, typeHandler=idHandler}
+      and status in
+      <foreach collection="params.status" item="status" open="(" close=")" separator=",">
+      	#{status}
+      </foreach>
+  </update>
+
+  <update id="updateOrderByShip">
+    update vdlm_order
+    set status = #{order.status},
+      shipped_at = #{order.shippedAt},
+      logistics_company = #{order.logisticsCompany},
+      logistics_order_no = #{order.logisticsOrderNo},
+      latest_sign_at = #{order.latestSignAt},
+      updated_at = now()
+    where id = #{params.id, typeHandler=idHandler}
+      and status = #{params.status}
+  </update>
+  
+  <update id="updateOrderByRequestRefund">
+    update vdlm_order
+    set status = 'REFUNDING',
+      updated_at = now()
+    where id = #{id, typeHandler=idHandler}
+      and status in('PAID', 'SHIPPED')
+  </update>
+  
+  <update id="updateOrderByCancelRefund">
+    update vdlm_order
+    set status = #{status},
+      updated_at = now()
+    where id = #{id, typeHandler=idHandler}
+      and status in('REFUNDING')
+  </update>
+  
+  <update id="updateOrderBySign">
+  	update vdlm_order
+    <set>
+      <if test="order.checkingAt != null" >
+        checking_at = #{order.checkingAt},
+      </if>
+      <if test="order.latestSignAt != null" >
+        latest_sign_at = #{order.latestSignAt},
+      </if>
+      <if test="order.status != null" >
+	      status = #{order.status},
+      </if>
+      <if test="order.succeedAt != null" >
+	      succeed_at = #{order.succeedAt},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{params.id, typeHandler=idHandler}
+      and status = #{params.status}
+  </update>
+  
+  <update id="updateOrderStatusWithPreCondition">
+    update vdlm_order
+    set status = #{order.status},
+      updated_at = now()
+    where id = #{params.id, typeHandler=idHandler}
+      and status = #{params.status}
+  </update>
+  
+  <update id="updateOrderByRefund">
+    update vdlm_order
+    set 
+   	  <if test="order.status!=null">
+	   	  status = #{order.status,jdbcType=VARCHAR},
+   	  </if>
+      refund_fee = #{order.refundFee},	
+      refund_goods_fee = #{order.refundGoodsFee},
+      refund_logistics_fee = #{order.refundLogisticsFee},
+	   <if test="order.refundType!=null">
+	   	  refund_type='${order.refundType.name()}',
+	   </if>   
+      refund_at = now(),
+      updated_at = now()
+    where id = #{params.id, typeHandler=idHandler}
+      and status in
+      <foreach collection="params.status" index="index" item="item" open="(" separator="," close=")">  
+        #{item}
+      </foreach>  
+      and archive = false
+  </update>
+  
+  <update id="updateTotalPrice">
+    update vdlm_order
+    set total_fee = #{totalFee}, updated_at = now()
+    where id = #{orderId, typeHandler=idHandler}
+      and seller_id = #{sellerId, typeHandler=idHandler}
+      and status = 'SUBMITTED'
+  </update>
+  
+  <update id="updatePrice">
+    update vdlm_order
+    set total_fee = #{totalFee}, logistics_fee = #{logisticsFee}, updated_at = now()
+    where id = #{orderId, typeHandler=idHandler}
+      and seller_id = #{sellerId, typeHandler=idHandler}
+      and status = 'SUBMITTED'
+  </update>
+  
+  <select id="selectOrderSeqByShopId" resultType="Long">
+    select count(*) as c
+    from vdlm_order o 
+    where (o.status in ('PAID', 'SHIPPED', 'SUCCESS') ) 
+    and o.shop_id = #{0,typeHandler=idHandler} 
+  </select>
+  
+  <update id="updateOrderRefundByAdmin">
+    update vdlm_order
+    set refund_type = #{1,jdbcType=VARCHAR},
+      updated_at = now()
+    where id = #{0, typeHandler=idHandler}
+      and (refund_type != #{1,jdbcType=VARCHAR} or refund_type is null )
+      and archive = false
+  </update>
+  
+  <select id="selectBySeller" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where id = #{id, typeHandler=idHandler} and seller_id=#{sellerId, typeHandler=idHandler} and archive=false
+  </select>
+  
+   <select id="selectByShopId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where shop_id=#{shopId, typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectCountByStatus4Buyer" resultType="Long">
+    select count(1)
+    from vdlm_order
+    where buyer_id=#{buyerId, typeHandler=idHandler} and archive=false
+    <if test="status != null" >
+    and status = #{status}
+    </if>
+  </select>
+
+  <select id="countByShopStatistics" resultType="Integer">
+    select count(*) as c
+	from vdlm_order o
+	where o.archive=false and o.shop_id = #{params.shopId, typeHandler=idHandler}
+	<if test="params.status != null">
+		and o.status = #{params.status}
+  	</if>
+	<if test="params.created1 != null">
+		and o.created_at >= #{params.created1}
+  	</if>
+  	<if test="params.created2 != null">
+  		<![CDATA[
+			and o.created_at <= #{params.created2}
+		]]>
+  	</if>
+  </select>
+	<!-- 查询用户余额 -->
+	<select id="selectDealByShopId" resultType="DECIMAL">
+		select sum(s.balance) as balance
+		from vdlm_account a,vdlm_sub_account s
+		where a.id=s.account_id
+		and a.archive=false and s.lock=false
+		and a.user_id=#{userId,typeHandler=idHandler}
+		and account_type=#{accountType,jdbcType=VARCHAR}
+	</select>
+	<!-- 新产生的未被访问的订单数 -->
+	<select id="countNoVisitOrderBySellerId" resultType="Integer">
+		select count(1) from vdlm_order
+		where seller_id = #{userId,typeHandler=idHandler} and archive=false
+		and created_at >= #{lastVisitTime,jdbcType=TIMESTAMP}
+	</select>
+	<update id="updRemarkByAdmin">
+    	update vdlm_order set 
+    		remark_admin = #{remark,jdbcType=VARCHAR}
+    	where id = #{orderId,typeHandler=idHandler}
+  	</update>
+  	<select id="obtainPaymentChannel" resultType="String">
+		select c.payment_channel
+		from vdlm_order o 
+		left join vdlm_cashieritem c 
+		on o.order_no = c.biz_no and o.pay_type = c.payment_mode and o.pay_type= 'UNION'
+		where o.order_no = #{orderNo,jdbcType=VARCHAR}
+	</select>
+	
+	<select id="selectByBuyer" resultMap="BaseResultMap">
+        select *
+        from vdlm_order o 
+        where o.buyer_id = #{buyerId, typeHandler=idHandler}
+        limit #{pager.offset}, #{pager.size}
+    </select>
+    
+    <select id="countByBuyer" resultType="Long">
+        select count(*)
+        from vdlm_order o 
+        where o.buyer_id = #{buyerId, typeHandler=idHandler}
+    </select>
+    <select id="countByBuyerPaidOrder" resultType="java.lang.Integer">
+        select COUNT( DISTINCT o.`pay_no`)
+        from vdlm_order o 
+        where o.buyer_id = #{buyerId, typeHandler=idHandler} 
+        <![CDATA[
+        	and o.status<>'CANCELLED' and o.status<>'SUBMITTED' and o.status<>'WAITPAYCONFIRM'
+        ]]>
+    </select>
+    <select id="countBySpecialTime" resultType="java.lang.Integer">
+       select  count(*) from vdlm_order where
+       CREATE_at &gt;=#{model.start} and CREATE_at&lt;= #{model.end} and status!='CANCELLED' 
+       and buyer_id=#{buyerId}
+    </select>
+    <select id="groupByStatus" resultType="hashmap">
+      SELECT t.status, COUNT(1) as c from ( 
+         select distinct pay_no, status from vdlm_order where buyer_id=#{userId, typeHandler=idHandler} and archive=false
+      ) t
+      group by t.status;
+    </select>
+    <select id="groupByStatusAfterPaid" resultType="hashmap">
+     SELECT t.status, COUNT(1) as c from ( 
+	      select distinct order_no, status from vdlm_order where buyer_id=#{userId, typeHandler=idHandler} and archive=false 
+	      and status!='SUBMITTED' and status !='CANCELLED'
+	  ) t
+      group by t.status;
+    </select>
+
+    <!-- seller pc 导出订单列表  -->
+    <select id="selectOrders4Export" resultMap="OrderExportVO">    	
+        select 
+            o.id,
+            o.order_no,  
+            o.pay_no,   
+            o.pay_type, 
+            i.product_name,  
+            i.sku_str, 
+            i.price,   
+            i.amount,    
+            p.discount_fee,  
+            o.logistics_fee,  
+            o.status,  
+            o.buyer_id, 
+            o.seller_id, 
+            o.remark, 
+            o.logistics_company,  
+            o.logistics_order_no, 
+            o.created_at, 
+            o.paid_at,    
+            o.succeed_at
+        from vdlm_order o 
+            left JOIN vdlm_order_item i on i.order_id=o.id 
+            left JOIN vdlm_order_item_promotion p on p.order_item_id=i.id
+        where 
+			o.seller_id=#{params.seller_id}
+    	<if test="params.status != null">
+    		<choose>
+    			<when test="params.status == 'CLOSED'">
+    				and status='CANCELLED'
+    			</when>
+    			<otherwise>
+		    		and status='${params.status}'
+    			</otherwise>
+    		</choose>
+    	</if>
+    	ORDER BY o.created_at desc 
+    </select>
+
+    <select id="cntByAdmin4BosExcel" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM
+                vdlm_order a inner JOIN vdlm_order_item b on a.id = b.order_id
+                INNER JOIN vdlm_product c on b.product_id = c.id
+                INNER JOIN vdlm_user d on a.buyer_id = d.id
+                INNER JOIN vdlm_shop e on c.shop_id = e.id
+                INNER JOIN vdlm_order_address f on a.id = f.order_id
+                INNER JOIN tmp_zone g on f.zone_id = g.id
+                INNER JOIN vdlm_user u on a.seller_id = u.id
+              left join vdlm_order_item_promotion i on b.id = i.order_item_id
+              left join vdlm_order_ext h on a.id = h.order_id
+              left join vdlm_outpay j on a.pay_no = j.bill_no
+        WHERE a.archive = 0
+        <include refid="condByAdmin4Bos"/>
+        limit 0,10001
+    </select>
+    <!--获取需要导出到excel中的数据 by reese 2015-7-29
+      a:订单表
+      b：商品item表
+      c：商品表
+      d：买家user表
+      e：商铺shop表
+      f：address表
+      g：zone表
+      i：promotion促销表
+      h：ext扩展表
+      j：outPay表
+      u：卖家user表
+    -->
+    <select id="selectByAdmin4BosExcel" resultMap="OrderExportVO">
+        select
+        a.id,a.pay_no,a.discount_fee,a.status, a.seller_id ,a.buyer_id ,a.shipped_at,
+        a.paid_status,a.refund_type,a.partner_type,a.checking_at,a.shipped_at,
+        a.refund_fee,a.refund_platform_fee,a.order_no,a.created_at ,a.paid_at ,
+        a.succeed_at ,a.logistics_fee,a.total_fee,a.logistics_company,a.logistics_order_no,
+        a.remark ,a.updated_at ,a.type ,a.pay_type,a.refund_at,
+        b.price,b.amount,b.id as item_id,b.sku_str,b.sku_id,
+        c.NAME as product_name ,c.id as product_id,
+        d.NAME as buyer_name ,
+        e.id as shop_id ,
+        e.NAME as shop_name,
+        f.id as addr_id ,f.phone as oa_phone,f.consignee,f.phone as buyer_phone ,
+        g.id as zone_id ,
+        h.settlement_status,h.refund_status,
+        i.discount_fee as per_discount_fee ,
+        j.trade_no,j.out_id,
+        u.name as seller_name,
+        (IFNULL(b.price,0)*b.amount ) AS product_fee,
+        concat(
+        c.id,
+        b.sku_id
+        ) as sku_product_id,
+        concat(g.pp_name,g.p_name,g.NAME,f.street) as full_address
+        FROM
+        vdlm_order a inner JOIN vdlm_order_item b on a.id = b.order_id
+        INNER JOIN vdlm_product c on b.product_id = c.id
+        INNER JOIN vdlm_user d on a.buyer_id = d.id
+        INNER JOIN vdlm_shop e on c.shop_id = e.id
+        INNER JOIN vdlm_order_address f on a.id = f.order_id
+        INNER JOIN tmp_zone g on f.zone_id = g.id
+        INNER JOIN vdlm_user u on a.seller_id = u.id
+        left join vdlm_order_item_promotion i on b.id = i.order_item_id
+        left join vdlm_order_ext h on a.id = h.order_id
+        left join vdlm_outpay j on a.pay_no = j.bill_no
+        where a.archive = 0
+        <include refid="condByAdmin4Bos"/>
+        order by a.updated_at
+    </select>
+
+    <sql id="condByAdmin4Bos">
+        <if test="params.orderNo != null" >
+            and a.order_no like #{params.orderNo}
+        </if>
+        <if test="params.shopName != null" >
+            and e.NAME like #{params.shopName}
+        </if>
+        <!-- 结算状态 add by reese-->
+        <if test="params.settleType != null  " >
+            and h.settlement_status = #{params.settleType,jdbcType=TINYINT}
+        </if>
+        <if test="params.buyerPhone != null" >
+            and f.phone like #{params.buyerPhone}
+        </if>
+        <if test="params.buyerName != null" >
+            and d.NAME like #{params.buyerName}
+        </if>
+        <if test="params.sellerName != null" >
+            and u.NAME like #{params.sellerName}
+        </if>
+        <if test="params.consignee != null" >
+            and f.consignee like #{params.consignee}
+        </if>
+        <if test="params.productId != null" >
+            and c.id like #{params.productId}
+        </if>
+        <if test="params.logisticsOrderNo != null" >
+            and a.logistics_order_no like #{params.logisticsOrderNo}
+        </if>
+        <if test="params.type != null" >
+            and a.type = #{params.type}
+        </if>
+        <if test="params.payType != null" >
+            and a.pay_type = #{params.payType}
+        </if>
+        <if test="params.paidStatus != null" >
+            and a.paid_status = #{params.paidStatus}
+        </if>
+        <if test="params.refundType != null">
+            <choose>
+                <when test="params.refundType.name() == 'INIT'"> and a.refund_type is null </when>
+                <otherwise>and a.refund_type = #{params.refundType}</otherwise>
+            </choose>
+        </if>
+        <if test="params.status != null" >
+            and a.status in
+            <foreach collection="params.status" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="params.partnerType != null">
+            and a.partner_type = #{params.partnerType}
+        </if>
+        <if test="params.startDate != null">
+            <choose>
+                <when test="params.dateType=='pay'"> and a.paid_at >= #{params.startDate} </when>
+                <when test="params.dateType=='checking'">and a.checking_at >= #{params.startDate}</when>
+                <when test="params.dateType=='shipped'">and a.shipped_at >= #{params.startDate}</when>
+                <when test="params.dateType=='success'">and a.succeed_at >= #{params.startDate}</when>
+                <when test="params.dateType=='refund'">and a.refund_type='SUCCESS' and a.updated_at >= #{params.startDate}</when>
+                <otherwise>and a.created_at >= #{params.startDate}</otherwise>
+            </choose>
+        </if>
+        <if test="params.endDate != null">
+            <choose>
+                <when test="params.dateType=='pay'"><![CDATA[and a.paid_at <= #{params.endDate}]]></when>
+                <when test="params.dateType=='checking'"><![CDATA[and a.checking_at <= #{params.endDate}]]></when>
+                <when test="params.dateType=='shipped'"><![CDATA[and a.shipped_at <= #{params.endDate}]]></when>
+                <when test="params.dateType=='success'"><![CDATA[and a.succeed_at <= #{params.endDate}]]></when>
+                <when test="params.dateType=='refund'"><![CDATA[and a.refund_type='SUCCESS' and a.updated_at <= #{params.endDate}]]></when>
+                <otherwise><![CDATA[and a.created_at <= #{params.endDate}]]></otherwise>
+            </choose>
+        </if>
+
+        <if test="params.feeOperator != null">
+            and a.total_fee
+            <choose>
+                <when test="params.feeOperator=='gt'"> > </when>
+                <when test="params.feeOperator=='gt='">>=</when>
+                <when test="params.feeOperator=='lt'">&lt;</when>
+                <when test="params.feeOperator=='lt='">&lt;=</when>
+                <otherwise>=</otherwise>
+            </choose>
+            #{params.minimumFee,jdbcType=DECIMAL}
+        </if>
+
+
+        <if test="params.refundFeeOperator != null">
+            and a.refund_fee
+            <choose>
+                <when test="params.refundFeeOperator=='gt'"> > </when>
+                <when test="params.refundFeeOperator=='gt='">>=</when>
+                <when test="params.refundFeeOperator=='lt'">&lt;</when>
+                <when test="params.refundFeeOperator=='lt='">&lt;=</when>
+                <otherwise>=</otherwise>
+            </choose>
+            #{params.refundFee,jdbcType=DECIMAL}
+        </if>
+
+        <if test="params.shippedStatus != null">
+            <choose>
+                <when test="params.shippedStatus == 'noShipped'">and a.shipped_at is null</when>
+                <when test="params.shippedStatus == 'shipped'">and a.shipped_at is not null</when>
+                <otherwise></otherwise>
+            </choose>
+        </if>
+    </sql>
+
+
+    <!--验证导入数据的正确性 by reese2015-7-30-->
+    <select id="checkDataValid" resultMap="OrderExportVO">
+        SELECT
+            *
+        FROM
+            vdlm_order vo
+        LEFT JOIN vdlm_order_ext voe ON vo.id = voe.order_id
+        WHERE
+            vo.order_no = #{orderNo}
+        AND vo.buyer_id = #{buyerId}
+     </select>
+    <!--逐条更新 by reese2015-7-30-->
+    <update id="updateSettlementStatus">
+        UPDATE vdlm_order vo left join vdlm_order_ext voe  on vo.id=voe.order_id
+        SET voe.settlement_status = 1
+        WHERE vo.buyer_id = #{buyerId} AND vo.order_no = #{orderNo}
+     </update>
+
+
+
+    <insert id="insertOrderExt" parameterType="com.vdlm.dal.model.Order">
+        <selectKey resultType="long" keyProperty="idRaw">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into vdlm_order_ext (order_id, express_company_no, mcode, coin,
+        coin_price, refund_status, utm_channel, utm_user_id, status_update_time, settlement_status, source)
+        values (#{id,typeHandler=idHandler}, 0, '', 0,
+        0.00,0,'',0,now(),1,'')
+    </insert>
+
+
+  <select id="loadOrderByOrderNos" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order
+    where order_no in 
+    <foreach collection="orderNos" index="index" item="no" open="(" separator="," close=")">  
+       #{no,jdbcType=VARCHAR} 
+    </foreach>
+  </select> 
+  <update id="updateWaitPayConfirmByPayNo">
+  update vdlm_order  set status=#{updateStatus}
+  where status=#{orderStatus} and buyer_id=#{buyerId,typeHandler=idHandler} and pay_no=#{payNo}
+  </update>
+  <select id="selectByOrderNoAndBuyer" resultMap="OrderVOMap">
+  	SELECT 
+	   o.id, o.order_no, o.type,o.pay_type, o.buyer_id, o.pay_no, o.shop_id, o.seller_id, o.logistics_fee, o.total_fee, o.paid_fee, o.discount_fee, o.goods_fee, 
+	    o.paid_at, o.paid_status, o.shipped_at, o.logistics_company, o.logistics_order_no, o.status, o.remark, o.archive, o.union_id, o.partner_type, 
+	    o.refund_fee, o.refund_platform_fee, o.refund_type, o.promotion_id, o.created_at, o.updated_at, o.checking_at, o.cancelled_at, o.succeed_at, 
+	    o.latest_sign_at, o.remind_ship_at,oe.tuan_flag as oe_tuan_status
+    from 
+    	vdlm_order o 
+    left join 
+    	vdlm_order_ext oe 
+    on 
+    	o.id=oe.order_id
+	where 
+		o.archive=false 
+	and 
+		o.order_no = #{orderNo,jdbcType=VARCHAR}
+    and 
+    	o.buyer_id = #{buyerId,jdbcType=VARCHAR}
+  </select>
+</mapper>

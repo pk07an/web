@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.SubAccountLogMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.SubAccountLog">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="op_type" property="opType" jdbcType="VARCHAR" />
+		<result column="request_id" property="requestId" typeHandler="idHandler" />
+		<result column="sub_account_id" property="subAccountId"
+			typeHandler="idHandler" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+		<result column="comment" property="comment" jdbcType="VARCHAR" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap type="com.vdlm.dal.vo.TradeDetailsVO" id="tradeDetailsResult" extends="BaseResultMap">
+		<result column="account_id" property="accountId" typeHandler="idHandler" />
+		<result column="account_type" property="accountType" jdbcType="VARCHAR" />
+		<result column="isLock" property="isLock" jdbcType="VARCHAR" />
+		<result column="biz_id" property="bizId" jdbcType="VARCHAR" />
+		<result column="pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="out_id" property="outId" jdbcType="VARCHAR" />
+		<result column="out_status" property="outStatus" jdbcType="VARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, op_type, request_id, sub_account_id, amount, comment,
+		created_at
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_sub_account_log
+		where id = #{id,typeHandler=idHandler}
+	</select>
+	<insert id="insert" parameterType="com.vdlm.dal.model.SubAccountLog">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_sub_account_log ( op_type, request_id,
+		sub_account_id, amount, comment, created_at)
+		values (
+		#{opType,jdbcType=VARCHAR}, #{requestId,typeHandler=idHandler},
+		#{subAccountId,typeHandler=idHandler}, #{amount,jdbcType=DECIMAL},
+		#{comment,jdbcType=VARCHAR}, now())
+	</insert>
+	<select id="countTradeDetailsByUserId" resultType="HashMap">
+		select count(1) as totalCount,sum(sal.amount) as totalAmount 
+		from vdlm_sub_account_log sal inner join
+		vdlm_sub_account sa on sal.sub_account_id=sa.id 
+		inner join vdlm_pay_request pr on sal.request_id=pr.id
+		left join vdlm_outpay op on pr.biz_id=op.bill_no
+		where 1=1 
+		<if test="userId != null">
+			and exists
+		(select 1 from vdlm_account a where sa.account_id=a.id and a.user_id=#{userId,typeHandler=idHandler})
+		</if>
+		<if test="bizId != null">
+			and pr.biz_id like #{bizId}
+	  	</if>
+	  	<if test="accountType != null">
+			and sa.account_type = #{accountType}
+	  	</if>
+	  	<if test="payType != null">
+			and pr.pay_type = #{payType}
+	  	</if>
+	  	<if test="startTime != null">
+			and sal.created_at >= #{startTime}
+	  	</if>
+	  	<if test="endTime != null">
+	  		<![CDATA[ 
+				and sal.created_at <= #{endTime}
+			]]>
+	  	</if>
+	</select>
+	<select id="queryTradeDetailsByUserId" resultMap="tradeDetailsResult">
+		select sal.id, sal.op_type, sal.request_id, sal.sub_account_id, sal.amount, sal.comment,
+		sal.created_at,sa.account_id,sa.account_type,sa.lock as isLock,pr.biz_id,pr.pay_type,op.out_id,op.out_status
+		from vdlm_sub_account_log sal inner join
+		vdlm_sub_account sa on sal.sub_account_id=sa.id 
+		inner join vdlm_pay_request pr on sal.request_id=pr.id
+		left join vdlm_outpay op on pr.biz_id=op.bill_no
+		where 1=1 
+		<if test="params.userId != null">
+			and exists
+		(select 1 from vdlm_account a where sa.account_id=a.id and a.user_id=#{params.userId,typeHandler=idHandler})
+		</if>
+		<if test="params.bizId != null">
+			and pr.biz_id like #{params.bizId}
+	  	</if>
+	  	<if test="params.accountType != null">
+			and sa.account_type = #{params.accountType}
+	  	</if>
+	  	<if test="params.payType != null">
+			and pr.pay_type = #{params.payType}
+	  	</if>
+	  	<if test="params.startTime != null">
+			and sal.created_at >= #{params.startTime}
+	  	</if>
+	  	<if test="params.endTime != null">
+	  		<![CDATA[ 
+				and sal.created_at <= #{params.endTime}
+			]]>
+	  	</if>
+		order by sal.id desc
+		<if test="page !=null">
+			limit #{page.offset}, #{page.size}
+		</if>
+    	<if test="page ==null">
+			limit 0, 50000
+		</if>
+	</select>
+	<select id="totalAmountByParams" resultType="DECIMAL">
+	select sum(amount) as c from vdlm_sub_account_log log join vdlm_sub_account a on log.sub_account_id = a.id
+	where 1 = 1
+	<if test="params.modifyType == 'increase'">
+		and log.amount > 0
+  	</if>
+	<if test="params.accountId != null">
+		and a.account_id = #{params.accountId, typeHandler=idHandler}
+  	</if>
+  	<if test="params.accountType != null">
+		and a.account_type = #{params.accountType}
+  	</if>
+	<if test="params.created1 != null">
+		and log.created_at >= #{params.created1}
+  	</if>
+  	<if test="params.created2 != null">
+  		<![CDATA[
+			and log.created_at < #{params.created2}
+		]]>
+  	</if>
+  	</select>
+</mapper>

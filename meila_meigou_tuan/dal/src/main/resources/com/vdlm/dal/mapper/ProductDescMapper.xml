@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProductDescMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProductDesc">
+	    <id column="id" property="id" jdbcType="VARCHAR" />
+		<result column="product_id" property="productId" typeHandler="idHandler" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="description" property="description" jdbcType="LONGVARCHAR" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+  
+	<sql id="Base_Column_List">
+		select id, archive, description, created_at, updated_at, product_id from vdlm_product_desc
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		<include refid="Base_Column_List" />
+		where product_id = #{productId, typeHandler=idHandler} and archive = false
+	</select>
+
+    <update id="update" parameterType="com.vdlm.dal.model.ProductDesc">
+		update vdlm_product_desc set 
+		<if test="description != null">
+		  description = #{description},
+		</if>
+		<if test="archive != null">
+		  archive = #{archive},
+		</if>
+		updated_at = now()
+		where product_id = #{productId, typeHandler=idHandler}
+	</update>
+	
+	<insert id="insert">
+	    insert into vdlm_product_desc (product_id, created_at, updated_at, description)
+		values (#{productId, typeHandler=idHandler}, now(),now(), #{description,jdbcType=LONGVARCHAR})
+	</insert>
+</mapper>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.TagMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Tag">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="tag" property="tag" jdbcType="VARCHAR" />
+		<result column="creator_id" property="creatorId" typeHandler="idHandler" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, tag, creator_id, created_at, updated_at
+	</sql>
+	
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_tag
+		where id = #{id}
+	</select>
+	
+	<select id="selectByOwnerTagName" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_tag
+		where tag = #{tag, jdbcType=VARCHAR} and creator_id = #{creatorId, typeHandler=idHandler}
+	</select>
+	
+<!-- 	<select id="selectByProductId" resultMap="BaseResultMap" -->
+<!-- 		parameterType="java.lang.String"> -->
+<!-- 		select t.id, t.tag -->
+<!-- 		from vdlm_product_tag p join vdlm_tag t on p.tag_id = t.id -->
+<!-- 		where product_id = #{prodcutId,typeHandler=idHandler} -->
+<!-- 		 and archive = false -->
+<!-- 	</select> -->
+	
+	<select id="selectByShopId" resultMap="BaseResultMap">
+		select distinct t.id, t.tag
+		from vdlm_product_tag p join vdlm_tag t
+		on p.tag_id = t.id
+		where shop_id = #{shopId, typeHandler=idHandler}
+		<if test="tag != null">
+			and t.tag like #{tag, jdbcType=VARCHAR}
+		</if>
+		 and p.archive = false
+	</select>
+	
+	<insert id="insert" parameterType="com.vdlm.dal.model.Tag">
+		<selectKey resultType="String" keyProperty="id">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_tag (id, tag, creator_id, created_at)
+		values (#{id,jdbcType=BIGINT}, #{tag,jdbcType=VARCHAR}, #{creatorId,typeHandler=idHandler}, now())
+	</insert>
+	
+	<select id="selectUserTags" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_tag
+        where creator_id = #{0, typeHandler=idHandler}
+    </select>
+    
+	<select id="selectUserTag" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_tag
+        where tag = #{0} and creator_id = #{1, typeHandler=idHandler}
+    </select>
+    
+    
+    <update id="updateUserTag">
+    update vdlm_tag
+    set tag = #{1}, updated_at = now()
+    where id = #{0} and creator_id = #{2, typeHandler=idHandler}
+    </update>
+	
+    <delete id="deleteTag">
+    delete from vdlm_tag
+    where tag = #{0} and creator_id = #{1, typeHandler=idHandler}
+    </delete>
+	
+</mapper>

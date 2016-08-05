@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.UserAlipayMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.UserAlipay">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="account_no" property="account" jdbcType="VARCHAR" />
+		<result column="account_name" property="name" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, user_id, account_no, account_name, archive, created_at, updated_at
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_user_alipay
+		where id = #{id, typeHandler=idHandler} and archive = false
+	</select>
+	<select id="loadByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_user_alipay
+		where user_id = #{userId, typeHandler=idHandler} and archive = false
+	</select>
+	<update id="updateForArchive">
+		update vdlm_user_alipay set archive=true,updated_at =
+		now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+	<update id="updateForUnArchive">
+		update vdlm_user_alipay set archive=false,updated_at =
+		now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+	<insert id="insert" parameterType="com.vdlm.dal.model.UserAlipay">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_user_alipay (user_id, account_no, account_name, created_at, updated_at)
+		values ( #{userId,typeHandler=idHandler}, #{account,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, now(), now())
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.UserAlipay">
+		update vdlm_user_alipay
+		<set>
+			<if test="account != null">
+				account_no = #{account,jdbcType=VARCHAR},
+			</if>
+			<if test="name != null">
+				account_name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="archive != null">
+				archive = #{archive,jdbcType=BIT},
+			</if>
+		updated_at = now()
+		</set>
+		where id = #{id,typeHandler=idHandler}
+	</update>
+</mapper>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>美啦拼团</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <script type="text/javascript">
+    !function(J){function H(){var d=E.getBoundingClientRect().width;var e=(d/7.5>100*B?100*B:(d/7.5<42?42:d/7.5));E.style.fontSize=e+"px",J.rem=e}var G,F=J.document,E=F.documentElement,D=F.querySelector('meta[name="viewport"]'),B=0,A=0;if(D){var y=D.getAttribute("content").match(/initial\-scale=([\d\.]+)/);y&&(A=parseFloat(y[1]),B=parseInt(1/A))}if(!B&&!A){var u=(J.navigator.appVersion.match(/android/gi),J.navigator.appVersion.match(/iphone/gi)),t=J.devicePixelRatio;B=u?t>=3&&(!B||B>=3)?3:t>=2&&(!B||B>=2)?2:1:1,A=1/B}if(E.setAttribute("data-dpr",B),!D){if(D=F.createElement("meta"),D.setAttribute("name","viewport"),D.setAttribute("content","initial-scale="+A+", maximum-scale="+A+", minimum-scale="+A+", user-scalable=no"),E.firstElementChild){E.firstElementChild.appendChild(D)}else{var s=F.createElement("div");s.appendChild(D),F.write(s.innerHTML)}}J.addEventListener("resize",function(){clearTimeout(G),G=setTimeout(H,300)},!1),J.addEventListener("pageshow",function(b){b.persisted&&(clearTimeout(G),G=setTimeout(H,300))},!1),H()}(window);
+    </script>
+    <link rel="stylesheet" type="text/css" href="../resources/css/meila.css">
+    <style>
+        html {
+            background-color: #f5f5f5;
+        }
+        .wrapper{width:7.5rem;}
+        .flexbox { display: -webkit-box !important; display: -moz-box !important; display: -ms-flexbox !important; display: box !important; display: flex !important; width: 100%; box-sizing: border-box; }
+        .flex1 { -webkit-box-flex: 1; -moz-box-flex: 1; -ms-flex: 1; flex: 1; }
+        .flex2 { -webkit-box-flex: 2; -moz-box-flex: 2; -ms-flex: 2; flex: 2; }
+        .flex3 { -webkit-box-flex: 3; -moz-box-flex: 3; -ms-flex: 3; flex: 3; }
+        .flex4 { -webkit-box-flex: 4; -moz-box-flex: 4; -ms-flex: 4; flex: 4; }
+        /*垂直居中*/
+        .align-center { -webkit-box-align: center; -moz-box-align: center; -ms-flex-align: center; box-flex: center; -webkit-align-items: center; align-items: center; }
+        /*水平居中*/
+        .pack-center { -webkit-box-pack: center; -moz-box-pack: center; -ms-flex-pack: center; -webkit-justify-content: center; justify-content: center; }
+        /*两端对齐*/
+        .pack-justify { -webkit-box-pack: justify; -moz-box-pack: justify; -ms-flex-pack: justify; -webkit-justify-content: space-between; justify-content: space-between; }
+        .align-end {
+            align-items: flex-end;
+        }
+        .flexwrap {
+            flex-flow: row wrap;
+        }
+        img {
+            vertical-align: top;
+        }
+        a {
+            color:inherit;
+        }
+        .main {
+            text-align: center;
+            font-size: .26rem;
+            color:rgba(0,0,0,.9);
+        }
+        .main header {
+            margin:.32rem 0 1.86rem;
+        }
+        .main p {
+            font-size: .3rem;
+        }
+        .main em {
+            color:#f94972;
+        }
+        .footer {
+            margin-top: 1.8rem;
+        }
+        .footer .rule {
+            margin-top: .52rem;
+        }
+        .icon-tips { 
+            display: inline-block; 
+            vertical-align: middle; 
+        }
+        .icon-tips {
+            display: inline-block;
+            width: .38rem; 
+            height: .38rem;  
+            background-image: url(../resources/images/tips.png); 
+            background-repeat: no-repeat; 
+            background-size: .38rem .74rem; 
+            background-origin: padding-box;
+            margin-right: .08rem;
+        }
+        .icon-success {
+            background-position: 0 0 ;
+        }
+        .icon-help {
+            background-position: 0 -0.36rem;
+        }
+        .invite-btn {
+            display: inline-block;
+            width:4.8rem;
+            height: .84rem;
+            color:#fff;
+            font-size: .3rem;
+            background-color: #f94972;
+            border-radius: .44rem;
+        }
+        .return-btn {
+            margin-top: .36rem;
+            background-color: #f5f5f5;
+            border:1px solid rgba(0,0,0,.3);
+            color:rgba(0,0,0,.9);
+        }
+        .small-loading {width: .32rem; height: .32rem; position: fixed; top: 50%; left: 50%; -webkit-transform: translate(-50%, -50%); transform: translate(-50%, -50%);}
+    </style>
+</head>
+<body>
+    <img class="small-loading" src="../resources/images/small-loading.gif" height="32" width="32">
+    <template id="app">
+    <div class="wrapper">
+        <div class="main">
+            <header class="flexbox pack-center align-center">
+                <i class="icon-tips icon-success"></i>支付成功
+            </header>
+            <div v-if="!hasShare">
+                <p>你需要拉到<em v-text="(data.productInfo.memberNum - data.tuanUser.length)<0?0:(data.productInfo.memberNum - data.tuanUser.length)"></em>人参团</p>
+                <p>才能拼团成功</p>
+            </div>
+            <div v-else>
+                <p>你需要拉到<em v-text="(data.productInfo.memberNum - data.tuanUser.length)<0?0:(data.productInfo.memberNum - data.tuanUser.length)"></em>人参团,才能拼团成功</p>
+                <p>分享越多，越容易成团</p>
+            </div>
+            <div class="footer">
+                <button class="invite-btn" @click="clickShare"><span v-if="hasShare">继续</span>喊小伙伴一起参团</button>
+                <a href="/ptuan/group/group-status.html?tuanNo={{data.tuanNo}}"><button v-if="hasShare" class="invite-btn return-btn">返回详情页</button></a> 
+                <a href="/ptuan/group/group-process.html">
+                    <div class="rule"><i class="icon-tips icon-help"></i>拼团规则</div>
+                </a> 
+            </div>
+        </div>
+    </div>
+    </template>
+    <script src="../resources/js/all/zepto.js"></script>
+    <script src="../resources/js/all/M.js"></script>
+    <script>
+        if (!M.is.inApp){
+            location.replace(M.url.setParam("tuanNo", M.url.getParam("tuanNo"), "/ptuan/group/group-status.html"));
+        }
+    </script>
+    <script src="../resources/js/utils.js"></script>
+    <script src="../resources/js/plugins/vue.js"></script>
+    <script src="../resources/js/plugins/vue-resource.js"></script>
+    <script>
+        var tuanNo = M.url.getParam('tuanNo');
+        var vue = new Vue({
+            el:'#app',
+            data:{
+                data:{},
+                shareOpt:{},
+                isSharebox:false,
+                isSharemask:false,
+                hasShare:false
+            },
+            created:function(){
+                this.fetchData();
+                this.initHistory();
+                if(sessionStorage.getItem('hasShare') === 'yes'){
+                    this.hasShare = true;
+                }
+                $('.small-loading').hide();
+            },
+            methods:{
+                fetchData:function(){
+                    var url =location.origin + '/ptuan/service/gettuaninfo.json?';
+                    var resource = this.$resource(url);
+                    resource.get(
+                        {
+                            tuanNo:tuanNo,
+                            time:Date.now()
+                        }
+                    ).then(
+                        //获取数据成功
+                        function(o){
+                            if(o.data.ret == 0){
+                                //o代表的意义，https://github.com/vuejs/vue-resource/blob/master/docs/http.md
+                                this.data = o.data.data;
+                                if(o.data.data.tuanUser.length === o.data.data.productInfo.memberNum){
+                                    location = '/ptuan/group/group-status.html?tuanNo=' + tuanNo;
+                                }
+                                this.initShare();
+                            }else{
+                                M.layer.msg({
+                                    content: o.data.msg,
+                                    btn: ['确定']
+                                });
+                            }  
+                        },
+                        //获取数据失败
+                        function(){
+                            M.layer.msg({
+                                content: '获取"拼团状态"数据失败，请稍后重试~',
+                                btn: ['确定']
+                            });
+                        }
+                    )
+                },
+                clickShare: function(){
+                    var self = this,
+                        typeChaMap = {
+                            wechat: 1,
+                            qq: 3,
+                            qzone: 4,
+                            weibo: 5
+                        };
+                    if (M.is.inApp) {
+                        window.CustomAppShare.show({
+                            click: function(type){
+                                M.app.share(
+                                    function(data){
+                                        if (data.code == 0){
+                                            if (sessionStorage.hasShare != 'yes'){
+                                                sessionStorage.setItem('hasShare','yes');
+                                                setTimeout(function(){
+                                                    self.hasShare = 'yes';
+                                                },5000);  
+                                            }
+                                        }
+                                    },
+                                    $.extend({cha: typeChaMap[type] || typeChaMap.wechat}, self.shareOpt || {})
+                                );
+                            }
+                        });
+                    } else {
+                        M.layer.msg({
+                            content: '请从美啦app分享本活动哦~',
+                            btn: ['确定']
+                        });
+                    }
+                },
+                setDefaultShare: function(opt){
+                    var self = this,
+                        content = {
+                            url: location.href,
+                            img: M.url.currentScriptOrigin + "/ptuan/resources/images/logo.png",
+                            title: '美啦拼团，便宜、便宜、便宜，购了吗？',
+                            des: '低价的歪果零食、爆款美妆！错过了要等很久！'
+                        };
+                    if (window.Utils.isEmptyObj(opt)){
+                        $.extend(content, self.shareOpt || {});
+                    }else{
+                        $.extend(content, opt);
+                    }
+                    content.success = function(data){
+                        if (sessionStorage.hasShare != 'yes'){
+                            sessionStorage.setItem('hasShare','yes');
+                            setTimeout(function(){
+                                self.hasShare = 'yes';
+                            },5000);  
+                        }
+                    };
+                    if (M.is.inWechat){
+                        window.Wechat.setShare(content);
+                    }else{
+                        M.app.getShareData(
+                            function(data) {
+                                if (data.code == 0){
+                                    content.success(data);    
+                                }
+                            }, 
+                            {
+                                url: content.url,
+                                imageUrl: content.img,
+                                title: content.title,
+                                des: content.des
+                            }
+                        );
+                    }
+        
+                },
+                initShare: function() {
+                    var content = {},
+                        self = this;
+                    this.shareOpt = {
+                        'url': location.origin + '/ptuan/group/group-status.html?tuanNo=' + M.url.getParam('tuanNo'),
+                        'img': this.data.productInfo.img2,
+                        'title': '我参加了美啦拼团——' + this.data.productInfo.productName,
+                        'des': '还差' +( (this.data.productInfo.memberNum - this.data.tuanUser.length)>0?(this.data.productInfo.memberNum - this.data.tuanUser.length):0) + '人即可拼团成功，原价' + this.data.productInfo.skuPrice + '，拼团价' + this.data.productInfo.tuanPrice + '，快来和ta一起享受优惠吧~'
+                    };
+                    $.extend(content, this.shareOpt || {});
+                    if (M.is.inWechat){
+                        window.Wechat.init({
+                            jsApiList: [
+                                'onMenuShareTimeline',
+                                'onMenuShareAppMessage',
+                                'onMenuShareQQ',
+                                'onMenuShareWeibo',
+                                'onMenuShareQZone'
+                            ],
+                            callback: function(){
+                                self.setDefaultShare(content);
+                            }
+                        });
+                    }else{
+                        M.app.controlSharePlatform({
+                            wechat: 1,
+                            qq: 1,
+                            qzone: 1,
+                            sina: 1
+                        },function(){
+                            self.setDefaultShare(content);
+                        });
+                    }
+                },
+                //把group-status加到历史记录
+                initHistory:function(){
+                    var statusUrl = location.origin + '/ptuan/group/group-status.html?tuanNo=' + tuanNo;
+                    var inviteUrl = location.origin + '/ptuan/group/group-invite.html?tuanNo=' + tuanNo;
+                    var isPushedStatus = sessionStorage.isPushedStatus || 0;
+                    var curUrl = location.href;
+                    if(!isPushedStatus){
+                        history.replaceState({url:statusUrl},'',statusUrl);
+                        history.pushState({url:inviteUrl},'',inviteUrl);
+                        sessionStorage.isPushedStatus = 1;
+                    }
+                    window.onpopstate = function(e){
+                        if(e.state.url && e.state.url !== curUrl){
+                            location.href = e.state.url;
+                        } 
+                    }
+                }
+            }
+        })
+    </script>
+</body>

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.TuanStatusMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.TuanStatus" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tuan_no" property="tuanNo" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="act_id" property="actId" jdbcType="BIGINT" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="member_num" property="memberNum" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="alive_time" property="aliveTime" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+     <result column="tuan_type" property="tuanType" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, tuan_no, user_id, act_id, sku_id, product_id, status, member_num, start_time, 
+    alive_time, created_at, updated_at, archive,tuan_type
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.TuanStatus" >
+  <selectKey resultType="long" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_tuan_status ( tuan_no, user_id, 
+      act_id, sku_id, product_id, 
+      status, member_num, start_time, 
+      alive_time, created_at, updated_at, 
+      archive,tuan_type)
+    values (#{tuanNo,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, 
+      #{actId,jdbcType=BIGINT}, #{skuId,jdbcType=BIGINT}, #{productId,jdbcType=BIGINT}, 
+      #{status,jdbcType=VARCHAR}, #{memberNum,jdbcType=INTEGER}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{aliveTime,jdbcType=INTEGER}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{archive,jdbcType=BIT},#{tuanType,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="update" parameterType="com.vdlm.dal.model.TuanStatus" >
+    update vdlm_tuan_status
+    <set >
+      <if test="tuanNo != null" >
+        tuan_no = #{tuanNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="actId != null" >
+        act_id = #{actId,jdbcType=BIGINT},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,jdbcType=BIGINT},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,jdbcType=BIGINT},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="memberNum != null" >
+        member_num = #{memberNum,jdbcType=INTEGER},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="aliveTime != null" >
+        alive_time = #{aliveTime,jdbcType=INTEGER},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="archive != null" >
+        archive = #{archive,jdbcType=BIT},
+      </if>
+      <if test="tuanType != null" >
+        tuan_type = #{tuanType,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

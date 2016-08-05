@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OutpayAgreementMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OutpayAgreement" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" typeHandler="idHandler" />
+    <result column="pay_mode" property="payMode" jdbcType="VARCHAR" />
+    <result column="biz_agree_id" property="bizAgreeId" jdbcType="VARCHAR" />
+    <result column="pay_agree_id" property="payAgreeId" jdbcType="VARCHAR" />
+    <result column="card_type" property="cardType" jdbcType="VARCHAR" />
+    <result column="bank_code" property="bankCode" jdbcType="VARCHAR" />    
+    <result column="account_num" property="accountNum" jdbcType="VARCHAR" />
+    <result column="identity_type" property="identityType" jdbcType="VARCHAR" />
+    <result column="identity_no" property="identityNo" jdbcType="VARCHAR" />
+    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="media_type" property="mediaType" jdbcType="VARCHAR" />
+    <result column="media_no" property="mediaNo" jdbcType="VARCHAR" />
+    <result column="bind_status" property="bindStatus" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap id="PayBankResultMap" type="com.vdlm.dal.model.UserPayBankVO" >
+  	<id column="aggree_id" property="aggreeId" jdbcType="BIGINT" />
+    <result column="user_id" property="userId" typeHandler="idHandler" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="img" property="bankImg" jdbcType="VARCHAR" />
+    <result column="account_num" property="accountNum" jdbcType="VARCHAR" />
+    <result column="bank_code" property="bankCode" jdbcType="VARCHAR" />
+    <result column="card_type" property="cardType" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, pay_mode, biz_agree_id, pay_agree_id, card_type, bank_code,
+    account_num, identity_type, identity_no, account_name, media_type, media_no, bind_status, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay_agreement
+    where id = #{id}
+  </select>
+   <select id="listBankByUserId" resultMap="PayBankResultMap">
+	select a.bankName, c.id as aggree_id, a.img, c.account_num, c.bank_code, c.card_type, c.user_id
+	from vdlm_paybank a join vdlm_paybank_cardmode b on a.id = b.paybank_id join vdlm_outpay_agreement c on b.bankCode = c.bank_code
+	where c.user_id = #{userId,typeHandler=idHandler} and pay_mode = 'UMPAY' and b.cardType = c.card_type
+  </select>
+  <select id="findByPayAgreeId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay_agreement
+    where pay_agree_id = #{payAgreeId} and pay_mode = #{payMode} and user_id = #{userId,typeHandler=idHandler}
+  </select>
+  <select id="listByUserId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay_agreement
+    where user_id = #{userId,typeHandler=idHandler} and bind_status = 'bind'
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.OutpayAgreement" >
+  		<selectKey resultType="String" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+    insert into vdlm_outpay_agreement (user_id, pay_mode, 
+      biz_agree_id, pay_agree_id, card_type, bank_code, account_num, identity_type, identity_no, account_name, 
+      media_type, media_no, bind_status, created_at, updated_at
+      )
+    values ( #{userId,typeHandler=idHandler}, #{payMode,jdbcType=VARCHAR}, 
+      #{bizAgreeId,jdbcType=VARCHAR}, #{payAgreeId,jdbcType=VARCHAR}, 
+      #{cardType,jdbcType=VARCHAR}, #{bankCode,jdbcType=VARCHAR},
+      #{accountNum,jdbcType=VARCHAR}, #{identityType,jdbcType=VARCHAR},
+      #{identityNo,jdbcType=VARCHAR}, #{accountName,jdbcType=VARCHAR},
+      #{mediaType,jdbcType=VARCHAR}, #{mediaNo,jdbcType=VARCHAR},
+      #{bindStatus,jdbcType=VARCHAR},
+      now(), now()
+      )
+  </insert>
+  <update id="unbind" parameterType="com.vdlm.dal.model.OutpayAgreement" >
+    update vdlm_outpay_agreement
+    set bind_status = 'unbind'
+      updated_at = now()
+    where id = #{id} and bind_status = 'bind'
+  </update>
+</mapper>

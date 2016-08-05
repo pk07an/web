@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.FragmentImageMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.vo.FragmentImageVO" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="fragment_id" property="fragmentId" typeHandler="idHandler"/>
+    <result column="img" property="img" jdbcType="VARCHAR"/>
+    <result column="img_width" property="imgWidth"/>
+    <result column="img_height" property="imgHeight"/>
+    <result column="idx" property="idx" jdbcType="INTEGER"/>
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, fragment_id, img, idx, created_at, img_width, img_height
+  </sql>
+  
+  <insert id="insert">
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  	INSERT INTO vdlm_fragment_image (fragment_id, img, idx, created_at, img_width, img_height)
+  	VALUES (#{fragmentId, typeHandler=idHandler}, #{img}, #{idx}, now(), #{imgWidth}, #{imgHeight})
+  </insert>
+  
+  <delete id="deleteById">
+  	delete from vdlm_fragment_image where id = #{id, typeHandler=idHandler}
+  </delete>
+  
+  <delete id="deleteByFragmentId">
+  	delete from vdlm_fragment_image where fragment_id = #{fragmentId, typeHandler=idHandler}
+  </delete>
+  
+  <select id="selectMaxByFragmentId" resultType="Integer">
+  	select max(idx) from vdlm_fragment_image
+  	where fragment_id = #{fragmentId, typeHandler=idHandler}
+  </select>
+  
+  <select id="selectByFragmentId" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_fragment_image
+  	where fragment_id = #{fragmentId, typeHandler=idHandler}
+  	order by idx asc
+  </select>
+  
+  <select id="selectByImgKey" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_fragment_image
+  	where img like #{imgKey}
+  	order by idx asc
+  </select>
+  
+  <update id="incAllBeforeDest">
+    update vdlm_fragment_image
+    set idx = idx + #{increment}, updated_at = now()
+    where idx >= #{idx} and fragment_id = #{fragmentId, typeHandler=idHandler}
+  </update>
+  
+  <update id="decAllAfterDest">
+  	<![CDATA[
+    update vdlm_fragment_image
+    set idx = idx + #{increment}, updated_at = now()
+    where idx <= #{idx} and fragment_id = #{fragmentId, typeHandler=idHandler}
+    ]]>
+  </update>
+  
+  <update id="updateSrcIdx">
+    update vdlm_fragment_image
+    set idx = #{idx}, updated_at = now()
+    where id = #{id, typeHandler=idHandler}
+  </update>
+  
+  <delete id="delete4Update">
+  	delete from vdlm_fragment_image
+  	where fragment_id = #{fragmentId, typeHandler=idHandler}
+  	<if test="ids != null and ids.size >0 ">
+  		id in
+  		<foreach collection="ids" index="index" item="id" open="(" separator="," close=")">  
+	       #{id}
+	  	</foreach>
+  	</if>
+  </delete>
+</mapper>

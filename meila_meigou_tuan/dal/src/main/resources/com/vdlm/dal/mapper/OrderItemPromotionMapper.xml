@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderItemPromotionMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderItemPromotion" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_item_id" property="orderItemId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="activity_idstr" property="activityIdstr" jdbcType="VARCHAR" />
+    <result column="discount_fee" property="discountFee" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.orderItemIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.orderItemIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, order_item_id, activity_idstr, discount_fee
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.vdlm.dal.model.OrderItemPromotionExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_promotion
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item_promotion
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="String" >
+    delete from vdlm_order_item_promotion
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.vdlm.dal.model.OrderItemPromotionExample" >
+    delete from vdlm_order_item_promotion
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderItemPromotion" >
+    insert into vdlm_order_item_promotion (id, order_item_id, 
+      activity_idstr, discount_fee)
+    values (#{id,jdbcType=BIGINT,typeHandler=idHandler}, #{orderItemId,jdbcType=BIGINT,typeHandler=idHandler}, 
+      #{activityIdstr,jdbcType=VARCHAR}, #{discountFee,jdbcType=DECIMAL})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vdlm.dal.model.OrderItemPromotion" >
+    insert into vdlm_order_item_promotion
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderItemId != null" >
+        order_item_id,
+      </if>
+      <if test="activityIdstr != null" >
+        activity_idstr,
+      </if>
+      <if test="discountFee != null" >
+        discount_fee,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="orderItemId != null" >
+        #{orderItemId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="activityIdstr != null" >
+        #{activityIdstr,jdbcType=VARCHAR},
+      </if>
+      <if test="discountFee != null" >
+        #{discountFee,jdbcType=DECIMAL},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.vdlm.dal.model.OrderItemPromotionExample" resultType="java.lang.Integer" >
+    select count(*) from vdlm_order_item_promotion
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update vdlm_order_item_promotion
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.orderItemId != null" >
+        order_item_id = #{record.orderItemId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.activityIdstr != null" >
+        activity_idstr = #{record.activityIdstr,jdbcType=VARCHAR},
+      </if>
+      <if test="record.discountFee != null" >
+        discount_fee = #{record.discountFee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update vdlm_order_item_promotion
+    set id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      order_item_id = #{record.orderItemId,jdbcType=BIGINT,typeHandler=idHandler},
+      activity_idstr = #{record.activityIdstr,jdbcType=VARCHAR},
+      discount_fee = #{record.discountFee,jdbcType=DECIMAL}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.OrderItemPromotion" >
+    update vdlm_order_item_promotion
+    <set >
+      <if test="orderItemId != null" >
+        order_item_id = #{orderItemId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="activityIdstr != null" >
+        activity_idstr = #{activityIdstr,jdbcType=VARCHAR},
+      </if>
+      <if test="discountFee != null" >
+        discount_fee = #{discountFee,jdbcType=DECIMAL},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.OrderItemPromotion" >
+    update vdlm_order_item_promotion
+    set order_item_id = #{orderItemId,jdbcType=BIGINT,typeHandler=idHandler},
+      activity_idstr = #{activityIdstr,jdbcType=VARCHAR},
+      discount_fee = #{discountFee,jdbcType=DECIMAL}
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+</mapper>

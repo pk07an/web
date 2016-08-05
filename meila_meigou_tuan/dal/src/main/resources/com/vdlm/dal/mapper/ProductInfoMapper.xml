@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProductInfoMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProductInfo">
+		<id column="id" property="id"  jdbcType="VARCHAR" />
+		<result column="product_id" property="product_id" jdbcType="BIGINT" />
+		<result column="property" property="property" jdbcType="INTEGER" />
+		<result column="ms_price" property="ms_price" jdbcType="DECIMAL" />
+		<result column="start_time" property="start_time" jdbcType="TIMESTAMP" />
+		<result column="end_time" property="end_time" jdbcType="TIMESTAMP" />
+		<result column="buy_limit_count" property="buy_limit_count" jdbcType="INTEGER" />
+ 		<result column="short_name" property="shortName" jdbcType="VARCHAR" />
+ 		<result column="short_intro" property="shortIntro" jdbcType="VARCHAR" />
+		<result column="created_at" property="created_at" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updated_at" jdbcType="TIMESTAMP" /> 
+        <result column="purchase_source" property="purchaseSource" jdbcType="VARCHAR" />
+        <result column="storage_type" property="storageType" jdbcType="VARCHAR" />
+        <result column="product_prepare_days" property="productPrepareDays" jdbcType="TINYINT" />
+        <result column="logistics_interna_days" property="logisticsInternaDays" jdbcType="TINYINT" />
+	</resultMap>
+ 
+	<resultMap id="AdminMap" type="com.vdlm.dal.vo.ProductExtAdmin" extends="BaseResultMap">
+ 		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="img" property="img" jdbcType="VARCHAR" />
+		<result column="img_width" property="imgWidth" jdbcType="INTEGER" />
+		<result column="img_height" property="imgHeight" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" typeHandler="idHandler" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="sales" property="sales" jdbcType="BIGINT" />
+		<result column="fake_sales" property="fakeSales" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="BIGINT" />
+		<result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="postage" property="postage" jdbcType="DECIMAL" />
+		<result column="recommend" property="recommend" jdbcType="BIT" />
+		<result column="recommend_at" property="recommendAt" jdbcType="TIMESTAMP" />
+		<result column="discount" property="discount" jdbcType="DECIMAL" />
+		<result column="commission_rate" property="commissionRate" jdbcType="DECIMAL" />
+		<result column="forsale_at" property="forsaleAt" jdbcType="TIMESTAMP" />
+		<result column="onsale_at" property="onsaleAt" jdbcType="TIMESTAMP" />
+		<result column="instock_at" property="instockAt" jdbcType="TIMESTAMP" /> 
+		<result column="isDelay" property="delayed" jdbcType="BIT" />
+		<result column="delayDays" property="delayAt" jdbcType="INTEGER" />
+		<result column="update_lock" property="updateLock" jdbcType="BIT" />
+		<result column="synchronousFlag" property="synchronousFlag" jdbcType="VARCHAR" />
+		<result column="third_item_id" property="thirdItemId" jdbcType="BIGINT" />
+		<result column="shop_name" property="shopName" jdbcType="VARCHAR"  />
+  	</resultMap>
+	 
+	<sql id="Base_Column_List">
+		id, product_id, property,ms_price, start_time, end_time, buy_limit_count, created_at, updated_at, share_img, share_img_width, share_img_height, short_intro, short_name, 
+        purchase_source, storage_type, product_prepare_days, logistics_interna_days 
+	</sql> 
+	 
+	 
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" /> 
+		from vdlm_product_info
+		where id = #{id} 
+	</select>
+ 
+	<select id="selectByProductId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" /> 
+		from vdlm_product_info
+		where product_id = #{productId} 
+	</select>
+ 
+    <select id="listProductsByAdmin" resultMap="AdminMap">
+		select pi.id, p.name, p.description, p.status, p.price, p.amount, p.sales, p.onsale_at, 
+		pi.created_at, pi.updated_at, s.name as shop_name, u.phone, p.img, p.commission_rate,p.code,
+		pi.start_time,pi.end_time,pi.ms_price,pi.buy_limit_count
+		from vdlm_product p join vdlm_shop s on p.shop_id = s.id join vdlm_user u on p.user_id = u.id
+		join vdlm_product_info pi on p.id=pi.product_id
+		where 1 = 1
+		<if test="params.archive != null">
+			and p.archive = #{params.archive}
+		</if>
+		<if test="params.productName != null">
+			and p.name like #{params.productName}
+		</if>		
+		<if test="params.shopName != null">
+			and s.name like #{params.shopName}
+		</if>
+		<if test="params.productStatus != null">
+			and p.status = #{params.productStatus}
+		</if>
+		<if test="params.createdFrom != null">
+			and pi.created_at >= #{params.createdFrom}
+		</if>
+		<if test="params.createdTo != null">
+			<![CDATA[
+			and pi.created_at <= #{params.createdTo}
+			]]>
+		</if>
+		<if test="params.updatedFrom != null">
+			and pi.updated_at >= #{params.updatedFrom}
+		</if>
+		<if test="params.updatedTo != null">
+			<![CDATA[
+			and pi.updated_at <= #{params.updatedTo}
+			]]>
+		</if>		
+	     <if test="params.startTimeFrom != null">
+			and pi.start_time >= #{params.startTimeFrom}
+		</if>
+		<if test="params.startTimeTo != null">
+			<![CDATA[
+			and pi.start_time <= #{params.startTimeTo}
+			]]>
+		</if>	
+		 <if test="params.endTimeFrom != null">
+			and pi.end_time >= #{params.endTimeFrom}
+		</if>
+		<if test="params.endTimeTo != null">
+			<![CDATA[
+			and pi.end_time <= #{params.endTimeTo}
+			]]>
+		</if>		
+		<if test="params.containCloseShop == false">
+			and s.archive = false
+		</if>
+		order by pi.created_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+    
+    <select id="countProductsByAdmin" resultType="Long">
+		select count(*) as c
+		from vdlm_product p join vdlm_shop s on p.shop_id = s.id join vdlm_user u on p.user_id = u.id
+		join vdlm_product_info pi on p.id=pi.product_id
+		where 1 = 1
+		<if test="params.archive != null">
+			and p.archive = #{params.archive}
+		</if>
+		<if test="params.productName != null">
+			and p.name like #{params.productName}
+		</if>		
+		<if test="params.shopName != null">
+			and s.name like #{params.shopName}
+		</if>
+		<if test="params.productStatus != null">
+			and p.status = #{params.productStatus}
+		</if>
+		<if test="params.createdFrom != null">
+			and p.created_at >= #{params.createdFrom}
+		</if>
+		<if test="params.createdTo != null">
+			<![CDATA[
+			and p.created_at <= #{params.createdTo}
+			]]>
+		</if>
+		<if test="params.updatedFrom != null">
+			and p.updated_at >= #{params.updatedFrom}
+		</if>
+		<if test="params.updatedTo != null">
+			<![CDATA[
+			and p.updated_at <= #{params.updatedTo}
+			]]>
+		</if>
+		<if test="params.containCloseShop == false">
+			and s.archive = false
+		</if>
+	</select>
+    
+   <insert id="insert" parameterType="com.vdlm.dal.model.ProductInfo" >
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	insert into vdlm_product_info (product_id, property, ms_price, start_time, end_time, buy_limit_count,created_at, updated_at, 
+	short_name, short_intro, share_img, share_img_width, share_img_height,
+    purchase_source, storage_type, product_prepare_days, logistics_interna_days
+     )
+    values (#{product_id,jdbcType=BIGINT},#{property,jdbcType=INTEGER}, #{ms_price,jdbcType=DECIMAL}, #{start_time,jdbcType=TIMESTAMP}, #{end_time,jdbcType=TIMESTAMP},#{buy_limit_count,jdbcType=INTEGER}, now(),now(),
+      #{shortName,jdbcType=VARCHAR}, #{shortIntro,jdbcType=VARCHAR}, #{share_img,jdbcType=VARCHAR}, #{share_img_width,jdbcType=INTEGER}, #{share_img_height,jdbcType=INTEGER},
+      #{purchaseSource,jdbcType=VARCHAR}, #{storageType,jdbcType=VARCHAR}, #{productPrepareDays,jdbcType=TINYINT}, #{logisticsInternaDays,jdbcType=TINYINT}
+      )
+  </insert>
+    
+   <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.ProductInfo" >
+    update vdlm_product_info
+    <set>    
+      <if test="property != null" >
+        property = #{property,jdbcType=INTEGER},
+      </if>
+      <if test="ms_price != null" >
+        ms_price = #{ms_price,jdbcType=DECIMAL},
+      </if>
+      <if test="start_time != null" >
+        start_time = #{start_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="end_time != null" >
+        end_time = #{end_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buy_limit_count != null" >
+        buy_limit_count = #{buy_limit_count,jdbcType=INTEGER},
+      </if>   
+      <if test="shortName != null" >
+        short_name = #{shortName,jdbcType=VARCHAR},
+      </if>  
+      <if test="shortIntro != null" >
+        short_intro = #{shortIntro,jdbcType=VARCHAR},
+      </if>   
+      <if test="purchaseSource != null" >
+        purchase_source = #{purchaseSource,jdbcType=VARCHAR},
+      </if>
+      <if test="storageType != null" >
+        storage_type = #{storageType,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrepareDays != null" >
+        product_prepare_days = #{productPrepareDays,jdbcType=TINYINT},
+      </if>
+      <if test="logisticsInternaDays != null" >
+        logistics_interna_days = #{logisticsInternaDays,jdbcType=TINYINT},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id} 
+  </update>
+ 
+ <update id="updateByProductId" parameterType="com.vdlm.dal.model.ProductInfo" >
+    update vdlm_product_info
+    <set>     
+      <if test="property != null" >
+        property = #{property,jdbcType=INTEGER},
+      </if>
+      <if test="ms_price != null" >
+        ms_price = #{ms_price,jdbcType=DECIMAL},
+      </if>
+      <if test="start_time != null" >
+        start_time = #{start_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="end_time != null" >
+        end_time = #{end_time,jdbcType=TIMESTAMP},
+      </if>
+      <if test="buy_limit_count != null" >
+        buy_limit_count = #{buy_limit_count,jdbcType=INTEGER},
+      </if>   
+      <if test="shortName != null" >
+        short_name = #{shortName,jdbcType=VARCHAR},
+      </if>  
+      <if test="shortIntro != null" >
+        short_intro = #{shortIntro,jdbcType=VARCHAR},
+      </if>  
+      <if test="purchaseSource != null" >
+        purchase_source = #{purchaseSource,jdbcType=VARCHAR},
+      </if>
+      <if test="storageType != null" >
+        storage_type = #{storageType,jdbcType=VARCHAR},
+      </if>
+      <if test="productPrepareDays != null" >
+        product_prepare_days = #{productPrepareDays,jdbcType=TINYINT},
+      </if>
+      <if test="logisticsInternaDays != null" >
+        logistics_interna_days = #{logisticsInternaDays,jdbcType=TINYINT},
+      </if> 
+      updated_at = now()
+    </set>
+    where product_id = #{product_id} 
+  </update>
+ 
+    <delete id="deleteByAdmin">
+		delete from vdlm_product_info 
+		where id in <foreach collection="ids" item="item" index="index"
+		open="(" separator="," close=")">#{item}</foreach> 
+	</delete>
+ 
+</mapper>

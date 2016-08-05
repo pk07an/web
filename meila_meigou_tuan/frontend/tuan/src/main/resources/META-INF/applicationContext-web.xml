@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+	   http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd"
+	default-lazy-init="true" default-autowire="byName">
+
+<!-- 	<bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver"> -->
+<!-- 		<property name="prefix" value="/WEB-INF/views/" /> -->
+<!-- 		<property name="suffix" value=".html" /> -->
+<!-- 		<property name="templateMode" value="HTML5" /> -->
+<!-- 		<property name="cacheable" value="${cache.page.templates}"/> -->
+<!-- 		<property name="cacheTTLMs" value="${cache.page.templates.ttl}" /> -->
+<!-- 		<property name="characterEncoding" value="UTF-8" /> -->
+<!-- 	</bean> -->
+
+    <bean id="templateResolver" class="com.vdlm.web.view.MultiDomainsTemplateResolver">
+        <property name="prefix" value="/WEB-INF/views/" />
+        <property name="defaultDomain" value="${templates.default.domain}"></property>
+        <property name="suffix" value=".html" />
+        <property name="templateMode" value="HTML5" />
+        <property name="cacheable" value="${cache.page.templates}"/>
+        <property name="cacheTTLMs" value="${cache.page.templates.ttl}" />
+        <property name="characterEncoding" value="UTF-8" />
+    </bean>
+	<!-- TODO -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/service/getaddress.json" />
+			<mvc:mapping path="/service/submitorder.json" />
+			<!-- <mvc:mapping path="/service/gettuaninfo.json" /> -->
+			<mvc:mapping path="/service/gettuanlist.json" />
+			<mvc:mapping path="/address/**" />
+			<!-- <mvc:mapping path="/service/checkJoinTuan.json" /> -->
+			<!-- <mvc:mapping path="/service/autoJoinTuan.json" /> -->
+	        <bean class="com.vdlm.interceptor.TokenInterceptor"/>
+	    </mvc:interceptor>
+	    
+	     <mvc:interceptor>
+            <mvc:mapping path="/group/*.html" />
+            <bean class="com.vdlm.interceptor.CookiesInterceptor"/>
+        </mvc:interceptor>
+	</mvc:interceptors>
+</beans>

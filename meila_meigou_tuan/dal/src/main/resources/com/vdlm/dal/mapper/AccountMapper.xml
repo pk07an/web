@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.AccountMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Account" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="user_id" property="userId" typeHandler="idHandler" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="freeze_balance" property="freezeBalance" jdbcType="DECIMAL" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  	<resultMap id="DealHistoryVOMap" type="com.vdlm.dal.vo.DealHistoryVO">
+		<result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="fee_from" property="feeFrom" jdbcType="VARCHAR" />
+		<result column="deal_type" property="dealType" jdbcType="VARCHAR" />
+		<result column="fee" property="fee" jdbcType="DECIMAL" />
+		<result column="date" property="date" jdbcType="TIMESTAMP" />
+	</resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, user_id, balance, freeze_balance, created_at, updated_at
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_account
+    where id = #{id, typeHandler=idHandler}
+  </select>
+  
+  	<select id="listDealByAccountId" resultMap="DealHistoryVOMap">
+	  	select pay.amount as fee, o.status as order_status, pay.updated_at as date, u.loginname as fee_from
+		from vdlm_sub_account sa join vdlm_pay_request pay on sa.id = pay.to_sub_account_id
+		join vdlm_order o on pay.biz_id = o.order_no join vdlm_user u on u.id = o.buyer_id
+		where pay.status = 'SUCCESS' and sa.account_id = #{accountId, typeHandler=idHandler} 
+		and sa.account_type = 'AVAILABLE'
+		and pay.pay_type != 'RECHARGE'
+		order by pay.updated_at desc
+	</select>
+  
+	<!-- 可以提现的账号列表，用于自动提现 -->
+	<select id="listByCanWithdraw" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_account a
+		where balance > 0 and freeze_balance = 0
+		and exists (select 1 from vdlm_user_bank b where b.user_id = a.user_id and b.archive = false)
+		and archive = false
+	</select>
+  
+  <select id="selectByUserId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_account
+    where user_id = #{userId, typeHandler=idHandler}
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Account" >
+	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into vdlm_account (user_id, balance, created_at, updated_at)
+    values (#{userId,typeHandler=idHandler}, #{balance,jdbcType=DECIMAL}, now(), now())
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.Account" >
+    update vdlm_account
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,typeHandler=idHandler},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.Account" >
+    update vdlm_account
+    set user_id = #{userId,typeHandler=idHandler},
+      balance = #{balance,jdbcType=DECIMAL},
+      updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <update id="addBalance" parameterType="com.vdlm.dal.model.Account" >
+    update vdlm_account
+    set balance = balance + #{amount,jdbcType=DECIMAL},
+    updated_at = now()
+    where id = #{accountId,typeHandler=idHandler}
+  </update>
+  
+  <update id="subBalance" parameterType="com.vdlm.dal.model.Account" >
+    update vdlm_account
+    set balance = balance - #{amount,jdbcType=DECIMAL},
+    updated_at = now()
+    where id = #{accountId,typeHandler=idHandler}
+  </update>
+  
+  <update id="freezeBalance" parameterType="com.vdlm.dal.model.Account" >
+    update vdlm_account
+    set balance = balance - #{amount,jdbcType=DECIMAL},
+    freeze_balance = #{amount,jdbcType=DECIMAL},
+    updated_at = now()
+    where id = #{accountId,typeHandler=idHandler}
+  </update>
+  <update id="unFreezeBalance" parameterType="com.vdlm.dal.model.Account" >
+    update vdlm_account
+    set balance = balance + #{amount,jdbcType=DECIMAL},
+    freeze_balance = freeze_balance - #{amount,jdbcType=DECIMAL},
+    updated_at = now()
+    where id = #{accountId,typeHandler=idHandler}
+  </update>
+</mapper>

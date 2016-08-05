@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderItemMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderItem" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="sku_str" property="skuStr" jdbcType="VARCHAR" />
+    <result column="product_img" property="productImg" jdbcType="VARCHAR" />
+    <result column="product_img_width" property="productImgWidth" jdbcType="INTEGER"/>
+    <result column="product_img_height" property="productImgHeight" jdbcType="INTEGER"/>
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_id, product_id, sku_id, product_name, sku_str, product_img, price, market_price, amount, created_at, updated_at, product_img_width, product_img_height
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item
+    where id = #{id,typeHandler=idHandler}
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from vdlm_order_item
+    where id = #{id,typeHandler=idHandler}
+  </delete>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderItem" >
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_order_item (order_id, product_id, 
+      sku_id, product_name, sku_str, 
+      product_img, price, market_price, amount, created_at, updated_at, product_img_width, product_img_height)
+    values (#{orderId,typeHandler=idHandler}, #{productId,typeHandler=idHandler}, 
+      #{skuId,typeHandler=idHandler}, #{productName,jdbcType=VARCHAR}, #{skuStr,jdbcType=VARCHAR}, 
+      #{productImg,jdbcType=VARCHAR}, #{price,jdbcType=DECIMAL}, #{marketPrice,jdbcType=DECIMAL}, 
+      #{amount, jdbcType=INTEGER}, now(), now(), #{productImgWidth}, #{productImgHeight})
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.OrderItem" >
+    update vdlm_order_item
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,typeHandler=idHandler},
+      </if>
+      <if test="productId != null" >
+        product_id = #{productId,typeHandler=idHandler},
+      </if>
+      <if test="skuId != null" >
+        sku_id = #{skuId,typeHandler=idHandler},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="skuStr != null" >
+        sku_str = #{skuStr,jdbcType=VARCHAR},
+      </if>
+      <if test="productImg != null" >
+        product_img = #{productImg,jdbcType=VARCHAR},
+      </if>
+      <if test="productImgWidth != null">
+      	product_img_width = #{productImgWidth},
+      </if>
+      <if test="productImgHeight != null">
+      	product_img_height = #{productImgHeight},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+	  <if test="marketPrice != null" >
+        market_price = #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.OrderItem" >
+    update vdlm_order_item
+    set order_id = #{orderId,typeHandler=idHandler},
+      product_id = #{productId,typeHandler=idHandler},
+      sku_id = #{skuId,typeHandler=idHandler},
+      product_name = #{productName,jdbcType=VARCHAR},
+      sku_str = #{skuStr,jdbcType=VARCHAR},
+      product_img = #{productImg,jdbcType=VARCHAR},
+      product_img_width = #{productImgWidth},
+      product_img_height = #{productImgHeight},
+      price = #{price,jdbcType=DECIMAL},
+      market_price = #{marketPrice,jdbcType=DECIMAL},
+      updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <select id="selectByOrderId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item
+    where order_id = #{orderId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="selectByOrderIdList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item
+    where 
+    order_id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+    	#{id,typeHandler=idHandler}
+    </foreach> 
+    and archive=false
+  </select>
+</mapper>

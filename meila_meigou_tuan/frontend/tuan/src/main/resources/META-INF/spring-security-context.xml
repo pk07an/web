@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+http://www.springframework.org/schema/security
+http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+	
+	<security:http auto-config="true" disable-url-rewriting="true" use-expressions="true" entry-point-ref="loginEntryPoint">
+	    <!--  
+	    <security:csrf request-matcher-ref="csrfMatcher"/>
+	    -->
+		<security:form-login login-page="/signin" authentication-failure-url="/signin?error=1"/>
+        <security:logout invalidate-session="true" logout-success-url="/" logout-url="/logout" />
+        <security:remember-me  key="${rememberMeServices.key}" services-ref="rememberMeServices" />
+<!--  		<security:intercept-url pattern="/**" access="permitAll" />  -->
+		
+ 	<!-- 	<security:intercept-url pattern="/favicon.ico" access="permitAll" />
+		<security:intercept-url pattern="/_resources/**" access="permitAll" />
+		<security:intercept-url pattern="/resources/**" access="permitAll" />
+		<security:intercept-url pattern="/res_mgi/**" access="permitAll" />
+        <security:intercept-url pattern="/signin" access="permitAll" />
+        <security:intercept-url pattern="/j_spring_security_check" access="permitAll" />
+        <security:intercept-url pattern="/partner/redirect" access="permitAll" />
+        <security:intercept-url pattern="/auth/redirect" access="permitAll" />
+        <security:intercept-url pattern="/cart/count" access="permitAll" />
+        <security:intercept-url pattern="/generalError" access="permitAll" />
+        <security:intercept-url pattern="/pay/**" access="permitAll" />
+        <security:intercept-url pattern="/p/**" access="permitAll" />
+        <security:intercept-url pattern="/ware/**" access="permitAll" />
+        <security:intercept-url pattern="/collect/**" access="permitAll" />
+        <security:intercept-url pattern="/wareorder/**" access="permitAll" />
+        <security:intercept-url pattern="/address/**" access="permitAll" />
+        <security:intercept-url pattern="/zone/**" access="permitAll" />
+        <security:intercept-url pattern="/coupon/**" access="permitAll" />
+        <security:intercept-url pattern="/order/**" access="permitAll" />
+        <security:intercept-url pattern="/cashier/**" access="permitAll" />
+        <security:intercept-url pattern="/m/buyer/**" access="permitAll" />
+        <security:intercept-url pattern="/meigou/**" access="permitAll" />
+        <security:intercept-url pattern="/m/seller.html" access="permitAll" />
+        <security:intercept-url pattern="/m/seller/order/**" access="permitAll" />
+        <security:intercept-url pattern="/m/seller/orders/" access="permitAll" />
+		<security:intercept-url pattern="/**" access="isAuthenticated()" /> 
+		 -->
+		 <security:intercept-url pattern="/**" access="permitAll" /> 
+	</security:http>
+	
+	<bean id="meilaLogin" class="com.vdlm.authentication.MeilaLoginStrategy" /> 
+</beans>

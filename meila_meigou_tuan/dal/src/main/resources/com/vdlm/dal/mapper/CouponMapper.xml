@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.CouponMapper" >
+
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Coupon" >
+    	<id column="id" property="id"/>
+    	<result column="code" property="code" jdbcType="VARCHAR" />
+	    <result column="activity_id" property="activityId" />
+	    <result column="activity_title" property="activityTitle" />
+	    <result column="user_id" property="userId" jdbcType="VARCHAR" typeHandler="idHandler"/>
+	    <result column="discount" property="discount" jdbcType="DECIMAL"/>
+	    <result column="valid_from" property="validFrom" jdbcType="TIMESTAMP" />
+	    <result column="valid_to" property="validTo" jdbcType="TIMESTAMP" />
+	    <result column="ext_coupon_id" property="extCouponId" jdbcType="VARCHAR" />
+	    <result column="status" property="status" jdbcType="VARCHAR" />
+	    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	    <result column="biz_no" property="bizNo" jdbcType="VARCHAR" />
+	    <result column="cashieritem_created_at" property="cashieritemCreatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+  
+  	<sql id="Base_Column_List" >
+    	s.id, s.code, s.activity_id, s.user_id, s.discount, s.ext_coupon_id, s.valid_from, s.valid_to, s.status, s.created_at, s.updated_at
+  	</sql>
+  
+	<sql id="condByAdmin">
+		<if test="params.code != null">
+			and s.code like #{params.code}
+		</if>
+		<if test="params.validfrom != null">
+			and s.valid_from  >= #{params.validfrom}
+		</if>
+		<if test="params.validto != null">
+			<![CDATA[
+			and s.valid_to  <= #{params.validto}
+			]]>
+		</if>
+		<if test="params.status != null">
+			and s.status = #{params.status}
+		</if>
+		<if test="params.activityid != null">
+			and s.activity_id = #{params.activityid}
+		</if>
+		<if test="params.cashieritemfrom != null">
+			and c.created_at >= #{params.cashieritemfrom}
+		</if>
+		<if test="params.cashieritemto != null">
+			<![CDATA[
+			and c.created_at  <= #{params.cashieritemto}
+			]]>
+		</if>
+	</sql>
+  
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+	    <include refid="Base_Column_List" />
+	    from vdlm_coupon s
+	    where s.id = #{id}
+	</select>
+  
+	<select id="selectByCouponCode" resultMap="BaseResultMap">
+	    select c.id, c.code, c.activity_id, c.user_id, c.discount, c.valid_from, 
+	    c.valid_to, c.status, c.created_at, c.updated_at
+	    from vdlm_coupon c join vdlm_coupon_activity a on c.activity_id = a.id
+	    where c.code = #{couponCode} and a.act_code = #{actCode} 
+	</select>
+  
+ 	<insert id="insert" parameterType="com.vdlm.dal.model.Coupon">
+	    <selectKey resultType="String" keyProperty="id">
+	        SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+    	insert into vdlm_coupon (code, activity_id, user_id, discount, ext_coupon_id, valid_from, valid_to, status, created_at, updated_at)
+    	values (#{code}, #{activityId}, #{userId, typeHandler=idHandler}, #{discount}, #{extCouponId}, #{validFrom}, #{validTo}, #{status}, now(), now())
+  	</insert>
+  
+	<select id="selectByUserAndStatus" resultMap="BaseResultMap">
+	    select
+	    <include refid="Base_Column_List" />
+	    from vdlm_coupon s
+	    where s.user_id = #{userId, typeHandler=idHandler}
+	    <if test="status != null" >
+	        and s.status = #{status}
+	    </if> 
+	</select>
+  
+  <update id="updateStatus" parameterType="com.vdlm.dal.model.Category">
+    update vdlm_coupon
+    set status = #{status}, updated_at = now()
+    where id = #{id} and status != #{status} 
+  </update>
+  
+  <update id="grant">
+    update vdlm_coupon
+    set user_id = #{userId, typeHandler=idHandler}, updated_at = now()
+    where id = #{id} and status = 'VALID'
+  </update>
+  
+  <select id="listCouponsByAdmin" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />, 
+        a.title as activity_title,
+        c.biz_no, c.created_at as cashieritem_created_at
+        from vdlm_coupon s left join vdlm_coupon_activity a
+        on s.activity_id = a.id left join vdlm_cashieritem c 
+        on s.id = c.coupon_id 
+        where 1 = 1
+		<include refid="condByAdmin"/>
+		order by s.created_at desc, s.updated_at desc
+        limit #{page.offset}, #{page.size} 
+	</select>
+	
+	<select id="countCouponsByAdmin" resultType="Long">
+    	select count(*) as t
+		from vdlm_coupon s left join vdlm_coupon_activity a
+        on s.activity_id = a.id left join vdlm_cashieritem c 
+        on s.id = c.coupon_id 
+		where 1=1
+		<include refid="condByAdmin"/>
+  	</select>
+  	
+  	<insert id="create">
+  		insert into vdlm_coupon(code, activity_id, discount, valid_from, valid_to, status, created_at) 
+			values 
+			<foreach collection="codes" item="item" index="index" separator=",">
+				(#{item}, #{params.activityid}, #{params.discount}, #{params.validfrom}, 
+				 #{params.validto}, #{params.status}, #{params.createdat})  
+	  		</foreach>
+  	</insert>
+  	
+  	<select id="selectByAdmin" resultMap="BaseResultMap">	
+	    select 
+	    <include refid="Base_Column_List" />,
+	    a.title as activity_title,
+        c.biz_no, c.created_at as cashieritem_created_at
+		from vdlm_coupon s left join vdlm_coupon_activity a
+        on s.activity_id = a.id left join vdlm_cashieritem c 
+        on s.id = c.coupon_id 
+		where 1 = 1
+	    <include refid="condByAdmin"/>
+		order by s.created_at desc, s.updated_at desc
+	    <if test="page !=null">
+	    	limit #{page.offset}, #{page.size} 
+	    </if>
+	    <if test="page ==null">
+			limit 0, 50000
+		</if>
+  </select>
+  
+  <update id="delete">
+  	delete from vdlm_coupon
+  	where id in <foreach collection="ids" item="item" index="index"
+	open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach>
+  </update>
+	
+	<select id="obtainCoupon" resultMap="BaseResultMap">
+		select
+	    <include refid="Base_Column_List" />
+	    from vdlm_coupon s
+	    where s.code = #{code}
+	</select>
+</mapper>

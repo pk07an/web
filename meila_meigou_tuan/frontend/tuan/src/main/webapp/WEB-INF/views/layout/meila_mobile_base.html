@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <th:block layout:fragment="page_title">
+             <title>美啦</title>
+        </th:block>
+
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, user-scalable=no,initial-scale=1,minimum-scale=1,maximum-scale=1" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        <!--/* windows phone 手机上禁止链接或绑定点击事件的元素在点击时出现灰色区域  */-->
+        <meta name="msapplication-tap-highlight" content="no" />
+        <link rel="shortcut icon" th:href="@{/ptuan/resources/web/favicon.ico}" />
+
+        <!--/* 其他meta标签  */-->
+        <th:block layout:fragment="meta"></th:block>
+
+        <th:block layout:fragment="rem_resize">
+            <!--/* resize 动态设定font-size的值  */-->
+            <script type="text/javascript">
+                // <![CDATA[
+                !function(a){function b(){var b=g.getBoundingClientRect().width;a.rem=(b/6.4>100?100:(b/6.4<50?50:b/6.4)),g.style.fontSize=a.rem+"px"}var g=a.document.documentElement,e;a.addEventListener("resize",function(){clearTimeout(e),e=setTimeout(b,300)},!1),a.addEventListener("pageshow",function(a){a.persisted&&(clearTimeout(e),e=setTimeout(b,300))},!1),b()}(window);
+                // ]]>
+            </script>
+        </th:block>
+        <th:block layout:fragment="base_js_first">
+            <script type="text/javascript" th:inline="javascript">
+                // <![CDATA[
+                if (typeof(M) == 'undefined' || !M){
+                    window.M = {};
+                }
+                M.cdn = {
+                    origin : 'http://www.meilapp.com'
+                };
+                M.userInfo =  {};    // <!--/*  {% raw globals().get('user_data', {}) %};  //TODO  */-->
+                var pathContext=[[@{/}]];
+                var collectAdDom = [[${(collect_ad_dom == null or not collect_ad_dom)?true:false}]];
+                // ]]>
+            </script>
+        </th:block>
+
+        <th:block layout:fragment="js_error_report">
+            <!--/*  js 错误上报脚本  */-->
+            <script type="text/javascript">
+                // <![CDATA[
+                (function(){var errorStr="";window.onerror=function(msg,url,line,col,error){if(msg!="Script error."&&!url){return true}setTimeout(function(){var data={};col=col||(window.event&&window.event.errorCharacter)||0;data.url=url;data.line=line;data.col=col;if(!!error&&!!error.stack){data.msg=error.stack.toString()}else if(!!arguments.callee){var ext=[];var f=arguments.callee.caller,c=3;while(f&&(--c>0)){ext.push(f.toString());if(f===f.caller){break}f=f.caller}ext=ext.join(",");data.msg=ext}if(errorStr.indexOf()==-1){data.userAgent=navigator.userAgent;if(!data.msg){data.msg=String(msg)+'[arguments[0]]'}var img=new Image();img.src='/page_report/?data='+encodeURIComponent(JSON.stringify(data))+'&type=3';errorStr+=data.msg}},0);return true}})();
+                // ]]>
+            </script>
+        </th:block>
+
+
+        <!--/* 页面相关特殊脚本，需要优先执行  */-->
+        <th:block layout:fragment="page_js_first"></th:block>
+
+        <!--/* 公共组件样式  */-->
+        <th:block layout:fragment="base_css">
+            <link rel="stylesheet" type="text/css" th:href="${'/ptuan/resources/css/meila.css'}" />
+        </th:block>
+
+        <!--/* 公共组件样式  */-->
+        <th:block layout:fragment="common_css"></th:block>
+        <!--/* 具体页面样式  */-->
+        <th:block layout:fragment="page_css"></th:block>
+
+    </head>
+    <body>
+        <!--/* page_content  */-->
+        <div class="wrapper" layout:fragment="content">
+            <!--/* page_header  */-->
+            <th:block layout:fragment="page_header">
+                <div class="new-header" th:if="${not isApp}">
+                    <a class="back" onclick="history.back()">后退</a>
+                    <th:block layout:fragment="header_title">title</th:block>
+                    <th:block layout:fragment="app_button">
+                        <button class="view-in-app">在App中查看</button>
+                    </th:block>
+                </div>
+            </th:block>
+            <!--/* page_body  */-->
+            <th:block layout:fragment="page_body"></th:block>
+            <!--/* page_footer  */-->
+            <th:block layout:fragment="page_footer"></th:block>
+        </div>
+        <th:block layout:fragment="page_attachment"></th:block>
+
+        <!--/* 全局脚本  */-->
+        <th:block layout:fragment="base_js">
+            <script type="text/javascript" charset="utf-8" th:src="${'/ptuan/resources/js/all/zepto.js'}"></script>
+            <script type="text/javascript" charset="utf-8" th:src="${'/ptuan/resources/js/all/M.js'}"></script>
+            <script type="text/javascript">
+                // <![CDATA[
+                $('.view-in-app').click(function(){
+                    var $this = $(this),
+                        url = '',
+                        label = $this.attr('data-jump-label'),
+                        data = $this.attr('data-jump-data'),
+                        $iframe = null;
+                    if (label){
+                         if (label != 'url' && data){
+                             url =  "meilapp://" + label + '/' + data;
+                         }
+                    }
+                    if (url){
+                        $iframe = $('#app-iframe');
+                        if ($iframe.length > 0) {
+                            $iframe.attr('src', url);
+                        } else {
+                            $iframe = $('<iframe id="app-iframe" src="' + url + '"></iframe>');
+                            $('body').append($iframe);
+                        }
+                    }
+                });
+                // ]]>
+            </script>
+        </th:block>
+
+        <!--/* 公共组件脚本  */-->
+        <th:block layout:fragment="common_js"></th:block>
+
+        <!--/* 具体页面相关脚本  */-->
+        <th:block layout:fragment="page_js"></th:block>
+    </body>
+</html>

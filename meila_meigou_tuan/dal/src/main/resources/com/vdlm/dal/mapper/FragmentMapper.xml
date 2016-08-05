@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.FragmentMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.vo.FragmentVO" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="shop_id" property="shopId" typeHandler="idHandler"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="description" property="description" jdbcType="VARCHAR"/>
+    <result column="show_model" property="showModel" jdbcType="BIT"/>
+    <result column="idx" property="idx" jdbcType="INTEGER"/>
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    <result column="code" property="code" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, shop_id, name, description, show_model, idx, created_at, updated_at, code
+  </sql>
+  <insert id="insert">
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  	INSERT INTO vdlm_fragment (shop_id, name, description, show_model, idx, created_at, updated_at)
+  	VALUES (#{shopId, typeHandler=idHandler}, #{name}, #{description}, #{showModel}, #{idx}, now(), now())
+  </insert>
+  <update id="update">
+  	UPDATE vdlm_fragment
+  	<set>
+  		<if test="shopId != null">
+  			shop_id = #{shopId, typeHandler=idHandler},
+  		</if>
+  		<if test="name != null">
+  			name = #{name},
+  		</if>
+  		<if test="description != null">
+  			description = #{description},
+  		</if>
+  		<if test="showModel != null">
+  			show_model= #{showModel},
+  		</if>
+  		updated_at = now()
+  	</set>
+  	
+  	WHERE id = #{id, typeHandler=idHandler}
+  </update>
+  
+  <delete id="deleteById">
+  	delete from vdlm_fragment where id=#{id, typeHandler=idHandler}
+  </delete>
+  
+  <select id="selectById" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_fragment
+  	where id = #{id, typeHandler=idHandler}
+  </select>
+  
+  <select id="selectMaxByShopId" resultType="Integer">
+  	select max(idx) from vdlm_fragment
+  	where shop_id = #{shopId, typeHandler=idHandler}
+  </select>
+  
+  <select id="selectByShopId" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_fragment
+  	where shop_id = #{shopId, typeHandler=idHandler}
+  	order by idx asc
+  </select>
+  
+  <update id="incAllBeforeDest">
+    update vdlm_fragment
+    set idx = idx + #{increment}, updated_at = now()
+    where idx >= #{idx} and shop_id = #{shopId, typeHandler=idHandler}
+  </update>
+  
+  <update id="decAllAfterDest">
+  	<![CDATA[
+    update vdlm_fragment
+    set idx = idx + #{increment}, updated_at = now()
+    where idx <= #{idx} and shop_id = #{shopId, typeHandler=idHandler}
+    ]]>
+  </update>
+  
+  <update id="updateSrcIdx">
+    update vdlm_fragment
+    set idx = #{idx}, updated_at = now()
+    where id = #{id, typeHandler=idHandler}
+  </update>
+  
+  <select id="selectByProductId" resultMap="BaseResultMap">
+  	select
+  	f.id, f.shop_id, f.name, f.description, f.show_model, pf.idx, f.created_at, f.updated_at, f.code
+  	from vdlm_fragment f inner join vdlm_product_fragment pf on f.id=pf.fragment_id
+  	where pf.product_id = #{productId, typeHandler=idHandler}
+  	order by pf.idx
+  </select>
+  
+  <update id="addCode">
+		update vdlm_fragment set code = #{id, jdbcType=VARCHAR}
+		where id =#{id, typeHandler=idHandler}
+	</update>
+</mapper>

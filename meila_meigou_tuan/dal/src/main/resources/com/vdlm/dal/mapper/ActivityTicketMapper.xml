@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ActivityTicketMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ActivityTicket" >
+    <id column="id" property="id"/>
+    <result column="activity_id" property="activityId"/>
+    <result column="shop_id" property="shopId" typeHandler="idHandler"/>
+    <result column="start_time" property="startTime"/>
+    <result column="end_time" property="endTime"/>
+    <result column="audit_status" property="auditStatus"/>
+    <result column="status" property="status"/>
+    <result column="created_at" property="createdAt"/>
+    <result column="feedback" property="feedback"/>
+    <result column="reason" property="reason"/>
+    
+    <result column="preferential_type" property="preferentialType"/>
+    <result column="discount" property="discount"/>
+    <result column="reduction" property="reduction"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  id, activity_id, shop_id, start_time, end_time, audit_status, status, created_at, feedback, reason, preferential_type, discount, reduction
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.ActivityTicket" >
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_activity_ticket (activity_id, shop_id, start_time, end_time, audit_status, status, created_at, feedback, reason, preferential_type, discount, reduction)
+    values (#{activityId}, #{shopId, typeHandler=idHandler}, #{startTime}, #{endTime}, #{auditStatus}, #{status}, now(), #{feedback}, #{reason}, #{preferentialType}, #{discount}, #{reduction})
+  </insert>
+  
+  <insert id="update" parameterType="com.vdlm.dal.model.ActivityTicket" >
+    update vdlm_activity_ticket
+    <set >
+      <if test="startTime != null" >
+        start_time = #{startTime},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime},
+      </if>
+      <if test="auditStatus != null" >
+        audit_status =  #{auditStatus},
+      </if>
+      <if test="status != null" >
+        status = #{status},
+      </if> 
+      <if test="feedback != null" >
+        feedback = #{feedback},
+      </if>
+      <if test="reason != null" >
+        reason = #{reason},
+      </if>
+      <if test="preferentialType != null">
+      	preferential_type = #{preferentialType},
+      </if>
+      <if test="discount != null">
+      	discount = #{discount},
+      </if>
+      <if test="reduction != null">
+      	reduction = #{reduction},
+      </if>
+      created_at = now()
+    </set>
+    where id = #{id} and archive=false
+  </insert>
+  
+  <!-- <select id="selectLatest" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_activity_ticket
+    where activity_id = #{activityId}
+    and shop_id = #{shopId, typeHandler=idHandler}
+    and status != 'CLOSED'
+    and archive = 0
+    order by created_at limit 1
+  </select> -->
+  
+  <select id="selectOne" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_activity_ticket
+    where activity_id = #{activityId}
+    and shop_id = #{shopId, typeHandler=idHandler}
+    and archive = 0
+    order by created_at
+  </select>
+  
+  <select id="selectCountByRange" resultType="Long">
+    select count(*)
+    from vdlm_activity_ticket
+    where shop_id = #{shopId, typeHandler=idHandler}
+    and (start_time &lt; #{to} and end_time &gt; #{from})
+    and archive = 0
+    <if test="excludeId != null" >
+    and id != #{excludeId} 
+    </if>
+  </select>
+  
+  <select id="selectNotStartedToBeInProgress" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_activity_ticket
+    where activity_id = #{activityId}
+    and status = 'NOT_STARTED' and archive = 0 and audit_status='APPROVED'
+    and now() &gt; start_time and now() &lt; end_time
+  </select>
+  
+  <select id="selectNotStartedToBeClosed" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_activity_ticket
+    where status = 'NOT_STARTED' and archive = 0 and audit_status='APPROVED'
+    and now() &gt; end_time
+  </select>
+  
+  <select id="selectInProgressToBeClosed" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_activity_ticket
+    where status = 'IN_PROGRESS' and archive = 0 and audit_status='APPROVED'
+    and now() &gt; end_time
+  </select>
+  
+  <update id="updateAuditStatus">
+    update vdlm_activity_ticket set audit_status = #{status}
+    where id = #{id} and archive = 0
+  </update>
+  
+  <update id="updateStatusToInProgress">
+    update vdlm_activity_ticket set status = 'IN_PROGRESS'
+    where now() &gt; start_time and now() &lt; end_time 
+    and status = 'NOT_STARTED' and archive = 0
+  </update>
+  
+  <update id="updateStatusToClosed">
+    update vdlm_activity_ticket set status = 'CLOSED'
+    where now() &gt; end_time 
+    and status in ('IN_PROGRESS', 'NOT_STARTED') and archive = 0
+  </update>
+  
+  <update id="updateStatusToClosedById">
+    update vdlm_activity_ticket set status = 'CLOSED'
+    where id=#{id}
+  </update>
+  
+  <update id="updateStatusFromStatus">
+    update vdlm_activity_ticket set status = #{toStatus}
+    where id = #{id} 
+    and status = #{fromStatus} and archive = 0
+  </update>
+  
+  <update id="deleteByActivityId">
+    update vdlm_activity_ticket set archive = 1
+    where activity_id = #{activityId}
+  </update>
+  
+  <select id="loadJoinTicketByActivityAndShop" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from vdlm_activity_ticket
+  	where activity_id=#{activityId}  and archive=false and audit_status='SUBMITTED'
+    and shop_id = #{shopId, typeHandler=idHandler}
+  	order by created_at asc
+  </select>
+  
+  <select id="loadSubmittedTicket4Audit" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from vdlm_activity_ticket
+  	where id in (select ticket_id from vdlm_campaign_product where activity_id=#{activityId}
+  	and product_id = #{productId, typeHandler=idHandler} and archive=false) and archive=false and audit_status='SUBMITTED'
+  </select>
+  
+  <select id="loadAllTicketByActId" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_activity_ticket
+    where activity_id = #{activityId} and archive=false;
+  </select>
+</mapper>

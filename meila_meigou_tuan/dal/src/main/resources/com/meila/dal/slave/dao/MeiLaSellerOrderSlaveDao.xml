@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.meila.dal.slave.dao.MeiLaSellerOrderSlaveDao">
+
+
+	<resultMap id="OrderBaseResultMap" type="com.vdlm.dal.model.Order">
+		<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="pay_type" property="payType" jdbcType="VARCHAR" />
+		<result column="buyer_id" property="buyerId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="seller_id" property="sellerId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="logistics_fee" property="logisticsFee" jdbcType="DECIMAL" />
+		<result column="total_fee" property="totalFee" jdbcType="DECIMAL" />
+		<result column="paid_fee" property="paidFee" jdbcType="DECIMAL" />
+		<result column="discount_fee" property="discountFee" jdbcType="DECIMAL" />
+		<result column="goods_fee" property="goodsFee" jdbcType="DECIMAL" />
+		<result column="refund_fee" property="refundFee" jdbcType="DECIMAL" />
+		<result column="refund_goods_fee" property="refundGoodsFee" jdbcType="DECIMAL" />
+		<result column="refund_logistics_fee" property="refundLogisticsFee" jdbcType="DECIMAL" />
+		<result column="refund_platform_fee" property="refundPlatformFee" jdbcType="DECIMAL" />
+		<result column="paid_at" property="paidAt" jdbcType="TIMESTAMP" />
+		<result column="paid_status" property="paidStatus" jdbcType="VARCHAR" />
+		<result column="shipped_at" property="shippedAt" jdbcType="TIMESTAMP" />
+		<result column="logistics_company" property="logisticsCompany" jdbcType="VARCHAR" />
+		<result column="logistics_order_no" property="logisticsOrderNo" jdbcType="VARCHAR" />
+		<result column="refund_at" property="refundAt" jdbcType="TIMESTAMP" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="remark" property="remark" jdbcType="VARCHAR" />
+		<result column="remark_admin" property="remarkAdmin" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="TINYINT" />
+		<result column="union_id" property="unionId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="vip" property="vip" jdbcType="TINYINT" />
+		<result column="refund_type" property="refundType" jdbcType="VARCHAR" />
+		<result column="promotion_id" property="promotionId" jdbcType="VARCHAR" />
+		<result column="coupon_id" property="couponId" jdbcType="VARCHAR" />
+		<result column="partner_type" property="partnerType" jdbcType="VARCHAR" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+		<result column="checking_at" property="checkingAt" jdbcType="TIMESTAMP" />
+		<result column="cancelled_at" property="cancelledAt" jdbcType="TIMESTAMP" />
+		<result column="succeed_at" property="succeedAt" jdbcType="TIMESTAMP" />
+		<result column="latest_sign_at" property="latestSignAt" jdbcType="TIMESTAMP" />
+		<result column="remind_ship_at" property="remindShipAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<resultMap id="OrderVOMap" type="com.vdlm.dal.vo.OrderVO" extends="OrderBaseResultMap">
+		<result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR" />
+		<result column="seller_phone" property="sellerPhone" jdbcType="VARCHAR" />
+		<result column="shop_name" property="shopName" jdbcType="VARCHAR" />
+		<result column="out_trade_no" property="outTradeNo" jdbcType="VARCHAR" />
+		<result column="payment_channel" property="paymentChannel" jdbcType="VARCHAR" />
+		<association property="orderAddress" column="order_id" columnPrefix="oa_" resultMap="OrderAddressMapperBaseResultMap"></association>
+		<association property="orderExt" column="order_id" columnPrefix="oe_" resultMap="OrderExtMapperBaseResultMap"></association>
+	</resultMap>
+
+	<resultMap id="OrderAddressMapperBaseResultMap" type="com.vdlm.dal.model.OrderAddress" >
+		<id column="id" property="id" typeHandler="idHandler"/>
+		<result column="order_id" property="orderId" typeHandler="idHandler" />
+		<result column="zone_id" property="zoneId" jdbcType="BIGINT" />
+		<result column="street" property="street" jdbcType="VARCHAR" />
+		<result column="consignee" property="consignee" jdbcType="VARCHAR" />
+		<result column="phone" property="phone" jdbcType="VARCHAR" />
+		<result column="weixin_id" property="weixinId" jdbcType="VARCHAR" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+		<result column="id_card" property="idCard" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="OrderExtMapperBaseResultMap" type="com.vdlm.dal.model.OrderExt" >
+		<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="express_company_no" property="expressCompanyNo" jdbcType="INTEGER" />
+		<result column="mcode" property="mcode" jdbcType="VARCHAR" />
+		<result column="coin" property="coin" jdbcType="INTEGER" />
+		<result column="coin_price" property="coinPrice" jdbcType="DECIMAL" />
+		<result column="refund_status" property="refundStatus" jdbcType="SMALLINT" />
+		<result column="utm_channel" property="utmChannel" jdbcType="VARCHAR" />
+		<result column="utm_user_id" property="utmUserId" jdbcType="INTEGER" />
+		<result column="status_update_time" property="statusUpdateTime" jdbcType="TIMESTAMP" />
+		<result column="settlement_status" property="settlementStatus" jdbcType="SMALLINT" />
+		<result column="source" property="source" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap type="com.vdlm.dal.vo.OrderVO" id="OrderVOMap2" extends="OrderVOMap">
+		<collection property="orderItems" ofType="com.vdlm.dal.model.OrderItem" javaType="ArrayList" columnPrefix="item_" column="order_id"
+					resultMap="OrderItemBaseResultMap">
+		</collection>
+	</resultMap>
+
+	<resultMap id="OrderItemBaseResultMap" type="com.vdlm.dal.model.OrderItem" >
+		<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="sku_id" property="skuId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="product_name" property="productName" jdbcType="VARCHAR" />
+		<result column="sku_str" property="skuStr" jdbcType="VARCHAR" />
+		<result column="product_img" property="productImg" jdbcType="VARCHAR" />
+		<result column="product_img_width" property="productImgWidth" jdbcType="INTEGER"/>
+		<result column="product_img_height" property="productImgHeight" jdbcType="INTEGER"/>
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+		<result column="amount" property="amount" jdbcType="INTEGER" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+	<sql id="querySql">
+		o.id, o.order_no,o.pay_no, o.type, o.pay_type, o.buyer_id, o.shop_id,
+		o.seller_id, o.logistics_fee, o.total_fee,
+		o.paid_fee, o.discount_fee, o.goods_fee, o.paid_at, o.paid_status, o.status,
+		o.remark, o.archive, o.created_at, o.updated_at, o.checking_at, o.cancelled_at, o.succeed_at,
+		o.latest_sign_at,o.logistics_company,o.logistics_order_no,o.refund_at,
+		item.id as item_id , item.order_id as item_order_id  ,item.product_id as  item_product_id,item.sku_id as item_sku_id,
+		item.product_name as item_product_name,item.sku_str as item_sku_str, item.product_img as item_product_img,item.market_price as item_market_price ,
+		item.price as item_price  ,item.amount as item_amount,item.created_at as  item_created_at,item.updated_at as item_updated_at
+	</sql>
+
+	<resultMap id="OrderQuantityMap" type="com.vdlm.dal.vo.OrderQuantityVO">
+        <result column="order_quantity" property="orderQuantity" jdbcType="BIGINT" />
+        <result column="order_status" property="orderStatus" jdbcType="VARCHAR"  />
+    </resultMap>
+
+	<select id="selectOrderBySeller" resultMap="OrderVOMap2">
+		 select distinct 
+		 	<include refid="querySql" />
+		from vdlm_order o 
+	        left join vdlm_order_item item on o.id=item.order_id 
+            <if test="status != null and status == 'REFUNDING'" >
+                left join (
+                    select order_id,refund_time from (
+                        select order_id,refund_time from vdlm_order_refund_apply 
+                        where archive = false 
+                        order by refund_time desc) as record 
+                    group by order_id) as ora 
+                on o.id = ora.order_id
+            </if>
+		where o.seller_id = #{sellerId,typeHandler=idHandler}
+			  and o.archive=false 
+		<if test="status != null" >
+		  	and o.status= '${status}' 
+		</if>   
+         <if test="status != null and status == 'REFUNDING'" >
+            order by ora.refund_time desc
+         </if>
+         <if test="status == null or status != 'REFUNDING'" >
+            order by created_at desc
+         </if>
+	    limit #{pager.offset}, #{pager.size} 
+	</select>
+	
+	<select id="getOrderQuantity" resultMap="OrderQuantityMap">
+        select 
+            status as order_status,
+            count(0) as order_quantity
+        from vdlm_order 
+        <where>
+            shop_id = #{shopId,typeHandler=idHandler}
+        </where>
+        group by status
+		order by null
+    </select>	
+    
+    <select id="countBySellerIdAndStatus" resultType="java.lang.Long">
+    	select count(0)
+		from vdlm_order o 
+	    where o.archive=false 
+    	and o.seller_id=#{sellerId,typeHandler=idHandler}
+    	<if test="status != null" >
+	  		and o.status= #{status,jdbcType=VARCHAR} 
+		</if>
+    </select>
+    
+    <select id="queryByOrderNo" resultMap="OrderVOMap2">
+    	select distinct 
+    		<include refid="querySql" />
+    		,oa.order_id as oa_order_id, oa.zone_id as oa_zone_id, oa.street as oa_street, oa.consignee as oa_consignee, 
+	    	oa.phone as oa_phone, oa.created_at as oa_created_at, oa.updated_at as oa_updated_at,oa.id_card as oa_id_card
+		from vdlm_order o 
+	        left join vdlm_order_item item on o.id=item.order_id 
+	        left join vdlm_order_address oa on o.id = oa.order_id
+	    where o.archive=false 
+	    	and o.order_no=#{orderNo,jdbcType=VARCHAR}
+	    	and o.seller_id=#{sellerId,typeHandler=idHandler}
+    </select>
+</mapper>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vdlm.dal.mapper.CashierItemMapper">
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.CashierItem">
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="biz_no" jdbcType="VARCHAR" property="bizNo"/>
+    <result column="payment_channel" jdbcType="VARCHAR" property="paymentChannel"/>
+    <result column="payment_mode" jdbcType="VARCHAR" property="paymentMode"/>
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="third_voucher_id" jdbcType="VARCHAR" property="thirdVoucherId" />
+    <result column="third_voucher_name" jdbcType="VARCHAR" property="thirdVoucherName" />
+    <result column="third_vouchers" jdbcType="DECIMAL" property="thirdVouchers" />
+    <result column="coupon_id" jdbcType="VARCHAR" property="couponId" />
+    <result column="user_id" property="userId" typeHandler="idHandler"/>
+    <result column="product_id" property="productId"  typeHandler="idHandler"/>
+    <result column="product_name" jdbcType="VARCHAR" property="productName" />
+    <result column="partner_type" jdbcType="VARCHAR" property="partnerType" />
+    <result column="batch_biz_nos" jdbcType="VARCHAR" property="batchBizNos" />
+    <result column="batch" property="batch" jdbcType="BIT" />
+    <result column="agreement_id" jdbcType="BIGINT" property="agreementId" />
+    <result column="bankCode" jdbcType="TIMESTAMP" property="bankCode" />
+    <result column="bankName" jdbcType="TIMESTAMP" property="bankName" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+    <result column="amount" jdbcType="DECIMAL" property="amount" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    
+  </resultMap>
+  
+  	<resultMap id="couponInfoVO" type="com.vdlm.dal.vo.CouponInfoVO">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="title" property="title" jdbcType="VARCHAR" />
+		<result column="amount" property="amount" jdbcType="DECIMAL" />
+	</resultMap>
+  
+  <sql id="Base_Column_List">
+	id, biz_no, payment_channel, payment_mode, amount, coupon_id, user_id,
+	agreement_id,
+	product_id, product_name, partner_type, batch_biz_nos, batch, bankCode, bankName,
+	created_at, status, updated_at
+  </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_cashieritem
+    where id = #{id, typeHandler=idHandler}
+  </select>
+  <insert id="insert" parameterType="com.vdlm.dal.model.CashierItem">
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  	INSERT INTO vdlm_cashieritem (biz_no, payment_channel, payment_mode, amount, coupon_id, user_id,
+  	agreement_id, bankCode, bankName, created_at, status, product_id, product_name, partner_type, 
+  	batch_biz_nos, batch, updated_at)
+  	VALUES (#{bizNo}, #{paymentChannel}, #{paymentMode}, #{amount}, #{couponId}, #{userId, typeHandler=idHandler}, 
+  	#{agreementId}, #{bankCode}, #{bankName}, now(), #{status},  #{productId, typeHandler=idHandler}, #{productName},  
+  	#{partnerType}, #{batchBizNos}, #{batch}, now())
+  </insert>
+  <update id="update" parameterType="com.vdlm.dal.model.CashierItem">
+  	UPDATE vdlm_cashieritem
+   	<set >
+	    <if test="bizNo != null" >
+	      biz_no = #{bizNo},
+	    </if>
+		<if test="paymentChannel != null" >
+	      payment_channel = #{paymentChannel},
+	    </if>
+	    <if test="paymentMode != null" >
+	      payment_mode = #{paymentMode},
+	    </if>
+	    <if test="amount != null" >
+	      amount = #{amount},
+	    </if>
+	    <if test="couponId != null" >
+	      coupon_id = #{couponId},
+	    </if>
+	    <if test="userId != null" >
+	      user_id = #{userId},
+	    </if>	    
+	    <if test="agreementId != null" >
+	      agreement_id = #{agreementId},
+	    </if>
+	    <if test="bankCode != null" >
+	      bankCode = #{bankCode},
+	    </if>
+	    <if test="bankName != null" >
+	      bankName = #{bankName},
+	    </if>
+	    <if test="status != null" >
+	      status = #{status},
+	    </if>
+	    <if test="productId != null" >
+	      product_id = #{productId, typeHandler=idHandler},
+	    </if>
+	    <if test="productName != null" >
+	      product_name = #{productName},
+	    </if>
+	    <if test="partnerType != null" >
+	      partner_type = #{partnerType},
+	    </if>
+	    <if test="batchBizNos != null" >
+	      batch_biz_nos = #{batchBizNos},
+	    </if>
+	    
+	    updated_at = now()
+	</set>
+	where id = #{id, typeHandler=idHandler}	
+  </update>
+  <delete id="deleteCouponByBizNo">
+  	delete FROM vdlm_cashieritem WHERE biz_no = #{bizNo} and coupon_id is not null and status != 'SUCCESS'
+  </delete>
+  
+  <delete id="deletePaymentByBizNo">
+  	delete FROM vdlm_cashieritem WHERE biz_no = #{bizNo} and coupon_id is null and status != 'SUCCESS'
+  </delete>
+
+  <delete id="deleteByBizNo">
+  	delete FROM vdlm_cashieritem WHERE biz_no = #{bizNo} and status != 'SUCCESS'
+  </delete>
+  
+  <update id="paid">
+  	update vdlm_cashieritem set status = 'SUCCESS', updated_at = now() 
+  	WHERE status = 'PENDING' and id = #{id, typeHandler=idHandler}
+  </update>  
+  <select id="listByBizNo" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_cashieritem
+    where biz_no = #{bizNo}
+    order by id desc
+  </select>
+  
+  <select id="listByBatchBizNos" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_cashieritem
+    where batch_biz_nos = #{batchBizNo}
+    order by id desc
+  </select>
+  
+  <select id="loadCashierItemByBizIdAndChannel" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_cashieritem
+    where biz_no=#{bizNo} and payment_mode=#{mode}
+  </select>
+  <select id="loadPaidFee" resultType="java.math.BigDecimal">
+  	select amount from vdlm_cashieritem where biz_no = #{bizNo} and (coupon_id = '' or coupon_id is null)
+  </select>
+  <select id="loadHongBaoFee" resultType="java.util.Map">
+  	select c.title, a.amount from vdlm_cashieritem a join vdlm_coupon b on a.coupon_id = b.id join vdlm_coupon_activity c on c.id = b.activity_id
+	where biz_no = #{bizNo} and a.status = 'SUCCESS'
+  	
+  </select>  
+  
+  <select id="loadCouponInfoByOrderNo" resultMap="couponInfoVO">
+  	select co.id, c.amount, ca.title
+  	from vdlm_cashieritem c inner join vdlm_coupon co on c.coupon_id=co.id 
+  	inner join vdlm_coupon_activity ca on co.activity_id=ca.id
+  	where c.biz_no = #{bizNo}
+  </select>
+</mapper>

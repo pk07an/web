@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PromotionModelMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.promotion.PromotionModel" >
+	<id column="id" property="id" typeHandler="idHandler" />
+	<result column="partner" property="partner" jdbcType="VARCHAR" />
+	<result column="seller_id" property="sellerId" typeHandler="idHandler" />
+	<result column="range" property="range" typeHandler="objectRangeHandler" />
+	<result column="obj_id" property="objId" typeHandler="idHandler" />
+	<result column="start" property="start" jdbcType="TIMESTAMP" />
+	<result column="end" property="end" jdbcType="TIMESTAMP" />
+	<result column="max_amount" property="maxAmount" jdbcType="INTEGER" />
+	<result column="coupon_code_id" property="couponCodeId" typeHandler="idHandler" />
+	<result column="max_credit" property="maxCredit" jdbcType="INTEGER" />
+	<result column="condition" property="condition" jdbcType="VARCHAR" />
+	<result column="action" property="action" typeHandler="actionTypeHandler" />
+	<result column="action_data" property="actionData" jdbcType="VARCHAR" />
+	<result column="priority" property="priority" jdbcType="INTEGER" />
+	<result column="superposition" property="superposition" jdbcType="BIT"/>
+	<result column="platform" property="platform" jdbcType="BIT"/>
+	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	<result column="description" property="description" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+	id, partner, seller_id, `range`, obj_id, start, end, max_amount, coupon_code_id, max_credit, `condition`,
+	action, action_data, priority, superposition, platform, created_at, updated_at, description
+  </sql>
+  
+  <select id="selectByRangeAndObjId" resultMap="BaseResultMap">
+  	select 
+	<include refid="Base_Column_List" />
+	from vdlm_promotion_model where objId = #{pair.id} and range = #{pair.range} order by `range` desc, priority desc
+  </select>
+  
+  <select id="selectByRangesAndObjIds" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_promotion_model where   archive=FALSE and
+	<foreach collection="pairs" index="index" item="pair" open="("
+    	separator="or " close=")">
+   		`range` = #{pair.range,typeHandler=objectRangeHandler} and obj_id = #{pair.id,typeHandler=idHandler}
+  	</foreach> order by `range` desc, priority desc
+  </select>
+  <select id="selectCntbyRangsAndObjIds" resultType="java.lang.Integer">
+     select count(1) from vdlm_promotion_model   where
+     	`range` = #{pair.range,typeHandler=objectRangeHandler} and obj_id = #{pair.id,typeHandler=idHandler}
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.promotion.PromotionModel" >
+	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	insert into vdlm_promotion_model (partner, seller_id, `range`, obj_id, start, end, max_amount, coupon_code_id, 
+		max_credit, `condition`, action, action_data, priority, superposition, platform,description,created_at, updated_at
+	  )
+	values (#{partner,jdbcType=VARCHAR}, #{sellerId,typeHandler=idHandler}, #{range,typeHandler=objectRangeHandler}, 
+	  #{objId,typeHandler=idHandler}, #{start,jdbcType=TIMESTAMP}, #{end,jdbcType=TIMESTAMP}, #{maxAmount,jdbcType=INTEGER}, 
+	  #{couponCodeId,typeHandler=idHandler}, #{maxCredit,jdbcType=INTEGER}, #{condition,jdbcType=VARCHAR},
+	  #{action,typeHandler=actionTypeHandler}, #{actionData,jdbcType=VARCHAR}, #{priority,jdbcType=INTEGER},
+	  #{superposition,jdbcType=BIT}, #{platform,jdbcType=BIT},#{description,jdbcType=VARCHAR} ,now(),now())
+  </insert>
+  
+  <update id="update" parameterType="com.vdlm.dal.model.promotion.PromotionModel" >
+	update vdlm_promotion_model
+	<set >
+	  <if test="objId != null" >
+		obj_id = #{objId,typeHandler=idHandler},
+	  </if>
+	  <if test="range != null" >
+		`range` = #{range,typeHandler=objectRangeHandler},
+	  </if>
+	  <if test="start != null" >
+		start = #{start,jdbcType=TIMESTAMP},
+	  </if>
+	  <if test="end != null" >
+		end = #{end,jdbcType=TIMESTAMP},
+	  </if>
+	  <if test="maxAmount != null" >
+		max_amount = #{maxAmount,jdbcType=INTEGER},
+	  </if>
+	  <if test="couponCodeId != null" >
+		coupon_code_id = #{couponCodeId,typeHandler=idHandler},
+	  </if>	
+	  <if test="maxCredit != null" >
+		max_credit = #{maxCredit,jdbcType=INTEGER},
+	  </if> 
+	  <if test="condition != null" >
+		`condition` = #{condition,jdbcType=VARCHAR},
+	  </if>
+	  <if test="action != null" >
+		action = #{action,typeHandler=actionTypeHandler},
+	  </if>
+	  <if test="actionData != null" >
+		action_data = #{actionData,jdbcType=VARCHAR},
+	  </if>
+	  <if test="priority != null" >
+		priority = #{priority,jdbcType=INTEGER},
+	  </if> 
+	  <if test="superposition != null" >
+		superposition = #{superposition,jdbcType=BIT},
+	  </if> 
+	  <if test="platform != null" >
+		platform = #{platform,jdbcType=BIT},
+	  </if>  
+	  <if test="description != null" >
+		description = #{description,jdbcType=VARCHAR},
+	  </if>  
+	  updated_at = now()
+	</set>
+	where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <!-- 
+  <delete id="deleteById">
+  	delete from vdlm_promotion_model where id = #{id,typeHandler=idHandler}
+  </delete>
+   -->
+  <update id="updatePeriodicityDate">
+  	update vdlm_promotion_model set start=date_add(start, interval 1 day), end=date_add(end, interval 1 day)
+  	where id = #{id,typeHandler=idHandler}
+  </update>
+  <select id="selectProModelByPrimaryKey" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from vdlm_promotion_model 
+     where id =#{id,typeHandler=idHandler} and archive=false
+   </select>
+   <select id="findProModelByProductID" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from vdlm_promotion_model 
+     where  rang=1000 and  obj_id = #{id,typeHandler=idHandler} and archive=false
+   </select>
+   <select id="selectByObjId" resultMap="BaseResultMap" parameterType="java.lang.String">
+     select <include refid="Base_Column_List" /> from vdlm_promotion_model 
+     where obj_id = #{objId,typeHandler=idHandler} and archive  =false
+   </select>
+   <select id="selectBySellerId" resultMap="BaseResultMap" parameterType="java.lang.String">
+     select <include refid="Base_Column_List" /> from vdlm_promotion_model 
+     where seller_id= = #{seller_id,typeHandler=idHandler} archive=false
+   </select>
+   <select id="selectByPartner"  resultMap="BaseResultMap" parameterType="java.lang.String">
+     select <include refid="Base_Column_List" /> from vdlm_promotion_model 
+     where partner=  #{partner} and `range`=1 and archive=false order by `range` desc, priority desc
+   </select>
+   
+    <select id="getAllList" resultMap="BaseResultMap">
+      select 
+      <include refid="Base_Column_List" />
+      from vdlm_promotion_model  
+      where 1 = 1  and archive=false
+     <if test="params.start!=null">
+        and start &gt;=#{params.start}
+     </if>
+     <if test="params.end!=null">
+        and end &lt; #{params.end}
+     </if>
+     <if test="params.range!=null">
+        and `range`= #{params.range}
+     </if>
+      <if test="params.description != null">
+	    and description like #{params.description}
+	  </if>	 
+	  and  archive=false
+      order by created_at desc  limit #{page.offset}, #{page.size}
+  </select>
+  
+    <select id="countAllList" resultType="Long">
+		select 
+	      count(1) c
+	      from vdlm_promotion_model  
+	      where 1 = 1  and archive=false
+	    <if test="params.start!=null">
+          and start &gt;=#{params.start}
+         </if>
+        <if test="params.end!=null">
+           and end &lt; #{params.end}
+        </if>
+		<if test="params.description != null">
+		   and description like #{params.description}
+		</if>	 
+	    <if test="params.range!=null">
+               and `range`= #{params.range}
+         </if>   
+	</select>
+	<update id="delRuleById" >
+	   update vdlm_promotion_model set archive=true where id=#{id,typeHandler=idHandler} 
+	</update>
+</mapper>

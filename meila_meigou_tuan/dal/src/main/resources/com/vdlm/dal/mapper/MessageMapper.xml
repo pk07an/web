@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.MessageMapper" >
+
+    <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Message" >
+        <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler"/>
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="content" property="content" jdbcType="VARCHAR" />
+        <result column="type" property="type" jdbcType="VARCHAR" />
+        <result column="status" property="status" jdbcType="VARCHAR" />
+        <result column="sess_id" property="sessId" jdbcType="VARCHAR" />
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, title, content, type, status, sess_id, created_at, updated_at
+    </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_message
+        where id = #{id,typeHandler=idHandler}
+    </select>
+
+	<select id="listMessageByAdmin" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_message
+        where type = #{params.type} 
+       <if test="params.status != null" >
+		 and status = #{params.status}
+  		</if>
+        order by updated_at desc
+        limit #{page.offset}, #{page.size} 
+	</select>
+	
+	<select id="countMessageByAdmin" resultType="Long">
+    	select count(*) as c
+		from vdlm_message
+        where type = #{params.type} 
+       	<if test="params.status != null" >
+			and status = #{params.status}
+  		</if>
+  </select>
+
+    <insert id="insert" parameterType="com.vdlm.dal.model.UserMessage">
+	    <selectKey resultType="long" keyProperty="idRaw">
+	        SELECT LAST_INSERT_ID() AS id
+	    </selectKey>
+        insert into vdlm_message (title, content, type, status, sess_id, created_at, updated_at)
+        values (#{title}, #{content}, #{type}, #{status}, #{sessId}, now(), now())
+    </insert>
+
+</mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.AppVersionMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.AppVersion" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="msg" property="msg" jdbcType="VARCHAR" />
+    <result column="version" property="clientVersion" jdbcType="VARCHAR" />
+    <result column="file_size" property="fileSize" jdbcType="BIGINT" />
+    <result column="md5" property="md5" jdbcType="VARCHAR" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="force_update" property="forceUpdate" jdbcType="TINYINT" />
+    <result column="os" property="os" jdbcType="VARCHAR" />
+    <result column="os_min_ver" property="osMinVer" jdbcType="VARCHAR" />    
+  </resultMap>
+
+  <select id="findCurrentVersion" resultMap="BaseResultMap">
+     select 
+    	(select vc.msg from vdlm_app_version vc where vc.version=#{clientVersion} and vc.os = #{os} ) as msg,
+    	(select vc.force_update from vdlm_app_version vc where vc.version=#{clientVersion} and vc.os = #{os} ) as force_update,
+    	 v.id, v.name, v.version, v.file_size, v.md5, v.url, v.created_at, v.updated_at, v.os, v.os_min_ver
+    from vdlm_app_version v where os = #{os} order by v.version desc limit 1
+  </select>
+</mapper>

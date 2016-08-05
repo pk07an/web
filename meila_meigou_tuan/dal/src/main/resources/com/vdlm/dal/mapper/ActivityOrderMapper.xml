@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ActivityOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ActivityOrder" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR"/>
+    <result column="seller_id" property="sellerId" jdbcType="BIGINT" />
+    <result column="buyer_id" property="buyerId" jdbcType="BIGINT" />
+    <result column="total_fee" property="totalFee" jdbcType="DECIMAL" />
+    <result column="activity_id" property="activityId" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <resultMap type="com.vdlm.dal.vo.ActivityOrderVO" id="activityOrderVO" extends="BaseResultMap">
+  	<result column="seller_phone" property="sellerPhone" jdbcType="VARCHAR" />
+    <result column="buyer_phone" property="buyerPhone" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_no, seller_id, buyer_id, total_fee, activity_id, status, created_at, updated_at
+  </sql>
+  <insert id="insertRandom">
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  	<![CDATA[
+  	insert into vdlm_activity_order(order_no, seller_id, buyer_id, total_fee, activity_id, status, created_at, updated_at)
+	select order_no,seller_id,buyer_id,total_fee,#{activityId},'INIT',now(),now()
+	from vdlm_order o where o.created_at>='2014-11-11 00:00:00' and o.created_at<='2014-11-11 23:59:59'
+	and status in('PAID','SHIPPED','SUCCESS')
+	and partner_type = #{partnerType}
+	and not exists (select 1 from vdlm_activity_order ao where ao.order_no=o.order_no)
+	and not exists (select 1 from vdlm_activity_order ao where o.buyer_id = ao.buyer_id group by buyer_id having count(buyer_id)>2)
+	order by rand() limit 1
+	]]>
+  </insert>
+  <insert id="insertDirectByOrderNo">
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	insert into vdlm_activity_order(order_no, seller_id, buyer_id, total_fee, activity_id, status, created_at, updated_at)
+	select order_no,seller_id,buyer_id,total_fee,#{activityId},'INIT',now(),now()
+	from vdlm_order where order_no=#{orderNo}
+  </insert>
+  <update id="updateStatusConfirmed">
+  	update vdlm_activity_order set status='COMFIRMED' where id=#{id, typeHandler=idHandler} and status='INIT'
+  </update>
+  <update id="updateStatusFinish">
+  	update vdlm_activity_order set status='FINISH' where id=#{id, typeHandler=idHandler} and status='COMFIRMED'
+  </update>
+  <update id="updateStatusCancel">
+  	update vdlm_activity_order set status='CANCEL' where id=#{id, typeHandler=idHandler} and status='INIT'
+  </update>
+  <select id="listByAdmin" resultMap="activityOrderVO">
+  	select 
+  	ao.id, ao.order_no, ao.seller_id, ao.buyer_id, ao.total_fee, ao.activity_id, ao.status, ao.created_at, ao.updated_at, s.phone as seller_phone, oa.phone as buyer_phone
+  	from vdlm_activity_order ao inner join vdlm_user s on ao.seller_id = s.id inner join vdlm_order o on o.order_no = ao.order_no inner join vdlm_order_address oa on o.id=oa.order_id
+  	where 1=1 
+  	<if test="params.orderNo!=null">
+  		and ao.order_no like #{params.orderNo}
+  	</if>
+  	<if test="params.sellerPhone!=null">
+  		and s.phone = #{params.sellerPhone}
+  	</if>
+  	<if test="params.buyerPhone!=null">
+  		and b.phone = #{params.buyerPhone}
+  	</if>
+  	<if test="params.status!=null">
+  		and ao.status = #{params.status}
+  	</if>
+  	order by created_at desc
+    limit #{page.offset}, #{page.size} 
+  </select>
+  <select id="countByAdmin" resultType="int">
+  	select count(1) from vdlm_activity_order ao inner join vdlm_user s on ao.seller_id = s.id inner join vdlm_user b on ao.buyer_id=b.id
+  	where 1=1 
+  	<if test="params.orderNo!=null">
+  		and ao.order_no like #{params.orderNo}
+  	</if>
+  	<if test="params.sellerPhone!=null">
+  		and s.phone = #{params.sellerPhone}
+  	</if>
+  	<if test="params.buyerPhone!=null">
+  		and b.phone = #{params.buyerPhone}
+  	</if>
+  	<if test="params.status!=null">
+  		and ao.status = #{params.status}
+  	</if>
+  </select>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_activity_order
+    where id = #{id, typeHandler=idHandler}
+  </select>
+ 
+</mapper>

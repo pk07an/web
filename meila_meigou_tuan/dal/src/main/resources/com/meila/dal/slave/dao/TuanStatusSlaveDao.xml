@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.TuanStatusSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.TuanStatus" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tuan_no" property="tuanNo" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="act_id" property="actId" jdbcType="BIGINT" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="member_num" property="memberNum" jdbcType="INTEGER" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="alive_time" property="aliveTime" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="need_num" property="needNum" jdbcType="VARCHAR" />
+     <result column="tuan_type" property="tuanType" jdbcType="VARCHAR" />
+  </resultMap>
+ 
+  <sql id="Base_Column_List" >
+    id, tuan_no, user_id, act_id, sku_id, product_id, status, member_num, start_time, 
+    alive_time, created_at, updated_at, archive,tuan_type
+  </sql>
+  
+  <select id="countValidTuanByActId" resultType="int" >
+  		select 
+            count(1) 
+        from
+            vdlm_tuan_status s 
+        left join 
+            vdlm_tuan_order oo 
+        on 
+            s.id = oo.tuan_id 
+        left join 
+            vdlm_order o 
+        on 
+            oo.order_no = o.order_no 
+        where 
+            oo.role = 'chief' 
+        and 
+            s.status in ('PROCESS', 'SUCCESS')
+        and 
+            o.status not in('SUBMITTED','CANCELLED','REFUNDING','CLOSED')
+        and 
+            s.act_id=#{actId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="countUserValidTuanByActIdAndUserId" resultType="int" >
+  	select 
+  		count(1) 
+  	from 
+  		vdlm_tuan_status 
+  	where 
+  		status  in ('PROCESS') 
+  	and 
+  		user_id=#{userId,jdbcType=BIGINT} 
+  	and 
+  		act_id=#{actId,jdbcType=BIGINT} 
+  	and archive=false
+  </select>
+  
+  <select id="selectTuanStatusByTuanNo" resultMap="BaseResultMap">
+  	select 
+      <include refid="Base_Column_List"/>
+      from
+          vdlm_tuan_status
+      where
+          tuan_no = #{tuanNo,jdbcType=VARCHAR}
+      and
+          archive = false
+  </select>
+
+  <select id="selectTuanStatus" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+      select
+      <include refid="Base_Column_List"/>
+      from
+      	vdlm_tuan_status
+      where
+      	id = #{groupBuyingId}
+      and
+      	archive = false
+  </select>
+  
+  <select id="countAllValidTuanMap" resultType="java.util.HashMap" >
+        select 
+                count(*) as tuanCount,
+                act_id as actId 
+          from 
+                vdlm_tuan_status 
+           where 
+                status  != 'CANCEL' 
+            group by 
+                act_id;
+        
+  </select>
+  
+  <select id="selectCanJoinTuanListByActId" resultMap="BaseResultMap">
+    select 
+        s.member_num - count(1) as need_num,
+        s.tuan_no,
+        s.user_id,
+        s.start_time
+    from
+        vdlm_tuan_status s 
+    left join 
+        vdlm_tuan_order oo 
+    on 
+        s.tuan_no = oo.tuan_no 
+    left join 
+        vdlm_order o 
+    on 
+        o.order_no = oo.order_no 
+    where 
+        s.status in ('PROCESS') 
+     and 
+        s.act_id = #{actId}
+    <!-- 登录态的时候，需要过滤该用户开的团和参加的团 -->
+     <if test="userId !=0">
+      and
+         s.user_id !=#{userId}
+      and
+         s.tuan_no not in
+         (
+            select 
+                    tuan_no 
+              from  
+                    vdlm_tuan_order oo2   
+               left join 
+                    vdlm_order o2
+                on
+                     o2.order_no = oo2.order_no 
+                 where 
+                    oo2.tuan_no=s.tuan_no
+                  and
+                    oo2.user_id=#{userId}
+                  and
+                    o2.status not in('CANCELLED') 
+         )
+      </if>
+     and 
+        o.status in ('paid')
+     and  
+        now() &lt; date_add(s.start_time, interval s.alive_time hour)     
+    group by 
+        s.id 
+    having 
+        need_num > 0 
+    order by 
+        need_num desc,start_time desc 
+    limit #{limit} 
+  </select>
+</mapper>

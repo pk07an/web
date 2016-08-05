@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderRefundAttachMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderRefundAttach" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="refund_id" property="refundId" typeHandler="idHandler" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="attach_key" property="attachKey" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, refund_id, type, attach_key
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_refund_attach
+    where id = #{id, typeHandler=idHandler}
+    and archive = false
+  </select>
+  <select id="listByRefundId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_refund_attach
+    where refund_id = #{refundId, typeHandler=idHandler}
+    and archive = false
+  </select>  
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderRefundAttach" >
+    insert into vdlm_order_refund_attach (refund_id, type, 
+      attach_key)
+    values (#{refundId,typeHandler=idHandler}, #{type,jdbcType=INTEGER}, 
+      #{attachKey,jdbcType=VARCHAR})
+  </insert>
+</mapper>

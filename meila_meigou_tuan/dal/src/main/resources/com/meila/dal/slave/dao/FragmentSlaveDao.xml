@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.FragmentSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.vo.FragmentVO" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="shop_id" property="shopId" typeHandler="idHandler"/>
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="description" property="description" jdbcType="VARCHAR"/>
+    <result column="show_model" property="showModel" jdbcType="BIT"/>
+    <result column="idx" property="idx" jdbcType="INTEGER"/>
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+    <result column="code" property="code" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, shop_id, name, description, show_model, idx, created_at, updated_at, code
+  </sql>
+  
+  <select id="selectByProductId" resultMap="BaseResultMap">
+    select
+    f.id, f.shop_id, f.name, f.description, f.show_model, pf.idx, f.created_at, f.updated_at, f.code
+    from vdlm_fragment f inner join vdlm_product_fragment pf on f.id=pf.fragment_id
+    where pf.product_id = #{productId, typeHandler=idHandler}
+    order by pf.idx
+  </select>
+  
+  
+</mapper>

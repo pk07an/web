@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>美啦拼团</title>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<script type="text/javascript">
+	!function(J){function H(){var d=E.getBoundingClientRect().width;var e=(d/7.5>100*B?100*B:(d/7.5<42?42:d/7.5));E.style.fontSize=e+"px",J.rem=e}var G,F=J.document,E=F.documentElement,D=F.querySelector('meta[name="viewport"]'),B=0,A=0;if(D){var y=D.getAttribute("content").match(/initial\-scale=([\d\.]+)/);y&&(A=parseFloat(y[1]),B=parseInt(1/A))}if(!B&&!A){var u=(J.navigator.appVersion.match(/android/gi),J.navigator.appVersion.match(/iphone/gi)),t=J.devicePixelRatio;B=u?t>=3&&(!B||B>=3)?3:t>=2&&(!B||B>=2)?2:1:1,A=1/B}if(E.setAttribute("data-dpr",B),!D){if(D=F.createElement("meta"),D.setAttribute("name","viewport"),D.setAttribute("content","initial-scale="+A+", maximum-scale="+A+", minimum-scale="+A+", user-scalable=no"),E.firstElementChild){E.firstElementChild.appendChild(D)}else{var s=F.createElement("div");s.appendChild(D),F.write(s.innerHTML)}}J.addEventListener("resize",function(){clearTimeout(G),G=setTimeout(H,300)},!1),J.addEventListener("pageshow",function(b){b.persisted&&(clearTimeout(G),G=setTimeout(H,300))},!1),H()}(window);
+	</script>
+    <link rel="stylesheet" type="text/css" href="../resources/css/meila.css">
+	<link rel="stylesheet" type="text/css" href="../resources/css/main.css" />
+	<style type="text/css">
+        .wrapper{width:7.5rem;}
+        .outer-footer{ width: 7.5rem; }
+        .download-bar{ width: 7.5rem; }
+        .download-bar div{width:7.5rem;}
+        .wechat-share-prompt{ max-width: 7.5rem; left: 0; right: 0; margin: 0 auto; background-color: rgba(0, 0, 0, .35); z-index: 99999;}
+        .wechat-share-prompt .point-share { width: 4.84rem; height: 1.3rem; }
+        .wechat-share-prompt .share-info { width: 5.3rem; height: 0.92rem; clear: both; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); -webkit-transform: translate(-50%, -50%);}
+        .share-guide { position: fixed; top: 0; left: 0; bottom: 0; right: 0; width: 7.5rem; margin: 0 auto; z-index: 999;}
+        .share-guide-top,
+        .share-guide-bottom { position: absolute; z-index: 999; background-color: rgba(0,0,0,0.35); }
+        .share-guide-top { left: 0; top: 0; right: 0; bottom: 0.99rem; }
+        .share-guide-bottom{ bottom: 0; width: 2.6rem; height: 0.99rem; }
+        .share-guide-top img { position: absolute; width: 5.78rem; height: 1.62rem; left: 50%; bottom: 0.2rem; -webkit-transform: translateX(-50%); transform: translateX(-50%);}
+        .tuan-prompt .layermchild{
+            max-width: 100%;
+            background-color: transparent;
+            color: #fff;
+            font-size: 0.42rem;
+            box-shadow: none;
+        }
+        .tuan-prompt .layermchild .layermcont{
+            line-height: 1.5;
+        }
+        .ware-details {
+            background-color: #fff;
+        }
+        .ware-details{
+            margin-bottom: 1rem;
+        }
+        .ware-details .pro-info-title {
+            text-align: left;
+            padding: 0 0.24rem;
+            height: .98rem;
+            line-height: .98rem;
+            font-size: .3rem;
+            color: rgba(0,0,0,0.9);
+        }
+        .logo {
+            width: .96rem;
+            height: .37rem;
+            position: absolute;
+            top: .28rem;
+            left: .28rem;
+        }
+        .list-select li .logo img {
+            width: .96rem;
+            height: .37rem;
+        }
+        .share-mask {
+            position: fixed;
+            display: none;
+            width:100%;
+            top:0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .share-box {
+            box-sizing: border-box;
+            position: fixed;
+            width:100%;
+            bottom: 0;
+            transition: transform 0.12s;
+            -moz-transition: transform 0.12s;
+            -webkit-transition: transform 0.12s;
+            -o-transition: transform 0.12s;
+            padding: .4rem;
+            background-color: #fff;
+            z-index: 9999;
+        }
+        .share-hidden {
+            transform:translateY(100%);
+            -webkit-transform:translateY(100%);
+            -moz-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            -o-transform:translateY(100%);
+        }
+        .share-item {
+            width:1rem;
+            font-size: .22rem;
+        }
+        .share-item img{
+            width: .94rem;
+            height: .94rem;
+        }
+        .share-info {
+            display: inline-block;
+            margin-top:.16rem;
+            text-align: center;
+        }
+        .ptuan-process {
+            background-color: #fff;
+            padding: .28rem .28rem;
+            margin-bottom:.28rem;
+        }
+        .ptuan-process a {
+            color:inherit;
+        }
+        .ptuan-process header {
+            margin-bottom: .3rem;
+            font-size: .3rem;
+        }
+        .ptuan-process header .tit {
+            font-size: .3rem;
+        }
+        .ptuan-process .see-details {
+            font-size: .26rem;
+            vertical-align: top;
+        }
+        .ptuan-process header span {
+            color:rgba(0,0,0,.9);
+        }
+        .process-flow {
+            padding: 0 .25rem;
+        }
+        .process-item {
+            box-sizing: border-box;
+            position: relative;
+            width:1.66rem;
+            height: .98rem;
+            padding: .16rem .23rem .16rem .35rem;
+            background:url('../resources/images/rectBg.png') no-repeat center;
+            background-size: 1.64rem .96rem;
+            font-size: .26rem;
+            color:rgba(0,0,0,.8);
+            line-height: 1.4;
+        }
+        .process-num {
+            position: absolute;
+            top:50%;
+            left: 0;
+            transform: translate(-50%,-50%);
+            -webkit-transform:translate(-50%,-50%);
+            -moz-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+            -o-transform:translate(-50%,-50%);
+            width:.5rem;
+            height: .5rem;
+            background:url('../resources/images/invite.png') no-repeat;
+            background-size: .54rem 1.9rem;
+            background-color: #fff;
+        }
+        .process-num1 {
+            background-position: -0.04rem -.35rem;
+        }
+        .process-num2 {
+            background-position: -0.02rem -.86rem;
+        }
+        .process-num3 {
+            background-position: -0.02rem -1.38rem;
+        }
+        .arrow-right {
+            display: inline-block;
+            width: .16rem;
+            height: .3rem;
+            margin-left: .16rem;
+            background:url('../resources/images/invite.png') no-repeat;
+            background-position: -.04rem -.04rem;
+            background-size: .54rem 1.9rem;
+            vertical-align: top;
+        }
+        .arrow-process {
+            /*margin-top:.06rem;*/
+        }
+        .nidongde img{
+            width:1.96rem;
+            height: 2.34rem;
+        }
+    </style>
+</head>
+<body>
+<img class="small-loading" src="../resources/images/small-loading.gif" height="32" width="32">
+<div class="wrapper"></div>
+<script type="text/template" id="main">
+    {{?it.data.userStatus!='MEMBER_PROCESS_UNJOIN'}}
+    <div class="result-tips flexbox align-center pack-center">
+        {{?it.data.userStatus=='CHIEF_UNPAID'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>等待支付</em>你还没支付哦，支付后即可开团</span></div>
+        {{??it.data.userStatus=='CHIEF_CANCEL'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>未完成支付，该团已取消！</em>该团已取消，再去重新开个团吧</span></div>
+        {{??it.data.userStatus=='CHIEF_PROCESS'}}
+        <div><i class="icon-tips icon-processing"></i><span><em>正在拼团中</em>还差{{=(it.data.productInfo.memberNum-it.data.tuanUser.length)}}人成团，快去邀请好友吧</span></div>
+        {{??it.data.userStatus=='CHIEF_REFUNDING'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>未凑齐{{=(it.data.productInfo.memberNum-it.data.tuanUser.length + 1)}}人，拼团失败！</em>退款中，将在3-5天内退款至支付账户</span></div>
+        {{??it.data.userStatus=='CHIEF_REUND_WAIT'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>未凑齐{{=(it.data.productInfo.memberNum-it.data.tuanUser.length + 1)}}人，拼团失败！</em>请等待退款，将在3-5天内退款至支付账户</span></div>
+        {{??it.data.userStatus=='CHIEF_REFUNDED'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>未凑齐{{=(it.data.productInfo.memberNum-it.data.tuanUser.length + 1)}}人，拼团失败！</em>已退款至你的支付账户</span></div>
+        {{??it.data.userStatus=='CHIEF_SUCCESS'}}
+        <div><i class="icon-tips icon-success"></i><span><em>拼团成功</em>已凑齐人数，商品发货中</span></div>
+        {{??it.data.userStatus=='MEMBER_PROCESS_UNPAID'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>等待支付</em>你还没支付哦，支付后即可参团</span></div>
+        {{??it.data.userStatus=='MEMBER_PROCESS_JOIN'}}
+        <div><i class="icon-tips icon-processing"></i><span><em>正在拼团中</em>还差{{=(it.data.productInfo.memberNum-it.data.tuanUser.length)}}人成团，快去邀请好友吧</span></div>
+        {{??it.data.userStatus=='MEMBER_FULL_UNJOIN'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>该团已满</em>该团人数已满，再开个团吧</span></div>
+        {{??it.data.userStatus=='MEMBER_FULL_REFUNDING'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>人数已满，参团失败！</em>退款中，将在3-5天内退款至支付账户</span></div>
+        {{??it.data.userStatus=='MEMBER_FULL_REUND_WAIT'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>人数已满，参团失败！</em>请等待退款，将在3-5天内退款至支付账户</span></div>
+        {{??it.data.userStatus=='MEMBER_FULL_REFUNDED'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>人数已满，参团失败！</em>已退款至你的支付账户</span></div>
+        {{??it.data.userStatus=='MEMBER_EXPIRE_JOIN'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>该团已过期，参团失败！</em>该团已过期，再开个团吧</span></div>
+        {{??it.data.userStatus=='MEMBER_EXPIRE_UNJOIN'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>该团已过期</em>该团已过期，再开个团吧</span></div>
+        {{??it.data.userStatus=='MEMBER_EXPIRE_REFUNDING'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>该团已过期，参团失败！</em>退款中，将在3-5天内退款至支付账户</span></div>
+        {{??it.data.userStatus=='MEMBER_EXPIRE_REFUND_WAIT'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>该团已过期，参团失败！</em>请等待退款，将在3-5天内退款至支付账户</span></div>
+        {{??it.data.userStatus=='MEMBER_EXPIRE_REFUNDED'}}
+        <div><i class="icon-tips icon-fail"></i><span><em>该团已过期，参团失败！</em>已退款至你的支付账户</span></div>
+         {{??it.data.userStatus=='MEMBER_SUCCESS'}}
+        <div><i class="icon-tips icon-success"></i><span><em>拼团成功</em>已凑齐人数，商品发货中</span></div>
+        {{?}}
+    </div>
+    {{?}}
+    <div class="details group-details">
+        <div class="banner">
+            <a href="javascript:void(0);">
+                <img src="{{=it.data.productInfo.img}}?imageMogr2/thumbnail/750x" alt="">
+            </a>
+            <div class="logo"><img src="../resources/images/meila_logo.png" alt=""></div>
+        </div>
+        <div class="info">
+            <h2 class="tit">{{=it.data.productInfo.productName}}</h2>
+            <p class="text">{{=it.data.productInfo.description}}</p>
+        </div>
+        <div class="result-select">
+            <div class="select-num">{{=it.data.productInfo.memberNum}}人团</div><div class="select-price"><span>¥<em>{{=it.data.productInfo.tuanPrice}}</em></span><del>¥{{=it.data.productInfo.skuPrice}}</del></div>
+        </div>
+    </div>
+    <div class="group-num">
+        <div class="hd">
+        {{?(it.data.productInfo.memberNum-it.data.tuanUser.length>0)}}
+            <h2 class="tit"><span>还差<em>{{=(it.data.productInfo.memberNum-it.data.tuanUser.length)}}</em>人参团</span></h2>
+        {{??}}
+            <h2 class="tit"><span>已凑齐人数</span></h2>
+        {{?}}
+        </div>
+        <div class="bd">
+            {{?it.data.productInfo.memberNum<=5}}
+                <ul class="flexbox pack-center">
+                    {{~it.data.tuanUser:val:idx}}
+                        {{?val.userRole=='CHIEF'}}
+                        <li class="promoter">
+                            <div class="border-fix"></div>
+                            {{? val.userImg}}
+                            <img src="{{=val.userImg}}" alt="">
+                            {{??}}
+                            <img src="../resources/images/default-avatar.png" alt="">
+                            {{?}}
+                            <p class="nickName">{{=val.nickName}}</p>
+                        </li>
+                        {{??}}
+                            {{? val.userImg}}
+                            <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                            {{??}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                            {{?}}
+                        {{?}}
+                    {{~}}
+                    {{for(var j=0; j<it.data.productInfo.memberNum-it.data.tuanUser.length; j++){}}
+                        <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                    {{}}}
+                </ul>
+            {{??it.data.productInfo.memberNum>5&&it.data.productInfo.memberNum<=8}}
+                {{?it.data.tuanUser.length<=4}}
+                    <ul class="flexbox pack-center">
+                        {{~it.data.tuanUser:val:idx}}
+                        {{?val.userRole=='CHIEF'}}
+                        <li class="promoter">
+                            <div class="border-fix"></div>
+                            <img src="{{=val.userImg}}" alt="">
+                            <p class="nickName">{{=val.nickName}}</p>
+                        </li>
+                        {{??}}
+                        <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                        {{?}}
+                        {{~}}
+                        {{for(var j=0; j<4-it.data.tuanUser.length; j++){}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                        {{}}}
+                    </ul>
+                    <ul class="flexbox pack-center">
+                        {{for(var j=0; j<it.data.productInfo.memberNum-4; j++){}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                        {{}}}
+                    </ul>
+                {{??}}
+                    <ul class="flexbox pack-center">
+                        {{~it.data.tuanUser.slice(0, 4):val:idx}}
+                        {{?val.userRole=='CHIEF'}}
+                        <li class="promoter">
+                            <div class="border-fix"></div>
+                            <img src="{{=val.userImg}}" alt="">
+                            <p class="nickName">{{=val.nickName}}</p>
+                        </li>
+                        {{??}}
+                        <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                        {{?}}
+                        {{~}}
+                    </ul>
+                    <ul class="flexbox pack-center">
+                        {{~it.data.tuanUser.slice(4):val:idx}}
+                        <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                        {{~}}
+                        {{for(var j=0; j<it.data.productInfo.memberNum-it.data.tuanUser.length; j++){}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                        {{}}}
+                    </ul>
+                {{?}}
+            {{??it.data.productInfo.memberNum>8}}
+                {{?it.data.tuanUser.length<=5}}
+                    <ul class="flexbox pack-center">
+                        {{~it.data.tuanUser:val:idx}}
+                        {{?val.userRole=='CHIEF'}}
+                        <li class="promoter">
+                            <div class="border-fix"></div>
+                            <img src="{{=val.userImg}}" alt="">
+                            <p class="nickName">{{=val.nickName}}</p>
+                        </li>
+                        {{??}}
+                        <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                        {{?}}
+                        {{~}}
+                        {{for(var j=0; j<5-it.data.tuanUser.length; j++){}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                        {{}}}
+                    </ul>
+                    <ul class="flexbox pack-center">
+                        {{for(var j=0; j<it.data.productInfo.memberNum-5; j++){}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                        {{}}}
+                    </ul>
+                {{??}}
+                    <ul class="flexbox pack-center">
+                        {{~it.data.tuanUser.slice(0, 5):val:idx}}
+                        {{?val.userRole=='CHIEF'}}
+                        <li class="promoter">
+                            <div class="border-fix"></div>
+                            <img src="{{=val.userImg}}" alt="">
+                            <p class="nickName">{{=val.nickName}}</p>
+                        </li>
+                        {{??}}
+                        <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                        {{?}}
+                        {{~}}
+                    </ul>
+                    <ul class="flexbox pack-center">
+                        {{~it.data.tuanUser.slice(5):val:idx}}
+                        <li><img src="{{=val.userImg}}" alt=""><p class="nickName">{{=val.nickName}}</p></li>
+                        {{~}}
+                        {{for(var j=0; j<it.data.productInfo.memberNum-it.data.tuanUser.length; j++){}}
+                            <li><img src="../resources/images/default-avatar.png" alt=""><p class="nickName"></p></li>
+                        {{}}}
+                    </ul>
+                {{?}}
+            {{?}}
+        </div>
+            <div class="ft">
+            {{?it.data.userStatus=='CHIEF_PROCESS'||it.data.userStatus=='MEMBER_PROCESS_UNJOIN'||it.data.userStatus=='MEMBER_PROCESS_UNPAID'||it.data.userStatus=='MEMBER_PROCESS_JOIN'}}
+            <span>离结束还有<em>00时00分00秒</em></span>
+            {{?}}
+            </div>
+    </div>
+    <div class="ptuan-process">
+        <header class="flexbox pack-justify">
+            <h3 class="tit">拼团流程</h3>
+            <a href="./group-process.html"><span class="see-details">查看详情<i class="arrow-right arrow-process"></i></span></a>
+        </header>
+        <section class="process-flow">
+            <ul class="flexbox pack-justify">
+                <li class="process-item"><i class="process-num process-num1"></i>支付开团或参团</li>
+                <li class="process-item"><i class="process-num process-num2"></i>邀请好友参团</li>
+                <li class="process-item"><i class="process-num process-num3"></i>达成人数拼团成功</li>
+            </ul>
+        </section>
+    </div>
+    <div class="group-bottom-fixed">
+        {{?it.data.userStatus=='CHIEF_PROCESS' || it.data.userStatus=='MEMBER_PROCESS_JOIN'}}
+        <div class="fixed-tip">还差{{=(it.data.productInfo.memberNum-it.data.tuanUser.length)}}人成团</div>
+        <div class="inner flexbox">
+            <a href="./group-zone.html" class="link more-group"><div><span class="sp-2">更多拼团</span></div></a>
+            {{?!it.data.isApp}}
+                <a href="" class="link flex1 share" data-num="{{=(it.data.productInfo.memberNum-it.data.tuanUser.length)}}"><div><span class="sp-2">喊小伙伴一起参团</span></div></a>
+            {{??}}
+                <a href="" class="link flex1 share"><div><span class="sp-2">喊小伙伴一起参团</span></div></a>
+            {{?}}
+        </div>
+        {{??it.data.userStatus=='CHIEF_CANCEL' || it.data.userStatus=='CHIEF_REFUNDING' || it.data.userStatus=='CHIEF_REUND_WAIT' || it.data.userStatus=='CHIEF_REFUNDED' || it.data.userStatus=='MEMBER_FULL_UNJOIN' || it.data.userStatus=='MEMBER_FULL_REFUNDING' || it.data.userStatus=='MEMBER_FULL_REUND_WAIT' || it.data.userStatus=='MEMBER_FULL_REFUNDED' || it.data.userStatus=='MEMBER_EXPIRE_JOIN' || it.data.userStatus=='MEMBER_EXPIRE_UNJOIN' || it.data.userStatus=='MEMBER_EXPIRE_REFUNDING' || it.data.userStatus=='MEMBER_EXPIRE_REFUND_WAIT' || it.data.userStatus=='MEMBER_EXPIRE_REFUNDED'}}
+        <div class="inner flexbox">
+            {{?it.data.productInfo.tuanActStatus == 'END' || it.data.productInfo.tuanActStatus == 'OVERLOAD'}}
+            <a href="./group-zone.html" class="link more-group flex1"><div><span class="sp-2">更多拼团</span></div></a>
+            {{??}}
+            <a href="./group-zone.html" class="link more-group"><div><span class="sp-2">更多拼团</span></div></a>
+            <a href="/ptuan/group/group-order.html?actId={{=it.data.productInfo.id}}&orderType=0&tuanNo={{=it.data.tuanNo}}" class="link flex1"><div><span class="sp-2">重新开团</span></div></a>
+            {{?}}
+        </div>
+        {{??it.data.userStatus=='CHIEF_SUCCESS' || it.data.userStatus=='MEMBER_SUCCESS'}}
+        <div class="inner flexbox">
+            <a href="./group-zone.html" class="link flex1"><div><span class="sp-2">更多拼团</span></div></a>
+        </div>
+        {{??it.data.userStatus=='MEMBER_PROCESS_UNJOIN'}}
+        <div class="inner flexbox">
+            <a href="./group-zone.html" class="link more-group"><div><span class="sp-2">更多拼团</span></div></a>
+            <a href="/ptuan/group/group-order.html?actId={{=it.data.productInfo.id}}&orderType=1&tuanNo={{=it.data.tuanNo}}" class="link flex1"><div><span class="sp-2">加入本拼团</span></div></a>
+        </div>
+        {{??it.data.userStatus=='CHIEF_UNPAID' || it.data.userStatus=='MEMBER_PROCESS_UNPAID'}}
+        <div class="inner flexbox">
+            <a href="./group-zone.html" class="link more-group"><div><span class="sp-2">更多拼团</span></div></a>
+            <a href="../../wareorder/pay/?trade_no={{=it.data.payNo + '&time=' + new Date().getTime()}}" class="link flex1"><div><span class="sp-2">立即支付</span></div></a>
+        </div>
+        {{??}}
+        <div class="inner flexbox">
+            <a href="./group-zone.html" class="link flex1"><div><span class="sp-2">更多拼团</span></div></a>
+        </div>
+        {{?}}
+    </div>
+</script>
+<script type="text/template" id="wareInfo">
+    {{?it.ware.length}}
+    <div class="ware-details">
+        <div class="pro-info-title">商品详情</div>
+        {{~it.ware:value:index1}}
+                {{?it.ware[index1].imgs.length}}
+                <div class="desc-img">
+                {{~it.ware[index1].imgs:value:index2}}
+                    <img alt="" relSrc="{{=it.ware[index1].imgs[index2].imgUrl}}?imageMogr2/thumbnail/750x"/>
+                {{~}}
+                </div>
+                {{?}}
+                {{?it.ware[index1].description}}
+                <p class="desc-text">{{=it.ware[index1].description}}</p>
+                {{?}}
+        {{~}}
+    </div>
+    {{?}}
+</script>
+<script type="text/javascript" src="../resources/js/wx/jweixin-1.0.0.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/zepto.js"></script>
+<script src="../resources/js/plugins/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/M.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/dot/doT.js"></script>
+<script src="../resources/js/utils.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/group-status.js"></script>
+<script type="text/javascript">
+    $(".group-bottom-fixed .link").bind("touchstart",function(){})
+
+    var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?ee90c8579d6c84f05e2d6da016ecd53c";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+    })();
+
+    var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254190362'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/q_stat.php%3Fid%3D1254190362%26l%3D3' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

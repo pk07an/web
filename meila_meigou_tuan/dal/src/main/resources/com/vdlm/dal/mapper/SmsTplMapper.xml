@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.SmsTplMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.SmsTpl" >
+    <id column="id" property="id"  typeHandler="idHandler" />
+    <result column="sms_event" property="smsEvent"  jdbcType="VARCHAR" />
+    <result column="country_code" property="countryCode"  jdbcType="VARCHAR" />
+    <result column="format_var" property="formatVar"  jdbcType="VARCHAR" />
+    <result column="content" property="content"  jdbcType="VARCHAR" />
+    <result column="plan_form" property="planForm"  jdbcType="VARCHAR" />
+    <result column="status" property="status"  jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" />
+    <result column="updated_at" property="updatedAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, sms_event, country_code, format_var, content, plan_form, status, archive, created_at, updated_at
+  </sql>
+  
+  <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sms_tpl
+    where id = #{id} and archive = false
+  </select>
+  
+  <select id="loadAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sms_tpl
+    where  archive = false
+  </select>
+  
+  <select id="selectByParam" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sms_tpl
+    where 1=1
+		<if test="params.smsEvent != null">
+			and sms_event = #{params.smsEvent}
+		</if>
+		<if test="params.countryCode != null">
+			and country_code = #{params.countryCode}
+		</if>
+		<if test="params.planForm != null">
+			and plan_form = #{params.planForm}
+		</if>
+		<if test="params.status != null">
+			and status = #{params.status}
+		</if>
+	    order by created_at desc;
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.SmsTpl">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_sms_tpl (sms_event, country_code, format_var, content, plan_form, status, archive, created_at, updated_at)
+    values (#{smsEvent, jdbcType=VARCHAR}, #{countryCode, jdbcType=VARCHAR}, #{formatVar, jdbcType=VARCHAR}, 
+    			#{content, jdbcType=VARCHAR}, #{planForm, jdbcType=VARCHAR},  #{status, jdbcType=VARCHAR}, false, now(), now())
+  </insert>
+  
+  <update id="delete">
+  	update vdlm_sms_tpl set archive=true,updated_at = now()
+	where id = #{id,typeHandler=idHandler}
+  </update>
+  
+</mapper>

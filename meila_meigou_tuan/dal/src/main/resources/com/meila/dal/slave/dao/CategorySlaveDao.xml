@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.CategorySlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Category" >
+    <id column="id" property="id" jdbcType="BIGINT"/>
+    <result column="term_id" property="termId" jdbcType="BIGINT"/>
+    <result column="name" property="name"/>
+    <result column="taxonomy" property="taxonomy"/>
+    <result column="parent_id" property="parentId"/>
+    <result column="tree_path" property="treePath"/>
+    <result column="shop_id" property="shopId" typeHandler="idHandler"/>
+    <result column="idx" property="idx"/>
+    <result column="creator_id" property="creatorId" typeHandler="idHandler" />
+    <result column="created_at" property="createdAt"/>
+    <result column="updated_at" property="updatedAt"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.vo.CategoryVO" id="categoryVO">
+  	<id column="id" property="id" jdbcType="BIGINT"/>
+  	<result column="name" property="name"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, term_id, name, taxonomy, parent_id, tree_path, shop_id, idx, creator_id, created_at, updated_at
+  </sql>
+  
+  
+  <!-- 根据商品id获取类目 -->
+  <select id="loadCategoryByProductId" resultMap="categoryVO">
+  	select c.id, c.name from vdlm_category c
+  	join vdlm_term_relationship tr on tr.category_id = c.id
+  	where tr.obj_type='product' and tr.obj_id=#{productId, typeHandler=idHandler}
+  </select>
+</mapper>

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.dao.MeiLaProductDao">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Product">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="img" property="img" jdbcType="VARCHAR" />
+		<result column="img_width" property="imgWidth" jdbcType="INTEGER" />
+		<result column="img_height" property="imgHeight" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" typeHandler="idHandler" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="sales" property="sales" jdbcType="BIGINT" />
+		<result column="fake_sales" property="fakeSales" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="BIGINT" />
+		<result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="postage" property="postage" jdbcType="DECIMAL" />
+		<result column="recommend" property="recommend" jdbcType="BIT" />
+		<result column="recommend_at" property="recommendAt" jdbcType="TIMESTAMP" />
+		<result column="discount" property="discount" jdbcType="DECIMAL" />
+		<result column="commission_rate" property="commissionRate" jdbcType="DECIMAL" />
+		<result column="forsale_at" property="forsaleAt" jdbcType="TIMESTAMP" />
+		<result column="onsale_at" property="onsaleAt" jdbcType="TIMESTAMP" />
+		<result column="instock_at" property="instockAt" jdbcType="TIMESTAMP" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+		<result column="isDelay" property="delayed" jdbcType="BIT" />
+		<result column="delayDays" property="delayAt" jdbcType="INTEGER" />
+		<result column="update_lock" property="updateLock" jdbcType="BIT" />
+		<result column="synchronousFlag" property="synchronousFlag" jdbcType="VARCHAR" />
+		<result column="third_item_id" property="thirdItemId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.vdlm.dal.model.Product" extends="BaseResultMap">
+		<result column="description" property="description" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, name,code, img, img_width, img_height, user_id, shop_id, status, archive, sales,
+		amount, market_price, price,postage, recommend, recommend_at, discount, commission_rate,
+		forsale_at, onsale_at, instock_at, created_at,fake_sales,
+		updated_at, isDelay, delayDays, update_lock, synchronousFlag
+	</sql>
+	
+	<!-- 取列表 -->
+	<sql id="List_Column_List">
+		id, shop_id, name,code, sales, fake_sales, amount, img, img_width, img_height, market_price, price,postage, status, discount, onsale_at, forsale_at, created_at, updated_at, update_lock, synchronousFlag 
+	</sql>
+	
+	<sql id="Blob_Column_List">
+		description
+	</sql>
+	
+	<resultMap id="AdminMap" type="com.vdlm.dal.vo.ProductAdmin" extends="BaseResultMap">
+	    <result column="shop_name" property="shopName" jdbcType="VARCHAR"  />
+	    <result column="phone" property="phone" jdbcType="VARCHAR"  />
+	    <result column="img" property="img" jdbcType="VARCHAR"  />
+  	</resultMap>
+  	
+	<select id="selectById" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_product
+		where id = #{id,typeHandler=idHandler} and archive = false
+	</select>
+ 	<update id="refundAmountAndSales" >
+	   	update vdlm_product set amount = amount + #{amount,jdbcType=INTEGER},sales = sales - #{amount,jdbcType=INTEGER},updated_at = now()
+	   	where id = #{id,typeHandler=idHandler}
+  	</update>
+</mapper>

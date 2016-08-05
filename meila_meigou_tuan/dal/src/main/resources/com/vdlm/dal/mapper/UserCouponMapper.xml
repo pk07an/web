@@ -1,0 +1,663 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.UserCouponMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.UserCoupon" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="coupon_code" property="couponCode" jdbcType="VARCHAR" />
+    <result column="shop_id" property="shopId" jdbcType="VARCHAR" typeHandler="idHandler" />
+    <result column="seller_id" property="sellerId" jdbcType="VARCHAR" typeHandler="idHandler" />
+    <result column="activity_id" property="activityId" jdbcType="VARCHAR" typeHandler="idHandler" />
+    <result column="activity_titile" property="activityTitile" jdbcType="VARCHAR" />
+    <result column="activity_range" property="activityRange" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="CHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <result column="used_time" property="usedTime" jdbcType="TIMESTAMP" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="coupon_channel" property="couponChannel" jdbcType="VARCHAR" />
+    <result column="coupon_title" property="couponTitle" jdbcType="VARCHAR" />
+    <result column="updated_time" property="updatedTime" jdbcType="TIMESTAMP" />
+    <result column="client_id" property="clientId" jdbcType="VARCHAR" />
+    <result column="ext_activity_id" property="extActivityId" jdbcType="VARCHAR" />
+     <result column="discount" property="discount" jdbcType="DECIMAL"/>
+  </resultMap>
+  
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.userIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.shopIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.sellerIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.activityIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.userIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.shopIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.sellerIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.activityIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, user_id, coupon_code, shop_id, seller_id, activity_id, activity_titile, activity_range, 
+    status, create_time, used_time, start_time, end_time, coupon_channel, coupon_title, 
+    updated_time, client_id, ext_activity_id
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.vdlm.dal.model.UserCouponExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from vdlm_user_coupon
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_user_coupon
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="String" >
+    delete from vdlm_user_coupon
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.vdlm.dal.model.UserCouponExample" >
+    delete from vdlm_user_coupon
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.vdlm.dal.model.UserCoupon" >
+    insert into vdlm_user_coupon (id, user_id, 
+      coupon_code, shop_id, 
+      seller_id, activity_id, 
+      activity_titile, activity_range, status, 
+      create_time, used_time, start_time, 
+      end_time, coupon_channel, coupon_title, 
+      updated_time, client_id, ext_activity_id
+      )
+    values (#{id,jdbcType=BIGINT,typeHandler=idHandler}, #{userId,jdbcType=BIGINT,typeHandler=idHandler}, 
+      #{couponCode,jdbcType=VARCHAR}, #{shopId,jdbcType=VARCHAR,typeHandler=idHandler}, 
+      #{sellerId,jdbcType=VARCHAR,typeHandler=idHandler}, #{activityId,jdbcType=VARCHAR,typeHandler=idHandler}, 
+      #{activityTitile,jdbcType=VARCHAR}, #{activityRange,jdbcType=VARCHAR}, #{status,jdbcType=CHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{usedTime,jdbcType=TIMESTAMP}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{couponChannel,jdbcType=VARCHAR}, #{couponTitle,jdbcType=VARCHAR}, 
+      #{updatedTime,jdbcType=TIMESTAMP}, #{clientId,jdbcType=VARCHAR}, #{extActivityId,jdbcType=VARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.vdlm.dal.model.UserCoupon" >
+    insert into vdlm_user_coupon
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="couponCode != null" >
+        coupon_code,
+      </if>
+      <if test="shopId != null" >
+        shop_id,
+      </if>
+      <if test="sellerId != null" >
+        seller_id,
+      </if>
+      <if test="activityId != null" >
+        activity_id,
+      </if>
+      <if test="activityTitile != null" >
+        activity_titile,
+      </if>
+      <if test="activityRange != null" >
+        activity_range,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="createTime != null" >
+        create_time,
+      </if>
+      <if test="usedTime != null" >
+        used_time,
+      </if>
+      <if test="startTime != null" >
+        start_time,
+      </if>
+      <if test="endTime != null" >
+        end_time,
+      </if>
+      <if test="couponChannel != null" >
+        coupon_channel,
+      </if>
+      <if test="couponTitle != null" >
+        coupon_title,
+      </if>
+      <if test="updatedTime != null" >
+        updated_time,
+      </if>
+      <if test="clientId != null" >
+        client_id,
+      </if>
+      <if test="extActivityId != null" >
+        ext_activity_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="couponCode != null" >
+        #{couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="shopId != null" >
+        #{shopId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="sellerId != null" >
+        #{sellerId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="activityId != null" >
+        #{activityId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="activityTitile != null" >
+        #{activityTitile,jdbcType=VARCHAR},
+      </if>
+      <if test="activityRange != null" >
+        #{activityRange,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usedTime != null" >
+        #{usedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="couponChannel != null" >
+        #{couponChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="couponTitle != null" >
+        #{couponTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedTime != null" >
+        #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientId != null" >
+        #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="extActivityId != null" >
+        #{extActivityId,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.vdlm.dal.model.UserCouponExample" resultType="java.lang.Integer" >
+    select count(*) from vdlm_user_coupon
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update vdlm_user_coupon
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.couponCode != null" >
+        coupon_code = #{record.couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shopId != null" >
+        shop_id = #{record.shopId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="record.sellerId != null" >
+        seller_id = #{record.sellerId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="record.activityId != null" >
+        activity_id = #{record.activityId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="record.activityTitile != null" >
+        activity_titile = #{record.activityTitile,jdbcType=VARCHAR},
+      </if>
+      <if test="record.activityRange != null" >
+        activity_range = #{record.activityRange,jdbcType=VARCHAR},
+      </if>
+      <if test="record.status != null" >
+        status = #{record.status,jdbcType=CHAR},
+      </if>
+      <if test="record.createTime != null" >
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.usedTime != null" >
+        used_time = #{record.usedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.startTime != null" >
+        start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endTime != null" >
+        end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.couponChannel != null" >
+        coupon_channel = #{record.couponChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.couponTitle != null" >
+        coupon_title = #{record.couponTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updatedTime != null" >
+        updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.clientId != null" >
+        client_id = #{record.clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.extActivityId != null" >
+        ext_activity_id = #{record.extActivityId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update vdlm_user_coupon
+    set id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      user_id = #{record.userId,jdbcType=BIGINT,typeHandler=idHandler},
+      coupon_code = #{record.couponCode,jdbcType=VARCHAR},
+      shop_id = #{record.shopId,jdbcType=VARCHAR,typeHandler=idHandler},
+      seller_id = #{record.sellerId,jdbcType=VARCHAR,typeHandler=idHandler},
+      activity_id = #{record.activityId,jdbcType=VARCHAR,typeHandler=idHandler},
+      activity_titile = #{record.activityTitile,jdbcType=VARCHAR},
+      activity_range = #{record.activityRange,jdbcType=VARCHAR},
+      status = #{record.status,jdbcType=CHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      used_time = #{record.usedTime,jdbcType=TIMESTAMP},
+      start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      coupon_channel = #{record.couponChannel,jdbcType=VARCHAR},
+      coupon_title = #{record.couponTitle,jdbcType=VARCHAR},
+      updated_time = #{record.updatedTime,jdbcType=TIMESTAMP},
+      client_id = #{record.clientId,jdbcType=VARCHAR},
+      ext_activity_id = #{record.extActivityId,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.UserCoupon" >
+    update vdlm_user_coupon
+    <set >
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="couponCode != null" >
+        coupon_code = #{couponCode,jdbcType=VARCHAR},
+      </if>
+      <if test="shopId != null" >
+        shop_id = #{shopId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="sellerId != null" >
+        seller_id = #{sellerId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="activityId != null" >
+        activity_id = #{activityId,jdbcType=VARCHAR,typeHandler=idHandler},
+      </if>
+      <if test="activityTitile != null" >
+        activity_titile = #{activityTitile,jdbcType=VARCHAR},
+      </if>
+      <if test="activityRange != null" >
+        activity_range = #{activityRange,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=CHAR},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="usedTime != null" >
+        used_time = #{usedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startTime != null" >
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="couponChannel != null" >
+        coupon_channel = #{couponChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="couponTitle != null" >
+        coupon_title = #{couponTitle,jdbcType=VARCHAR},
+      </if>
+      <if test="updatedTime != null" >
+        updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="clientId != null" >
+        client_id = #{clientId,jdbcType=VARCHAR},
+      </if>
+      <if test="extActivityId != null" >
+        ext_activity_id = #{extActivityId,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.UserCoupon" >
+    update vdlm_user_coupon
+    set user_id = #{userId,jdbcType=BIGINT,typeHandler=idHandler},
+      coupon_code = #{couponCode,jdbcType=VARCHAR},
+      shop_id = #{shopId,jdbcType=VARCHAR,typeHandler=idHandler},
+      seller_id = #{sellerId,jdbcType=VARCHAR,typeHandler=idHandler},
+      activity_id = #{activityId,jdbcType=VARCHAR,typeHandler=idHandler},
+      activity_titile = #{activityTitile,jdbcType=VARCHAR},
+      activity_range = #{activityRange,jdbcType=VARCHAR},
+      status = #{status,jdbcType=CHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      used_time = #{usedTime,jdbcType=TIMESTAMP},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      coupon_channel = #{couponChannel,jdbcType=VARCHAR},
+      coupon_title = #{couponTitle,jdbcType=VARCHAR},
+      updated_time = #{updatedTime,jdbcType=TIMESTAMP},
+      client_id = #{clientId,jdbcType=VARCHAR},
+      ext_activity_id = #{extActivityId,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  
+  <select id="selectCouponUrlMap" resultType="java.util.HashMap">
+  	  select 
+  	  	distinct 
+  	  	a.activity_id as activityId,
+  	  	b.jump_url  as url
+  	  	from vdlm_user_coupon a  
+  	  join  
+  	  	vdlm_promotion_tag b on a.activity_id=b.pro_id 
+  	  	<where>
+  	  		a.user_id=#{userId,typeHandler=idHandler} 
+  	  	and 
+  	  		b.archive=false
+  	  	and
+  	  	   a.status='N'
+  	  	 and 
+  	  	   a.end_time > now()
+  	  	</where>
+  </select>
+  
+  
+  <sql id="CouponWithDiscount_Column_List" >
+    a.id,  a.user_id,  a.coupon_code,  a.shop_id,  a.seller_id,  a.activity_id,  a.activity_titile,  a.activity_range, 
+     a.status,  a.create_time,  a.used_time,  a.start_time,  a.end_time,  a.coupon_channel,  a.coupon_title, 
+     a.updated_time,  a.client_id,  a.ext_activity_id,b.discount
+  </sql>
+  
+  <select id="selectCurrentUserCouponWithDiscount" resultMap="BaseResultMap" >
+    select
+ <include refid="CouponWithDiscount_Column_List"></include>
+    from 
+    	vdlm_user_coupon a 
+    left join 
+    	vdlm_promotion_voucher b 
+    on 
+    	a.coupon_code=b.code
+ <where>
+ 	 	a.status=#{status, jdbcType=VARCHAR}
+ 	and
+ 		<![CDATA[ 
+ 			a.start_time  <= now()
+ 		 ]]>
+ 	and 
+ 		a.end_time >= now()
+ 	and
+ 		a.user_id=#{userId,typeHandler=idHandler}
+ </where>
+     
+    
+  </select>
+  
+</mapper>

@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.ProductSlaveDao">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Product">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="img" property="img" jdbcType="VARCHAR" />
+		<result column="img_width" property="imgWidth" jdbcType="INTEGER" />
+		<result column="img_height" property="imgHeight" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" typeHandler="idHandler" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="sales" property="sales" jdbcType="BIGINT" />
+		<result column="fake_sales" property="fakeSales" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="BIGINT" />
+		<result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="postage" property="postage" jdbcType="DECIMAL" />
+		<result column="recommend" property="recommend" jdbcType="BIT" />
+		<result column="recommend_at" property="recommendAt" jdbcType="TIMESTAMP" />
+		<result column="discount" property="discount" jdbcType="DECIMAL" />
+		<result column="commission_rate" property="commissionRate" jdbcType="DECIMAL" />
+		<result column="forsale_at" property="forsaleAt" jdbcType="TIMESTAMP" />
+		<result column="onsale_at" property="onsaleAt" jdbcType="TIMESTAMP" />
+		<result column="instock_at" property="instockAt" jdbcType="TIMESTAMP" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+		<result column="isDelay" property="delayed" jdbcType="BIT" />
+		<result column="delayDays" property="delayAt" jdbcType="INTEGER" />
+		<result column="update_lock" property="updateLock" jdbcType="BIT" />
+		<result column="synchronousFlag" property="synchronousFlag" jdbcType="VARCHAR" />
+		<result column="third_item_id" property="thirdItemId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.vdlm.dal.model.Product" extends="BaseResultMap">
+		<result column="description" property="description" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, name,code, img, img_width, img_height, user_id, shop_id, status, archive, sales,
+		amount, market_price, price,postage, recommend, recommend_at, discount, commission_rate,
+		forsale_at, onsale_at, instock_at, created_at,fake_sales,
+		updated_at, isDelay, delayDays, update_lock, synchronousFlag
+	</sql>
+	
+	<!-- 取列表 -->
+	<sql id="List_Column_List">
+		id, shop_id, name,code, sales, fake_sales, amount, img, img_width, img_height, market_price, price,postage, status, discount, onsale_at, forsale_at, created_at, updated_at, update_lock, synchronousFlag 
+	</sql>
+	
+	<sql id="Blob_Column_List">
+		description
+	</sql>
+	
+	<resultMap id="AdminMap" type="com.vdlm.dal.vo.ProductAdmin" extends="BaseResultMap">
+	    <result column="shop_name" property="shopName" jdbcType="VARCHAR"  />
+	    <result column="phone" property="phone" jdbcType="VARCHAR"  />
+	    <result column="img" property="img" jdbcType="VARCHAR"  />
+  	</resultMap>
+  	
+    <select id="selectByCode" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        ,
+        <include refid="Blob_Column_List" />
+        from vdlm_product
+        where code = #{code} and archive = false
+    </select>
+    
+    <select id="loadExt" resultType="java.util.Map">
+      select * from vdlm_product_ext  pe 
+      where pe.product_id=#{productId,typeHandler=idHandler} 
+    </select>
+        
+    <select id="selectSimilarProduct" resultMap="BaseResultMap">
+        select
+            <include refid="List_Column_List" />
+        from vdlm_product
+        where 
+            shop_id=#{shopId,typeHandler=idHandler} 
+            and status = 'ONSALE' 
+            and archive = false
+            and code != #{excludeCode}
+        order by created_at desc
+        limit #{page.offset}, #{page.size}
+    </select>
+    
+    <select id="countProductListByUserID" resultType="long">
+        select count(1)
+        from vdlm_product p left JOIN vdlm_product_info i on p.id = i.product_id 
+        where 
+        user_id = #{userId,typeHandler=idHandler}
+        and (i.property = 1 or i.property is null)
+        and status = 'ONSALE' 
+        and archive = false     
+    </select>
+    
+    <select id="selectProductListByUserID" resultMap="BaseResultMap">
+        select p.id, p.user_id, p.shop_id, p.name,code, p.sales, p.fake_sales, p.amount, p.img, p.img_width, p.img_height, p.market_price, p.price,postage, p.status, p.discount, p.onsale_at, p.forsale_at, p.created_at, p.updated_at, p.update_lock, p.synchronousFlag,
+            CASE 
+                WHEN amount = 0 THEN '2'
+                WHEN status = 'ONSALE' THEN '3'
+            END  as order_field     
+        from vdlm_product p left JOIN vdlm_product_info i on p.id = i.product_id 
+        where 
+        user_id = #{userId,typeHandler=idHandler}
+        and (i.property = 1 or i.property is null)
+        and status = 'ONSALE'
+        and archive = false     
+        order by order_field desc , sales desc 
+        <if test="page != null" >
+            limit #{page.offset}, #{page.size}
+        </if>
+    </select>
+     <select id="selectWareIdByCode" resultType="String">
+        select
+      	 id
+        from vdlm_product
+        where code = #{code}
+    </select>
+     <select id="selectProductAmountByCode" resultType="Integer">
+        select
+      	 amount
+        from vdlm_product
+        where code = #{code}
+    </select>
+    
+    <select id="selectProductCodeBySkuId" resultType="String">
+    	select 
+    		code 
+    	from 
+    		vdlm_product 
+    	where 
+    		id 
+    	in (select product_id from vdlm_sku where id= #{skuId,typeHandler=idHandler} );
+    </select>
+    
+    <select id="selectCollectionProductByProductIds"  resultMap="BaseResultMap">
+		select
+			<include refid="Base_Column_List" />
+		from
+			vdlm_product
+		where
+			amount>0 
+		and 
+			status ='ONSALE' 
+		and 
+			id 
+		in
+		<foreach collection="productIds" open="(" close=")" separator="," item="productId">
+			#{productId,typeHandler=idHandler}
+		</foreach>
+		limit 10
+	</select>
+</mapper>

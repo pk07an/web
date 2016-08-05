@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ActivitySPMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ActivitySP" >
+    <id column="id" property="id"/>
+    <result column="activity_id" property="activityId"/>
+    <result column="shop_id" property="shopId" typeHandler="idHandler"/>
+    <result column="start_time" property="startTime"/>
+    <result column="end_time" property="endTime"/>
+    <result column="max_qty" property="maxQty"/>
+    <result column="creator_id" property="creatorId"/>
+    <result column="created_at" property="createdAt"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+  id, name, shop_id, start_time, end_time, max_qty, creator_id, created_at
+  </sql>
+  
+  <select id="getFirstActivitySP" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_activity_sp a 
+    where end_time > now()
+      and exists (
+        select * from vdlm_activity_sp_product b 
+          where a.id=b.activity_id and b.product_id = #{productId, typeHandler=idHandler}
+      )
+    order by start_time limit 1
+  </select>
+  
+  <select id="getBuyQty" parameterType="com.vdlm.dal.model.ActivitySP" resultType="Integer">
+    select ifNull(sum(a.amount), 0)
+    from vdlm_order_item a, vdlm_order b
+    where a.order_id = b.id and b.status !='CANCELLED'
+     and b.buyer_id = #{userId, typeHandler=idHandler} 
+     and b.created_at >= #{activity.startTime}
+     and exists 
+       (
+          select * from vdlm_activity_sp_product c
+          where a.product_id = c.product_id and c.activity_id = #{activity.id}
+       )  
+  </select>
+</mapper>

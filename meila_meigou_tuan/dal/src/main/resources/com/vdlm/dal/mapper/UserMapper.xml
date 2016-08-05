@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.UserMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.User" >
+	<id column="id" property="id" typeHandler="idHandler" />
+	<result column="name" property="name" jdbcType="VARCHAR" />
+	<result column="loginname" property="loginname" jdbcType="VARCHAR" />
+	<result column="phone" property="phone" jdbcType="VARCHAR" />
+	<result column="email" property="email" jdbcType="VARCHAR" />
+	<result column="password" property="password" jdbcType="VARCHAR" />
+	<result column="archive" property="archive" jdbcType="BIT" />
+	<result column="avatar" property="avatar" jdbcType="VARCHAR" />
+	<result column="shop_id" property="shopId" typeHandler="idHandler" />
+	<result column="id_card_num" property="idCardNum" jdbcType="VARCHAR" />
+	<result column="partner" property="partner" jdbcType="VARCHAR" />
+	<result column="ext_user_id" property="extUserId" jdbcType="VARCHAR" />
+	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	<result column="withdraw_type" property="withdrawType" jdbcType="INTEGER"/>
+	<result column="code" property="code" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+	id, name, loginname, admin, roles, phone, email, password, archive, avatar, shop_id, id_card_num, partner, ext_user_id, created_at, updated_at, withdraw_type, code
+  </sql>
+  
+  <update id="updateByCode" parameterType="com.vdlm.dal.model.User" >
+	update vdlm_user
+	<set >
+	  <if test="name != null" >
+		name = #{name,jdbcType=VARCHAR},
+	  </if>
+	  <if test="phone != null" >
+		phone = #{phone,jdbcType=VARCHAR},
+	  </if>
+	  <if test="email != null" >
+		email = #{email,jdbcType=VARCHAR},
+	  </if>
+	  <if test="password != null" >
+		password = #{password,jdbcType=VARCHAR},
+	  </if>
+	  <if test="archive != null" >
+		archive = #{archive,jdbcType=BIT},
+	  </if>
+	  <if test="shopId != null" >
+		shop_id = #{shopId,typeHandler=idHandler},
+	  </if>
+	  <if test="avatar != null" >
+		avatar = #{avatar,jdbcType=VARCHAR},
+	  </if>	
+	  <if test="idCardNum != null" >
+		id_card_num = #{idCardNum,jdbcType=VARCHAR},
+	  </if>  
+	  updated_at = now()
+	</set>
+	where code = #{code} and archive=false
+  </update>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_user
+	where id = #{id,typeHandler=idHandler} and archive=false
+  </select>
+   <!--add by reese 选择最小id-->
+    <select id="selectMinId" resultType="java.lang.Integer">
+        select
+        MIN(id)
+        from vdlm_user
+    </select>
+  
+  <select id="loadByLoginname" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_user
+	where loginname = #{0} and archive=false
+  </select>
+  
+    <select id="loadByCode" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_user
+	where code = #{0} and archive=false
+  </select>
+  
+  <select id="countRegistered" parameterType="string" resultType="int">
+	select count(*) from vdlm_user where loginname=#{mobile} and archive=false
+  </select>
+
+  <update id="deleteByPrimaryKey">
+    update vdlm_user set archive=true, updated_at = now()
+    where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="undeleteByPrimaryKey">
+    update vdlm_user set archive=false, updated_at = now()
+    where id = #{id,typeHandler=idHandler} and archive=true
+  </update>
+
+  <insert id="insert" parameterType="com.vdlm.dal.model.User" >
+	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	insert into vdlm_user (id,name, loginname, phone,
+	  email, password, archive, shop_id, partner, ext_user_id, created_at, updated_at,code
+	  )
+	values (#{id},#{name,jdbcType=VARCHAR}, #{loginname,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+	  #{email,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, false,
+	  #{shopId,typeHandler=idHandler}, #{partner}, #{extUserId}, now(),now(),#{code})
+  </insert>
+
+  <update id="changePwd">
+	update vdlm_user
+	set password=#{newPwd}, updated_at = now()
+	where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.User" >
+	update vdlm_user
+	<set >
+	  <if test="name != null" >
+		name = #{name,jdbcType=VARCHAR},
+	  </if>
+	  <if test="phone != null" >
+		phone = #{phone,jdbcType=VARCHAR},
+	  </if>
+	  <if test="email != null" >
+		email = #{email,jdbcType=VARCHAR},
+	  </if>
+	  <if test="password != null" >
+		password = #{password,jdbcType=VARCHAR},
+	  </if>
+	  <if test="archive != null" >
+		archive = #{archive,jdbcType=BIT},
+	  </if>
+	  <if test="shopId != null" >
+		shop_id = #{shopId,typeHandler=idHandler},
+	  </if>
+	  <if test="avatar != null" >
+		avatar = #{avatar,jdbcType=VARCHAR},
+	  </if>	
+	  <if test="idCardNum != null" >
+		id_card_num = #{idCardNum,jdbcType=VARCHAR},
+	  </if>  
+	  updated_at = now()
+	</set>
+	where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="updateByPrimaryKey" >
+	update vdlm_user
+	set name = #{name,jdbcType=VARCHAR},
+	  loginname = #{loginname,jdbcType=VARCHAR},
+	  phone = #{phone,jdbcType=VARCHAR},
+	  email = #{email,jdbcType=VARCHAR},
+	  password = #{password,jdbcType=VARCHAR},
+	  archive = #{archive,jdbcType=BIT},
+	  shop_id = #{shopId,typeHandler=idHandler},
+	  avatar = #{avatar,jdbcType=VARCHAR},
+	  id_card_num = #{idCardNum,jdbcType=VARCHAR},
+	  updated_at = now()
+	where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="emptyUserPassword" >
+    update vdlm_user
+    set password = NULL, updated_at = now()
+    where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+
+  <update id="emptyUserPasswordByLoginname" >
+    update vdlm_user
+    set password = NULL, updated_at = now()
+    where loginname = #{loginname,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="updateNameAndIdCardNumByPrimaryKey" >
+    update vdlm_user
+    set name = #{name, jdbcType=VARCHAR}, id_card_num = #{idCardNum, jdbcType=VARCHAR}, updated_at = now()
+    where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+
+  <update id="saveWithDrawType">
+  	update vdlm_user 
+  	set withdraw_type=#{type}
+	where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+   <!-- use by bos -->
+  <select id="selectByPKAndAdmin" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_user
+	where id = #{id,typeHandler=idHandler}
+  </select>
+  
+  <select id="loadByRoles" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_user
+	where roles = #{0} and archive=false
+  </select>
+  
+  <select id="selectUserByExtUserId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_user
+    where ext_user_id = #{extUserId, jdbcType=VARCHAR} and archive=false
+  </select>
+  
+  <update id="updateUserToAdmin">
+     update vdlm_user set roles=1 where id= #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <select id="selectUserAdmin" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_user u
+    where roles=1 and archive=false 
+		<include refid="selectAdminClause"/>
+      order by created_at desc
+    limit #{pager.offset}, #{pager.size}
+  </select>
+  <select id="selectCntAdmin" resultType="java.lang.Integer">
+    select count(*) from vdlm_user u where roles=1 and archive=false 
+		<include refid="selectAdminClause"/>   
+  </select>
+  
+  <sql id="selectAdminClause">
+    <if test="params.role_id != null">
+		and exists (select * from vdlm_bos_userrole ur where ur.user_id=u.id and ur.role_id=#{params.role_id})
+	</if>
+    <if test="params.name != null">
+		and u.name like '#{params.role_id}%'
+	</if>
+    <if test="params.phone != null">
+		and u.phone=#{params.phone}
+	</if>
+  </sql>
+  
+  
+  <select id="selectUserRoleList" resultType="com.vdlm.dal.model.Role">
+    select b.id, b.name 
+      from vdlm_bos_userrole a, vdlm_bos_role b
+     where a.role_id=b.id and a.user_id=#{id,typeHandler=idHandler}
+     order by b.id
+  </select>
+  
+  <select id="selectFunc" resultType="java.lang.String">
+    select distinct  b.func_code 
+      from vdlm_bos_userrole a, vdlm_bos_rolefunc b
+     where a.role_id=b.role_id and a.user_id=#{id,typeHandler=idHandler}
+  </select>
+  <update id="updateAdmin"  parameterType="com.vdlm.dal.model.User">
+     update vdlm_user set name=#{name},phone=#{phone},password=#{password} where loginname=#{loginname}
+  </update>
+  <update id="updateAdminPrimaryKey">
+      UPDATE vdlm_user set  id =#{bigId} where id=#{id,typeHandler=idHandler}
+  </update>
+
+    <select id="countUserByPhone" resultType="java.lang.Integer">
+        select count(1) from vdlm_user where  phone =#{phone,jdbcType=VARCHAR}
+        <if test="id != null and ''!=id ">
+            <![CDATA[
+              AND id <>#{id,typeHandler=idHandler}
+             ]]>
+        </if>
+    </select>
+    
+  <select id="selectUserByIds" resultMap="BaseResultMap">
+	select 
+	<include refid="Base_Column_List" />
+	from vdlm_user
+	where id in
+	<foreach collection="userIds" index="index" item="id" open="(" separator="," close=")">  
+       #{id,typeHandler=idHandler}
+  	</foreach>
+	and archive=false
+  </select>
+
+  
+</mapper>

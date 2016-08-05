@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.TuanOrderMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.TuanOrder" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tuan_id" property="tuanId" jdbcType="BIGINT" />
+    <result column="tuan_no" property="tuanNo" jdbcType="VARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="role" property="role" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, tuan_id, tuan_no, order_no, pay_no, role, user_id, created_at, updated_at, archive
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_tuan_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <insert id="insert" parameterType="com.vdlm.dal.model.TuanOrder" >
+    insert into vdlm_tuan_order (tuan_id, tuan_no, 
+      order_no, pay_no, role, 
+      user_id, created_at, updated_at, 
+      archive)
+    values ( #{tuanId,jdbcType=BIGINT}, #{tuanNo,jdbcType=VARCHAR}, 
+      #{orderNo,jdbcType=VARCHAR}, #{payNo,jdbcType=VARCHAR}, #{role,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=BIGINT}, #{createdAt,jdbcType=TIMESTAMP}, #{updatedAt,jdbcType=TIMESTAMP}, 
+      #{archive,jdbcType=BIT})
+  </insert>
+  <update id="update" parameterType="com.vdlm.dal.model.TuanOrder" >
+    update vdlm_tuan_order
+    <set >
+      <if test="tuanId != null" >
+        tuan_id = #{tuanId,jdbcType=BIGINT},
+      </if>
+      <if test="tuanNo != null" >
+        tuan_no = #{tuanNo,jdbcType=VARCHAR},
+      </if>
+      <if test="orderNo != null" >
+        order_no = #{orderNo,jdbcType=VARCHAR},
+      </if>
+      <if test="payNo != null" >
+        pay_no = #{payNo,jdbcType=VARCHAR},
+      </if>
+      <if test="role != null" >
+        role = #{role,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="archive != null" >
+        archive = #{archive,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

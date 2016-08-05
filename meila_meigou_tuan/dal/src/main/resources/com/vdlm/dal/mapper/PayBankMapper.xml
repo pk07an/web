@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PayBankMapper" >
+
+  <resultMap id="payBankResultMap" type="com.vdlm.dal.model.PayBank" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="bankName" property="bankName" jdbcType="VARCHAR" />
+    <result column="startWith" property="startWith" jdbcType="VARCHAR" />
+    <result column="img" property="img" jdbcType="VARCHAR"/>
+    <result column="isHot" property="isHot" jdbcType="INTEGER"/>
+    <result column="bankStatus" property="bankStatus" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.model.PayBankWay" id="payBankWay" extends="payBankResultMap">
+  	<id column="bankId" property="bankId" jdbcType="BIGINT" typeHandler="idHandler" />
+  	<result column="cardType" property="cardType" jdbcType="VARCHAR" />
+  	<result column="paymentMode" property="paymentMode" jdbcType="VARCHAR"/>
+  	<result column="bankCode" property="bankCode" jdbcType="VARCHAR"/>
+  	<result column="payWayStatus" property="payWayStatus" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <select id="queryHotPayBanksCreditCard" resultMap="payBankWay">
+    select 
+    p.id,p.bankName,p.startWith,p.img,p.isHot,p.status as bankStatus,
+    pc.paybank_id as bankId,pc.cardType,pc.paymentMode,pc.bankCode,pc.status as payWayStatus
+    from vdlm_paybank p inner join vdlm_paybank_cardMode pc on p.id=pc.paybank_id
+    where p.isHot=1 and pc.cardType='CREDITCARD' and p.status='TRUE' and pc.status='TRUE' order by p.id
+  </select>
+  <select id="queryAllPayBanksCreditCard" resultMap="payBankWay">
+    select 
+	p.id,p.bankName,p.startWith,p.img,p.isHot,p.status as bankStatus,
+    pc.paybank_id as bankId,pc.cardType,pc.paymentMode,pc.bankCode,pc.status as payWayStatus
+    from vdlm_paybank p inner join vdlm_paybank_cardMode pc on p.id=pc.paybank_id
+	where pc.cardType='CREDITCARD' and p.status='TRUE' and pc.status='TRUE' order by p.startWith,p.id
+  </select>
+
+  <select id="queryHotPayBanksDebitCard" resultMap="payBankWay">
+    select 
+    p.id,p.bankName,p.startWith,p.img,p.isHot,p.status as bankStatus,
+    pc.paybank_id as bankId,pc.cardType,pc.paymentMode,pc.bankCode,pc.status as payWayStatus
+    from vdlm_paybank p inner join vdlm_paybank_cardMode pc on p.id=pc.paybank_id
+	where p.isHot=1 and pc.cardType='DEBITCARD' and p.status='TRUE' and pc.status='TRUE' order by p.id
+  </select>
+  <select id="queryAllPayBanksDebitCard" resultMap="payBankWay">
+    select 
+    p.id,p.bankName,p.startWith,p.img,p.isHot,p.status as bankStatus,
+    pc.paybank_id as bankId,pc.cardType,pc.paymentMode,pc.bankCode,pc.status as payWayStatus
+    from vdlm_paybank p inner join vdlm_paybank_cardMode pc on p.id=pc.paybank_id
+	where pc.cardType='DEBITCARD' and p.status='TRUE' and pc.status='TRUE' order by p.startWith,p.id
+  </select>
+  <update id="updateBankStatusFalse">
+  	update vdlm_paybank_cardMode set status='FALSE' where paymentMode=#{mode}
+  	and bankCode not in
+      <foreach collection="bankCodeList" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+  </update>
+  <select id="supportBank" resultType="string">
+  	select distinct(bankCode) from vdlm_paybank_cardMode where paymentMode=#{mode} and status='TRUE'
+  </select>
+  <select id="obtainCommonlyBankList" resultMap="payBankResultMap">
+  	select * from vdlm_paybank where isHot = 1 and status = 'TRUE'
+  </select>
+</mapper>

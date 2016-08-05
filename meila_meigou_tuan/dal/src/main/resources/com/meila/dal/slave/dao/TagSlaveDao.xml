@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.TagSlaveDao">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Tag">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="tag" property="tag" jdbcType="VARCHAR" />
+		<result column="creator_id" property="creatorId" typeHandler="idHandler" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, tag, creator_id, created_at, updated_at
+	</sql>
+	
+	<select id="selectByProductId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select t.id, t.tag
+		from vdlm_product_tag p join vdlm_tag t on p.tag_id = t.id
+		where product_id = #{prodcutId,typeHandler=idHandler}
+		 and archive = false
+	</select>
+	
+	
+</mapper>

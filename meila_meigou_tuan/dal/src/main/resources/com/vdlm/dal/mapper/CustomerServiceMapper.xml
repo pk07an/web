@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.CustomerServiceMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.CustomerService" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="name" property="name"  jdbcType="VARCHAR" />
+    <result column="tel_phone" property="telPhone"  jdbcType="VARCHAR" />
+    <result column="qq_id" property="qqId"  jdbcType="VARCHAR" />
+    <result column="weixin_id" property="weixinId"  jdbcType="VARCHAR" />
+    <result column="service_area" property="serviceArea"  jdbcType="VARCHAR" />
+    <result column="note" property="note"  jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="TINYINT" />
+    <result column="created_at" property="createdAt" />
+    <result column="updated_at" property="updatedAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, name, tel_phone,  qq_id, weixin_id, service_area, note, archive, created_at, updated_at
+  </sql>
+  
+   <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_customer_service
+    where id = #{id}
+  </select>
+  
+   <select id="loadAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_customer_service
+    where archive = false
+  </select>
+  
+   <select id="selectByName" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_customer_service
+    where name = #{0} and archive = false
+  </select>
+  
+  <select id="selectByPhone" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from vdlm_customer_service
+ 	where tel_phone = #{0} and archive = false
+  </select>
+  
+  <select id="getSupportByScope" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from vdlm_customer_service
+ 	where service_area like #{0} and archive = false
+  </select>
+  
+  <update id="deleteByPrimaryKey">
+    update vdlm_customer_service set archive=true, updated_at = now()
+    where id = #{id}
+  </update>
+  <update id="undeleteByPrimaryKey">
+    update vdlm_customer_service set archive=false, updated_at = now()
+    where id = #{id}
+  </update>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.CustomerService">
+    <selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into vdlm_customer_service (name, tel_phone,  qq_id, weixin_id, service_area, note, archive, created_at, updated_at)
+    values (#{name,jdbcType=VARCHAR}, #{telPhone,jdbcType=VARCHAR}, #{qqId,jdbcType=VARCHAR}, 
+      #{weixinId,jdbcType=VARCHAR},#{serviceArea,jdbcType=VARCHAR},#{note,jdbcType=VARCHAR},
+      false, #{danbao}, now(), now())
+  </insert>
+  
+</mapper>

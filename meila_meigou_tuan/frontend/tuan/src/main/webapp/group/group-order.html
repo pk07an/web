@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>确认订单</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <script type="text/javascript">
+    !function(J){function H(){var d=E.getBoundingClientRect().width;var e=(d/7.5>100*B?100*B:(d/7.5<42?42:d/7.5));E.style.fontSize=e+"px",J.rem=e}var G,F=J.document,E=F.documentElement,D=F.querySelector('meta[name="viewport"]'),B=0,A=0;if(D){var y=D.getAttribute("content").match(/initial\-scale=([\d\.]+)/);y&&(A=parseFloat(y[1]),B=parseInt(1/A))}if(!B&&!A){var u=(J.navigator.appVersion.match(/android/gi),J.navigator.appVersion.match(/iphone/gi)),t=J.devicePixelRatio;B=u?t>=3&&(!B||B>=3)?3:t>=2&&(!B||B>=2)?2:1:1,A=1/B}if(E.setAttribute("data-dpr",B),!D){if(D=F.createElement("meta"),D.setAttribute("name","viewport"),D.setAttribute("content","initial-scale="+A+", maximum-scale="+A+", minimum-scale="+A+", user-scalable=no"),E.firstElementChild){E.firstElementChild.appendChild(D)}else{var s=F.createElement("div");s.appendChild(D),F.write(s.innerHTML)}}J.addEventListener("resize",function(){clearTimeout(G),G=setTimeout(H,300)},!1),J.addEventListener("pageshow",function(b){b.persisted&&(clearTimeout(G),G=setTimeout(H,300))},!1),H()}(window);
+    </script>
+    <link rel="stylesheet" type="text/css" href="../resources/css/meila.css">
+    <link rel="stylesheet" type="text/css" href="../resources/css/main.css" />
+    <style type="text/css">
+        html,body{width: 100%;height: 100%;}
+        html{background-color: #f5f5f5;}
+        .wrapper{width:7.5rem;}
+        .outer-footer{ width: 7.5rem; }
+        .download-bar{ width: 7.5rem; }
+        .download-bar div{width:7.5rem;}
+        .wechat-share-prompt{ max-width: 7.5rem; }
+
+        .wrapper{background-color:#f5f5f5}
+        .commitBtn .middle{height:.98rem;background-color:#fff;line-height:.98rem}
+        .avatar{overflow:hidden;margin-top:.2rem;margin-right:.17rem;width:.62rem;height:.62rem;border-radius:50%}
+        .userInfo{position:relative;overflow:hidden;padding:.2rem .28rem 0;background:#fff url(../resources/images/ribbon_bg.png) no-repeat bottom left;background-origin: border-box;background-size: 7.5rem .06rem;}
+        .userInfo span{margin-right:.6rem;color:rgba(0,0,0,.9);font-size:.3rem;line-height:.68rem}
+        .userInfo i{color:rgba(0,0,0,.9);font-size:.3rem}
+        .orderList dd .goodsInfo h3,.orderList h2,.userInfo p{color:rgba(0,0,0,.9);font-size:.26rem}
+        .orderList dd .goodsInfo h3{margin:.07rem 0 .1rem 0;line-height: 0.38rem;word-break:break-all;overflow : hidden;text-overflow: ellipsis;display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;}
+        .userInfo p{overflow:hidden;margin:0 .44rem .41rem 0;max-height:1.44rem;color:rgba(0,0,0,.6);font-size:.26rem}
+        .group-info {margin-bottom: 1.08rem;}
+        p.idcard{ margin: 0 .44rem .025rem 0;}
+        p.idcard span { margin-left: 0.09rem; font-size: 0.26rem; color: rgba(0,0,0,.6); line-height: 0.3rem; }
+        p.idcard span.no-idcard { color: #f94972 !important; }
+        .arrowRight{position:absolute;top:50%;right:.28rem;margin-top:-.12rem;width: .14rem; height: .24rem; margin-left: .03rem; padding: 1px; background: url(../resources/images/arrow-right.png) 0 0 no-repeat; background-size: .14rem .24rem; background-origin: content-box;}
+        .arrowDown{-webkit-transform:rotate(135deg);transform:rotate(135deg)}
+        .orderList{overflow:hidden;margin-top:.28rem;background-color:#fff;border-bottom: 1px solid rgba(0,0,0,.08);}
+        .orderList dt{padding:0 .28rem;height:.99rem;line-height:.99rem;border-bottom: 1px solid rgba(0,0,0,.08);}
+        .orderList dt .sellerImg{display:inline-block;overflow:hidden;margin-top:.11rem;margin-right:.12rem;width:.52rem;height:.52rem;border-color:#d9d9d9;border-radius:50%}
+        .discountList,.leaveWords{overflow:hidden;background-color:#fff}
+        .orderList dt .sellerImg img{display:block;width:.52rem}
+        .orderList h2{display:inline-block;vertical-align:top}
+        .orderList dd{overflow:hidden;padding:.2rem 0 0 .28rem}
+        .orderList dd .goodsImg{float:left;width:1.72rem;min-height:1.72rem}
+        .orderList dd .goodsImg img{width:1.72rem;height:1.72rem;vertical-align:bottom}
+        .orderList dd .goodsInfo{overflow:hidden;padding-right:.42rem;padding-left:.28rem;min-height:1.44rem;height:1.91rem;}
+        .orderList dd:not(:last-child) .goodsInfo{border-bottom: 1px solid rgba(0,0,0,.08);}
+        .orderList dd .goodsInfo i,.orderList dd .goodsInfo s{color:rgba(0,0,0,.9);font-size:.26rem}
+        .littleCount p.countNum,
+        .littleCount p.sentCost { color: rgba(0,0,0,.6);font-size:.26rem }
+        .littleCount p.sentCost{margin-bottom:.1rem}
+        .orderList dd .goodsInfo p{color:rgba(0,0,0,.6);font-size:.22rem;line-height:.24rem}
+        .orderList dd .goodsInfo s{margin-right:.18rem;text-decoration:none;line-height:.75rem}
+        .orderList dd:last-child .goodsInfo{border:0}
+        .littleCount{overflow:hidden;padding:.22rem .24rem;background-color:#fff;text-align:right}
+        .littleCount p.sentCost i{display:inline-block;min-width:1.2rem;color: rgba(0,0,0,.6);}
+        .littleCount p.countNum span{display:inline-block;min-width:1.2rem;color:#f94972;font-size:.3rem}
+        .leaveWords{padding:.16rem .24rem;border-top: 1px solid rgba(0,0,0,0.08);}
+        .discountList .cashCoupon,.discountList .redBag{padding-right:.24rem;line-height:.96rem}
+        .leaveWords .inputBox{overflow:hidden;border-radius:.1rem}
+        .leaveWords .inputBox:before{border-color:#e5e5e5;border-radius:.2rem}
+        .leaveWords input.sayToSeller{padding-left:.2rem;width:5.69rem;height:.64rem;border:none;color:rgba(0,0,0,.9);font-size:.26rem}
+        .toobar{position:fixed;bottom:0;width:7.5rem;height:.98rem;margin: 0 auto; border-top: 1px solid rgba(0,0,0,.08); -webkit-box-sizing: border-box; box-sizing: border-box;left:0;right:0;}
+        .toobar-wrap{position: fixed; bottom: 0; width: 7.5rem; height: .98rem;}
+        .discountList{padding-left:.24rem}
+        .discountList .cashCoupon{position:relative}
+        .discountList strong{color:rgba(0,0,0,.9);font-weight:400;font-size:.28rem}
+        .discountList .cashCoupon p,.discountList .redBag p{float:right;color:rgba(0,0,0,.65);font-size:.24rem}
+        .discountList .cashCoupon p{margin-right:.44rem}
+        .discountList .redBag p span{position:relative;display:inline-block;margin-top:.25rem;margin-left:.14rem;width:.76rem;height:.46rem;border-radius:.8rem;background-color:#f94972;vertical-align:top}
+        .discountList .redBag p span::after{position:absolute;top:.03rem;right:.03rem;width:.4rem;height:.4rem;border-radius:50%;background:#fff;content:""}
+        .discountList .redBag p span.offState{background-color:#d7d7d7}
+        .discountList .redBag p span.offState::after{left:.03rem}
+        .commitBtn{overflow:hidden;text-align:right}
+        .commitBtn a.toCommit{float:right;display:block;margin-left:.2rem;width:1.9rem;background:#f94972;color:#fff;text-align:center;font-size:.3rem;line-height:.98rem}
+        .orderInfo,.payWay{overflow:hidden;background-color:#fff}
+        .commitBtn p{color:rgba(0,0,0,.6);font-size:.26rem;line-height:.32rem}
+        .commitBtn p .small-size {font-size: .26rem;}
+        .commitBtn p i{color:#f94972;font-size:.26rem}
+        .commitBtn p s{color:#f94972;vertical-align:-2px;text-decoration:none;font-size:.42rem}
+        .commitBtn p b{margin-right:.15rem;color:#f94972;vertical-align:-2px;font-weight:400;font-size:.42rem}
+        .ptuan-process {
+            box-sizing: border-box;
+            padding: .54rem .28rem 1rem;
+        }
+        .ptuan-process a {
+            color:inherit;
+        }
+        .ptuan-process header {
+            margin-bottom: .3rem;
+            font-size: .3rem;
+        }
+        .ptuan-process header .tit {
+            font-size: .26rem;
+            color:rgba(0,0,0,.6);
+        }
+        .ptuan-process header span {
+            color:rgba(0,0,0,.9);
+        }
+        .ptuan-process .see-details {
+            font-size: .26rem;
+            vertical-align: top;
+        }
+        .process-flow {
+            padding: 0 .26rem 0 .49rem;
+        }
+        .process-item {
+            box-sizing: border-box;
+            position: relative;
+            width:1.66rem;
+            height: .98rem;
+            padding: .16rem .23rem .16rem .35rem;
+            background:url('../resources/images/rectBg.png') no-repeat center;
+            background-size: 1.64rem .96rem;
+            font-size: .26rem;
+            color:rgba(0,0,0,.8);
+            line-height: 1.4;
+        }
+        .process-num {
+            position: absolute;
+            top:50%;
+            left: 0;
+            transform: translate(-50%,-50%);
+            -webkit-transform:translate(-50%,-50%);
+            -moz-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+            -o-transform:translate(-50%,-50%);
+            width:.5rem;
+            height: .5rem;
+            background:#f5f5f5 url('../resources/images/invite.png') no-repeat;
+            background-size: .54rem 1.9rem;
+        }
+        .process-num1 {
+            background-position: -0.04rem -.35rem;
+        }
+        .process-num2 {
+            background-position: -0.02rem -.86rem;
+        }
+        .process-num3 {
+            background-position: -0.02rem -1.38rem;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <img class="small-loading" src="../resources/images/small-loading.gif" height="32" width="32">
+    <form id="order_submit_form" method="post" action="/wareorder/submit">
+        <div class="userInfo"></div>
+        <div class="group-info"></div>
+    </form>
+</div>
+<script type="text/template" id="userInfo">
+{{?it.data!=null}}
+<a href="" style="display: block;">
+    <span>{{=it.data.consignee}}</span><i>{{=it.data.phone}}</i>
+    {{?/\bBONDED_AREA_ML\b|\bBONDED_AREA\b/g.test(it.data.deliveryType)}}
+    <p class="idcard">身份证
+        {{?it.data.idCard!=null && !!it.data.idCard}}
+        <span>{{=it.data.idCard}}</span>
+        {{??}}
+        <span class="no-idcard">(请完善您的身份证信息)</span>
+        {{?}}
+    </p>
+    {{?}}
+    <p class="address">{{=it.data.addressStr}}</p>
+    <s class="arrowRight"></s>
+</a>
+{{??}}
+<a href="javascript:;" id="no-address" style="color: rgba(0,0,0,.45); display: block;font-size: .3rem; height: 1rem;text-align: center; line-height: 1rem;padding-bottom: .2rem;">
+        点击新建收货地址
+        <s class="arrowRight"></s>
+</a>
+{{?}}
+</script>
+<script type="text/template" id="group-info">
+<dl class="orderList">
+    <!--
+    <dt>
+        <img class="avatar" alt="头像" src="http://meilapp.qiniucdn.com/Fom3cZZv3BK0SH4GFOh2TSYab93R?imageView2/1/w/52/h/52">
+        <h2>Angela</h2>
+    </dt>
+    -->
+    <dd>
+        <div class="goodsImg">
+            <img src="{{=it.data.img2}}?imageMogr2/thumbnail/172x172">
+        </div>
+        <div class="goodsInfo">
+            <h3>{{=it.data.productName}}</h3>
+            <p><span>{{=it.data.skuSpecStr}}</span> </p>
+            <s>¥{{=it.data.tuanPrice}}</s>
+        </div>
+    </dd>
+</dl>
+<div class="littleCount">
+    <p class="sentCost">运费：<i>¥0.00</i></p>
+    {{? it.data.discount}}
+    <p class="sentCost">优惠：<i>-¥{{=it.data.discount.toFixed(2)}}</i></p>
+    {{?}}
+    <p class="countNum">合计：<span>¥{{=(it.data.tuanPrice - it.data.discount).toFixed(2)}}</span></p>
+</div>
+<div class="leaveWords">
+    <div class="inputBox"><input class="sayToSeller" type="text" placeholder="给卖家留言" name="sayToSeller"></div>
+</div>
+<div class="ptuan-process g-border-bottom">
+    <header class="flexbox pack-justify">
+        <h3 class="tit">拼团流程</h3>
+    </header>
+    <section class="process-flow">
+        <ul class="flexbox pack-justify">
+            <li class="process-item"><i class="process-num process-num1"></i>支付开团或参团</li>
+            <li class="process-item"><i class="process-num process-num2"></i>邀请好友参团</li>
+            <li class="process-item"><i class="process-num process-num3"></i>达成人数拼团成功</li>
+        </ul>
+    </section>
+</div>
+</script>
+<script type="text/template" id="toobar">
+<div class="toobar">
+    <div class="toobar-wrap ">
+        <div class="commitBtn">
+            <a class="toCommit">去支付</a>
+            <p class="total middle">实付：<i>¥</i><s id="totalYuan">{{=((it.data.tuanPrice - it.data.discount).toFixed(2).toString()).slice(0,(it.data.tuanPrice - it.data.discount).toFixed(2).toString().indexOf('.')!==-1?(it.data.tuanPrice - it.data.discount).toFixed(2).toString().indexOf('.'):(it.data.tuanPrice - it.data.discount).toFixed(2).toString().length)}}</s><s class="small-size">{{=((it.data.tuanPrice - it.data.discount).toFixed(2).toString().indexOf('.')==-1)?'.00':((it.data.tuanPrice - it.data.discount).toFixed(2).toString()).slice((it.data.tuanPrice - it.data.discount).toFixed(2).toString().indexOf('.'),(it.data.tuanPrice - it.data.discount).toFixed(2).toString().length)}}</s></p>
+            <del></del>
+        </div>
+    </div>
+</div>
+</script>
+<script type="text/javascript" src="../resources/js/wx/jweixin-1.0.0.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/zepto.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/M.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/dot/doT.js"></script>
+<script src="../resources/js/utils.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/group-order.js"></script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?ee90c8579d6c84f05e2d6da016ecd53c";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254190362'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/q_stat.php%3Fid%3D1254190362%26l%3D3' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

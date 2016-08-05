@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PromotionMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Promotion" >
+    <id column="id" property="id" />
+    <result column="title" property="title" />
+    <result column="banner" property="banner" jdbcType="VARCHAR" />
+    <result column="act_date" property="actDate" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, title, discount, details, created_at, updated_at, archive
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_promotion
+    where id = #{id}
+  </select>
+  
+  <select id="selectAvailables" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_promotion
+    where archive = false
+  </select>
+  
+</mapper>

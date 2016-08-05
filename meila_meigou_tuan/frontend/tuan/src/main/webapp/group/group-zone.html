@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>美啦拼团</title>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<script type="text/javascript">
+	!function(J){function H(){var d=E.getBoundingClientRect().width;var e=(d/7.5>100*B?100*B:(d/7.5<42?42:d/7.5));E.style.fontSize=e+"px",J.rem=e}var G,F=J.document,E=F.documentElement,D=F.querySelector('meta[name="viewport"]'),B=0,A=0;if(D){var y=D.getAttribute("content").match(/initial\-scale=([\d\.]+)/);y&&(A=parseFloat(y[1]),B=parseInt(1/A))}if(!B&&!A){var u=(J.navigator.appVersion.match(/android/gi),J.navigator.appVersion.match(/iphone/gi)),t=J.devicePixelRatio;B=u?t>=3&&(!B||B>=3)?3:t>=2&&(!B||B>=2)?2:1:1,A=1/B}if(E.setAttribute("data-dpr",B),!D){if(D=F.createElement("meta"),D.setAttribute("name","viewport"),D.setAttribute("content","initial-scale="+A+", maximum-scale="+A+", minimum-scale="+A+", user-scalable=no"),E.firstElementChild){E.firstElementChild.appendChild(D)}else{var s=F.createElement("div");s.appendChild(D),F.write(s.innerHTML)}}J.addEventListener("resize",function(){clearTimeout(G),G=setTimeout(H,300)},!1),J.addEventListener("pageshow",function(b){b.persisted&&(clearTimeout(G),G=setTimeout(H,300))},!1),H()}(window);
+	</script>
+	<link rel="stylesheet" type="text/css" href="../resources/css/meila.css">
+	<link rel="stylesheet" type="text/css" href="../resources/css/main.css">
+	<style type="text/css">
+        .wrapper{width:7.5rem;}
+        .outer-footer{ width: 7.5rem; }
+        .download-bar{ width: 7.5rem; }
+        .download-bar div{width:7.5rem;}
+        .wechat-share-prompt{ max-width: 7.5rem; }
+
+        body { max-width: 7.5rem; height: 100%; margin: 0 auto; background-color: #f5f5f5; }
+        .tab-none { text-align: center; padding-top: 1.9rem }
+        .tab-none img { width: 2.82rem; height: 2.32rem; }
+        .tab-none p { color: rgba(0,0,0,.6); font-size: .26rem; }
+        .share-mask {
+            position: fixed;
+            display: none;
+            width:100%;
+            top:0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .share-box {
+            box-sizing: border-box;
+            position: fixed;
+            width:100%;
+            bottom: 0;
+            transition: transform 0.12s;
+            -moz-transition: transform 0.12s;
+			-webkit-transition: transform 0.12s;
+			-o-transition: transform 0.12s;
+            padding: .4rem;
+            background-color: #fff;
+            z-index: 9999;
+        }
+        .share-hidden {
+        	transform:translateY(100%);
+            -webkit-transform:translateY(100%);
+            -moz-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            -o-transform:translateY(100%);
+        }
+        .share-item {
+            width:1rem;
+            font-size: .22rem;
+        }
+        .share-item img{
+            width: .94rem;
+            height: .94rem;
+        }
+        .share-info {
+            display: inline-block;
+            margin-top:.16rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+	<div class="nav-tab">
+	    <nav class="flexbox pack-justify">
+	        <a href="" class="nav-main"><span>拼团精选</span></a>
+	        <a href="" class="nav-mygroup"><span>我的拼团</span></a>
+	    </nav>
+	</div>
+	<div class="tab-content">
+		<img class="small-loading" relSrc="../resources/images/small-loading.gif" height="32" width="32">
+		<div class="groupList hidden"></div>
+		<div class="myGroup hidden"></div>
+	</div>
+	<!-- 拼团精选 -->
+	<script type="text/template" id="groupList">
+	    <div class="tab-pane tab-pane-1" >
+	    	{{?it.list.length}}
+	        <ul class="list-select">
+	        	{{~it.list:value:index}}
+	            <li data-share-img="{{=value.img2}}">
+	                <div class="banner">
+	                	<a href="./group-details.html?skuId={{=value.id}}">
+	                		<img relSrc="{{=value.img}}?imageMogr2/thumbnail/750x" alt="">
+                		</a>
+                		{{?value.tuanActStatus == "END" || value.tuanActStatus == "OVERLOAD"}}
+                		<div class="sell-out"><img src="../resources/images/sell-out.png" alt=""></div>
+                		{{?}}
+            		</div>
+	                <div class="info">
+	                    <h2 class="tit">{{=value.productName}}</h2>
+	                    <p class="text">{{=value.description}}</p>
+	                </div>
+	                <div class="select flexbox align-center pack-justify">
+	                    <div class="d d-1">
+	                        <div class="select-num">{{=value.memberNum}}人团</div><div class="select-price"><span>¥<em>{{=value.tuanPrice}}</em></span><del>¥{{=value.skuPrice}}</del></div>
+	                    </div>
+	                    <div class="d d-2">
+	                         {{?value.tuanActStatus == "END" || value.tuanActStatus == "OVERLOAD"}}
+	                         <a href="javascript:;" class="forbid">去开团</a>
+	                         {{??}}
+	                        <a href="./group-details.html?skuId={{=value.id}}">去开团</a>
+	                        {{?}}
+	                        <!--<a href="./group-details.html?skuId={{=value.id}}" class="disabled">卖光了</a>-->
+	                    </div>
+	                </div>
+	                <div class="logo"><img src="../resources/images/meila_logo.png" alt=""></div>
+	            </li>
+	            {{~}}
+	        </ul>
+	        {{??}}
+	        <div class="tab-none">
+	          <img src="../resources/images/tab-none.png" alt="">
+	          <p>现在还没有拼团活动~</p>
+	        </div>
+	        {{?}}
+	    </div>
+    </script>
+
+    <!-- 我的拼图 -->
+    <script type="text/template" id="myGroup">
+	    <div class="tab-pane tab-pane-2">
+	    	{{?it.data.list.length}}
+	        <ul class="list-group">
+	        	{{~it.data.list:value:index}}
+	            <li>
+	                <div class="d d-1 flexbox align-center">
+	                    <div class="pic"><img relSrc="{{=value.tuanActivity.img2}}?imageMogr2/thumbnail/172x172" alt=""></div>
+	                    <div class="info flex1">
+	                        <h2 class="tit">{{=value.tuanActivity.productName}}</h2>
+	                        <p class="group-price"><span>¥<em>{{=value.tuanActivity.tuanPrice}}</em></span><del>¥{{=value.tuanActivity.skuPrice}}</del></p>
+	                    </div>
+	                    <a href="/ptuan/group/group-status.html?tuanNo={{=value.tuanNo}}" class="link-details"></a>
+	                </div>
+	                <div class="d d-2 flexbox align-center pack-justify">
+	                	{{?value.status=='SUCCESS'}}
+	                    	<p class="text success">{{=value.statusDesc}}</p>
+	                    {{??value.status=='WAIT_PAID'}}
+	                    	<p class="text text-red">{{=value.statusDesc}}</p>
+	                    {{??value.status=='PROCESS'}}
+	                    	<p class="text text-red">{{=value.statusDesc}}</p>
+	                    	{{??value.status=='REFUNDING'}}
+	                    	<p class="text error">{{=value.statusDesc}}</p>
+	                    {{??value.status=='REFUNDED'}}
+	                    	<p class="text error">{{=value.statusDesc}}</p>
+	                    	{{??value.status=='WAIT_REFUNDING'}}
+	                    	<p class="text error">{{=value.statusDesc}}</p>
+	                    	{{??value.status=='WAIT_COMFIRM'}}
+	                    	<p class="text error">{{=value.statusDesc}}</p>
+	                    	{{??}}
+	                    	<p class="text error">{{=value.statusDesc}}</p>
+	                    {{?}}
+	                    <div class="link-wrapper">
+	                        {{?value.status=='WAIT_PAID'}}
+			  <a href="../../wareorder/pay/?trade_no={{=value.payNo + '&time=' + new Date().getTime()}}" class="btn-red">立即支付</a>
+			  {{??value.status=='PROCESS'}}
+				<a href="/ptuan/group/group-status.html?tuanNo={{=value.tuanNo}}" class="btn-red share">邀请好友</a>
+	                        {{??}}
+	                        <a href="/m/buyer/order/detail/?orderNo={{=value.orderNo}}">查看订单</a>
+	                        {{?}}
+	                    </div>
+	                </div>
+	            </li>
+	            {{~}}
+	        </ul>
+	        {{??}}
+	        <div class="tab-none">
+	          <img src="../resources/images/tab-none.png" alt="">
+	          <p>你还没有参加拼团活动</p>
+	        </div>
+	        {{?}}
+	    </div>
+    </script>
+	
+</div>
+<script type="text/javascript" src="../resources/js/wx/jweixin-1.0.0.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/zepto.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/M.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/dot/doT.js"></script>
+<script src="../resources/js/utils.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/group-zone.js"></script>
+<script type="text/javascript">
+    $(".group-bottom-fixed .link").bind("touchstart",function(){});
+</script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?ee90c8579d6c84f05e2d6da016ecd53c";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254190362'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/q_stat.php%3Fid%3D1254190362%26l%3D3' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

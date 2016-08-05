@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PosterTagMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.PosterTag" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="poster_id" property="posterId" />
+    <result column="term_id" property="termId" />
+    <result column="creator_id" property="creatorId" />
+    <result column="created_at" property="createdAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, poster_id, term_id, creator_id, created_at
+  </sql>
+  
+  <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_poster_tag
+    where id = #{id}
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.PosterTag">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_poster_tag (poster_id, term_id, creator_id, created_at)
+    values (#{posterId}, #{termId}, #{creatorId, typeHandler=idHandler}, now())
+  </insert>
+  
+  <delete id="delete">
+    delete from vdlm_poster_tag
+    where poster_id = #{posterId}
+    and term_id = #{termId}
+  </delete>
+  
+</mapper>

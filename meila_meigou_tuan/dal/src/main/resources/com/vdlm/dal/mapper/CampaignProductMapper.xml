@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.CampaignProductMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.CampaignProduct" >
+    <result column="ticket_id" property="ticketId" />
+    <result column="activity_id" property="activityId" />
+    <result column="product_id" property="productId" typeHandler="idHandler" />
+    <result column="discount" property="discount" />
+    <result column="reduction" property="reduction" />
+    <result column="activity_amount" property="activityAmount"/>
+    <result column="created_at" property="createdAt"/>
+    <result column="archive" property="archive" jdbcType="BIT" />
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.vo.CampaignProductEX" id="campaignProductEX" extends="BaseResultMap">
+  	<result column="status" property="status"/>
+  	<result column="audit_status" property="auditStatus"/>
+  	<result column="activityStartTime" property="activityStartTime" jdbcType="TIMESTAMP"/>
+  	<result column="activityEndTime" property="activityEndTime" jdbcType="TIMESTAMP"/>
+  	<result column="feedback" property="feedback"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.vo.XQHomeActProductVO" id="XQHomeActProductVO" >
+  	<result column="product_id" property="productId"  jdbcType="VARCHAR"/>
+  	<result column="market_price" property="oldPrice" jdbcType="DECIMAL"/>
+  	<result column="price" property="actPrice"  jdbcType="DECIMAL"/>
+  	<result column="name" property="productTitle"  jdbcType="VARCHAR"/>
+  	<result column="reason" property="productDesc"  jdbcType="VARCHAR"/>
+  	<result column="start_time" property="startTime"  jdbcType="TIMESTAMP"/>
+  	<result column="end_time" property="endTime"  jdbcType="TIMESTAMP"/>
+  	<result column="amount" property="soldOut" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    ticket_id, activity_id, product_id, discount, reduction, activity_amount, created_at, archive
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.CampaignProduct" >
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_campaign_product (ticket_id, activity_id, product_id, discount, reduction, activity_amount, created_at, archive)
+    values (#{ticketId}, #{activityId}, #{productId, typeHandler=idHandler}, #{discount}, #{reduction}, #{activityAmount}, now(), 0)
+  </insert>
+  
+  <select id="selectByProdcut" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_campaign_product
+    where product_id = #{productId, typeHandler=idHandler} and archive =false
+  </select>
+  
+  <select id="selectByTicket" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_campaign_product
+    where ticket_id = #{ticketId} and archive =false
+  </select>
+  
+  <select id="selectByTicketAndProduct" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_campaign_product
+    where ticket_id = #{ticketId}
+    and product_id = #{productId, typeHandler=idHandler}
+  </select>
+  
+  <update id="updateByTicketAndProduct">
+  update vdlm_campaign_product 
+  set discount = #{discount},
+  reduction = #{reduction},
+  activity_amount = #{activityAmount}
+  where ticket_id = #{ticketId}
+  and product_id = #{productId, typeHandler=idHandler}
+  </update>
+  
+  <delete id="deleteByActivityAndProduct" >
+  	delete from vdlm_campaign_product 
+  	where activity_id = #{activityId} and product_id = #{productId, typeHandler=idHandler}
+  </delete>
+  
+  <delete id="deleteActivityProducts" >
+    delete from vdlm_campaign_product
+    where activity_id = #{activityId} and product_id in 
+    <foreach collection="productIds" item="item" index="index"
+	open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach> 
+  </delete>
+  
+  <select id="loadCampaignProductEX" resultMap="campaignProductEX">
+  	select cp.*, ti.status, ti.audit_status, ti.start_time as activityStartTime, ti.end_time as activityEndTime, ti.feedback 
+  	from vdlm_campaign_product cp inner join vdlm_activity a on cp.activity_id=a.id 
+	inner join vdlm_activity_ticket ti on cp.ticket_id=ti.id
+	where cp.activity_id=#{activityId} and cp.archive=false and ti.archive=false and ti.shop_id = #{shopId, typeHandler=idHandler}
+  </select>
+  
+  <select id="countCampaignProductByQuery" resultType="Long">
+  	select count(1)
+  	from vdlm_campaign_product cp inner join vdlm_activity_ticket ti on cp.ticket_id=ti.id
+	where cp.archive=false and ti.archive=false
+	<if test="paramsMap.activityId != null">
+		and cp.activity_id = #{paramsMap.activityId}
+	</if>
+	<if test="paramsMap.auditStatus != null">
+		and ti.audit_status = #{paramsMap.auditStatus}
+	</if>
+	
+  </select>
+  
+  <select id="listCampaignProductByQuery" resultMap="campaignProductEX">
+  	select cp.*, ti.status, ti.audit_status, ti.start_time as activityStartTime, ti.end_time as activityEndTime, ti.feedback 
+  	from vdlm_campaign_product cp inner join vdlm_activity_ticket ti on cp.ticket_id=ti.id
+	where cp.archive=false and ti.archive=false
+	<if test="paramsMap.activityId != null">
+		and cp.activity_id = #{paramsMap.activityId}
+	</if>
+	<if test="paramsMap.auditStatus != null">
+		and ti.audit_status = #{paramsMap.auditStatus}
+	</if>
+	order by created_at
+	<if test="paramsMap.sort != 1">
+		desc
+	</if>
+  </select>
+  
+  <!-- <select id="countCampaignProduct4Home" resultType="Long">
+  	select count(1)
+  	from vdlm_campaign_product cp inner join vdlm_activity_ticket ti on cp.ticket_id=ti.id
+	where cp.archive=false and ti.archive=false
+	<if test="paramsMap.activityId != null">
+		and cp.activity_id = #{paramsMap.activityId}
+	</if>
+  </select> -->
+  
+  <select id="countCampaignProduct4Home" resultType="Long">
+  	select count(1)
+	from vdlm.vdlm_product vp, vdlm.vdlm_activity_ticket vat, vdlm.vdlm_campaign_product vcp
+	where vp.id = vcp.product_id and vcp.ticket_id = vat.id	
+	and vat.status  = 'IN_PROGRESS'
+	<if test="paramsMap.activityId != null">
+		and vat.activity_id = #{paramsMap.activityId}
+	</if>
+	<if test="paramsMap.type == 1">
+		and date(vat.start_time) = curdate()
+	</if>
+	<if test="paramsMap.type == 2">
+		and date(vat.start_time)  &lt; curdate()
+	</if>
+	<if test="paramsMap.type == 3">
+		and 1=1
+	</if>
+	and vat.status != 'CLOSED'
+	and vat.audit_status = 'APPROVED'
+  </select>
+  
+  <select id="listCampaignProduct4Home" resultMap="XQHomeActProductVO">
+	select vp.id as product_id, vp.market_price, vp.price, vp.name, vp.status, vat.start_time, vat.end_time, vat.reason, vp.amount
+	from vdlm.vdlm_product vp, vdlm.vdlm_activity_ticket vat, vdlm.vdlm_campaign_product vcp
+	where vp.id = vcp.product_id and vcp.ticket_id = vat.id	
+	and vat.status  = 'IN_PROGRESS'
+	<if test="paramsMap.activityId != null">
+		and vat.activity_id = #{paramsMap.activityId}
+	</if>
+	<if test="paramsMap.type == 1">
+		and date(vat.start_time) = curdate()
+	</if>
+	<if test="paramsMap.type == 2">
+		and date(vat.start_time)  &lt; curdate()
+	</if>
+	<if test="paramsMap.type == 3">
+		and 1=1
+	</if>
+	and vat.status != 'CLOSED'
+	and vat.audit_status = 'APPROVED'
+	order by vcp.created_at desc
+    <if test="page != null" >
+	    limit #{page.offset}, #{page.size}
+    </if>
+  </select>
+  
+  <update id="auditTicketProduct">
+  	update vdlm_campaign_product set ticket_id=#{newTicketId} 
+  	where activity_id=#{activityId} and ticket_id=#{oldTicketId} and product_id=#{productId, typeHandler=idHandler}
+  </update>
+</mapper>

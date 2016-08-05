@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.TermRelationshipMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.TermRelationship" >
+    <id column="id" property="id" />
+    <result column="category_id" property="categoryId" />
+    <result column="obj_type" property="objType" />
+    <result column="obj_id" property="objId" typeHandler="idHandler"/>
+    <result column="created_at" property="createdAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, category_id, obj_type, obj_id, created_at
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.TermRelationship">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_term_relationship (category_id, obj_type, obj_id, created_at)
+    values (#{categoryId}, #{objType}, #{objId, typeHandler=idHandler}, now())
+  </insert>
+
+  <select id="select" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_term_relationship
+    where obj_type = #{0} and obj_id = #{1, typeHandler=idHandler} and category_id = #{2}
+  </select>
+  
+  <select id="listInCategory" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_term_relationship
+    where category_id = #{cid} and obj_type = #{objType}
+    limit #{pager.offset}, #{pager.size}
+  </select> 
+  
+  <select id="listUnderCategory" resultMap="BaseResultMap">
+    select
+    r.category_id, r.obj_type, r.obj_id, r.created_at
+    from vdlm_term_relationship r
+    join vdlm_category c on c.id = r.category_id
+    join vdlm_product p on p.id = r.obj_id and p.archive = 0 and p.shop_id = #{shopId, typeHandler=idHandler}
+    where (r.category_id = #{cid} or
+    c.tree_path like (select concat(tree_path, #{cid}, '>%') from vdlm_category where id = #{cid}))
+    and r.obj_type = #{objType}
+    limit #{pager.offset}, #{pager.size}
+  </select> 
+  
+  <select id="countUnderCategory" resultType="long">
+    select count(1)
+    from vdlm_term_relationship r
+    join vdlm_category c on c.id = r.category_id
+    join vdlm_product p on p.id = r.obj_id and p.archive = 0
+    where (r.category_id = #{cid} or
+    c.tree_path like (select concat(tree_path, #{cid}, '>%') from vdlm_category where id = #{cid}))
+    and r.obj_type = #{objType}
+  </select> 
+  
+  <select id="selectByCategoryAndObjtype" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_term_relationship
+    where category_id = #{0} and obj_type = #{1}
+  </select> 
+  
+  <select id="countProducts" resultType="Long">
+    select 
+    count(1)
+    from vdlm_term_relationship tr
+    join vdlm_category c on c.id = tr.category_id and c.creator_id = #{1, typeHandler=idHandler}
+    where tr.category_id = #{0} and obj_type = 'product' 
+  </select> 
+  
+  <delete id="delete">
+    delete from vdlm_term_relationship 
+    where id = #{id}
+  </delete>
+  
+  <delete id="deleteByCatAndObject">
+    delete from vdlm_term_relationship 
+    where category_id = #{cid}
+    and obj_type = #{objType}
+    and obj_id = #{objId, typeHandler=idHandler}
+  </delete>
+  
+  <select id="checkProductIdExists" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_term_relationship
+    where obj_type = #{objType} and obj_id = #{objId, typeHandler=idHandler}
+  </select>
+  
+</mapper>

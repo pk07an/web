@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderRefundMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderRefund" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="apply_no" property="applyNo" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId"  typeHandler="idHandler" />
+	<result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="refund_fee" property="refundFee" jdbcType="DECIMAL" />
+    <result column="buyer_require" property="buyerRequire" jdbcType="INTEGER" />
+    <result column="buyer_received" property="buyerReceived" jdbcType="BIT" />
+    <result column="refund_reason" property="refundReason" jdbcType="VARCHAR" />
+    <result column="refund_memo" property="refundMemo" jdbcType="VARCHAR" />
+    <result column="return_address" property="returnAddress" jdbcType="VARCHAR" />
+    <result column="return_name" property="returnName" jdbcType="VARCHAR" />
+    <result column="return_memo" property="returnMemo" jdbcType="VARCHAR" />
+    <result column="return_phone" property="returnPhone" jdbcType="VARCHAR" />
+    <result column="refuse_reason" property="refuseReason" jdbcType="VARCHAR" />
+    <result column="refuse_detail" property="refuseDetail" jdbcType="VARCHAR" />
+    <result column="logistics_company" property="logisticsCompany" jdbcType="VARCHAR" />
+    <result column="logistics_no" property="logisticsNo" jdbcType="VARCHAR" />
+    <result column="logistics_memo" property="logisticsMemo" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="admin_status" property="adminStatus" jdbcType="VARCHAR" />
+    <result column="admin_remark" property="adminRemark" jdbcType="VARCHAR" />
+    <result column="admin_op_time" property="adminOpTime" jdbcType="TIMESTAMP" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="reject_time" property="rejectTime" jdbcType="TIMESTAMP" />
+    <result column="reject_return_time" property="rejectReturnTime" jdbcType="TIMESTAMP" />
+    <result column="confirm_time" property="confirmTime" jdbcType="TIMESTAMP" />
+    <result column="ship_time" property="shipTime" jdbcType="TIMESTAMP" />
+    <result column="sign_time" property="signTime" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="TINYINT" />
+  </resultMap>
+  <resultMap id="OrderVRefundOMap" type="com.vdlm.dal.vo.OrderRefundVO" extends="BaseResultMap">
+  	    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    	<result column="order_fee" property="orderFee" jdbcType="DECIMAL" />
+    	<result column="buyer_phone" property="buyerPhone" jdbcType="DECIMAL" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, apply_no, order_id, order_fee, product_name, img, order_status, refund_fee, buyer_require, refuse_reason, refuse_detail,
+    buyer_received, refund_reason, refund_memo, return_address, return_name, return_memo, return_phone, status, created_at, updated_at,
+    logistics_company, logistics_no, logistics_memo, reject_time, reject_return_time, confirm_time, ship_time, sign_time
+  </sql>
+  
+  <sql id="BaseVO_Column_List" >
+    (o.total_fee + o.discount_fee) order_fee, o.order_no, r.order_status, r.refuse_detail, r.refuse_reason,
+    r.id, r.apply_no, r.order_id, r.product_name, r.img, r.refund_fee, r.buyer_require, 
+    r.buyer_received, r.refund_reason, r.refund_memo, r.return_address, 
+    r.return_name, r.return_memo, r.return_phone, r.status, r.created_at, r.updated_at,
+    r.logistics_company, r.logistics_no, r.logistics_memo, r.admin_status, r.admin_remark, r.admin_op_time,
+    r.reject_time, r.reject_return_time, r.confirm_time, r.ship_time, r.sign_time
+  </sql>
+  
+  <sql id="condByAdmin">
+	<if test="params.orderno != null">
+		and o.order_no like #{params.orderno}
+	</if>
+	<if test="params.status != null">
+		and r.status like #{params.status}
+	</if>	
+	<if test="params.refundvalidfrom != null">
+		and r.created_at  >= #{params.refundvalidfrom}
+	</if>
+	<if test="params.refundvalidto != null">
+		<![CDATA[
+			and r.created_at  <= #{params.refundvalidto}
+		]]>
+	</if>
+	</sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_refund
+    where id = #{id, typeHandler=idHandler}
+  </select>
+  
+  <select id="listByOrderId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_refund
+    where order_id = #{orderId, typeHandler=idHandler}
+    and archive = false
+  </select>
+  
+   <select id="selectVOByPrimaryKey" resultMap="OrderVRefundOMap">
+    select 
+    <include refid="BaseVO_Column_List" />
+    ,oa.phone buyer_phone
+    from vdlm_order_refund r join vdlm_order o on o.id=r.order_id join vdlm_order_address oa on oa.order_id = o.id
+    where o.archive=false and r.id = #{id, typeHandler=idHandler}
+  </select>
+  
+    <!--
+   -->
+  	<select id="list" resultMap="OrderVRefundOMap">
+		select
+		<include refid="BaseVO_Column_List" />
+		from vdlm_order_refund r join vdlm_order o on o.id=r.order_id
+		where seller_id = #{sellerId, typeHandler=idHandler} 
+		
+		order by r.created_at desc
+	    <if test="page != null" >
+		    limit #{page.offset}, #{page.size}
+	    </if>
+	</select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from vdlm_order_refund
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderRefund" >
+    insert into vdlm_order_refund (apply_no, order_id,
+      product_name, img, order_status, 
+      refund_fee, buyer_require, buyer_received, 
+      refund_reason, refund_memo, status, 
+      created_at, updated_at)
+    values (#{applyNo,jdbcType=VARCHAR}, #{orderId,typeHandler=idHandler}, 
+      #{productName,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR}, #{orderStatus,jdbcType=VARCHAR}, 
+      #{refundFee,jdbcType=DECIMAL}, #{buyerRequire,jdbcType=INTEGER}, #{buyerReceived,jdbcType=BIT}, 
+      #{refundReason,jdbcType=VARCHAR}, #{refundMemo,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
+      now(), now())
+  </insert>
+  
+  <update id="reject" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund 
+    set status = 'REJECT_REFUND',
+        refuse_detail = #{refuseDetail},
+        refuse_reason = #{refuseReason},
+        reject_time = now(),
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} and status in ('SUBMITTED')
+  </update>
+  
+  <update id="rejectSign" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund 
+    set status = 'REJECT_RETURN',
+        refuse_detail = #{refuseDetail},
+        refuse_reason = #{refuseReason},
+        reject_return_time = now(),
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} and status = 'RETURN_ING'
+  </update>
+  
+  <update id="success" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund 
+    set status = 'SUCCESS',
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} 
+     and ((status = 'SUBMITTED' and buyer_require = 1) or status = 'RETURN_ING' and buyer_require = 2 )
+  </update>  
+  
+  <update id="confirmSellerByAdmin">
+    update vdlm_order_refund 
+    set admin_status = #{adminStatus},
+    	admin_remark = #{adminRemark},
+    	admin_op_time = now(),
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} 
+     and status in('REJECT_REFUND', 'REJECT_RETURN')
+  </update>  
+  
+  
+  <update id="ship" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund 
+    set status = 'RETURN_ING',
+    	logistics_company = #{logisticsCompany},
+        logistics_no = #{logisticsNo},
+        logistics_memo = #{logisticsMemo},
+   		ship_time = now(),
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} 
+     and status = 'AGREE_RETURN'
+  </update>
+  
+  <update id="cancel" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund 
+    set status = 'CANCELLED',
+    	archive = true,
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} 
+     and status = 'SUBMITTED'
+  </update>
+  
+  <update id="sign" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund 
+    set status = 'SUCCESS',
+    	sign_time = now(),
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} 
+     and status = 'RETURN_ING'
+  </update>
+<update id="confirm" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund
+    set status = 'AGREE_RETURN',
+        return_address = #{returnAddress},
+        return_name = #{returnName},
+        return_memo = #{returnMemo},
+        return_phone = #{returnPhone},
+        return_memo = #{returnMemo},
+        confirm_time = now(),
+        updated_at = now()
+     where id = #{id, typeHandler=idHandler} and status = 'SUBMITTED'
+  </update>
+  
+  <update id="updateByModifyRequest" parameterType="com.vdlm.dal.model.OrderRefund" >
+      update vdlm_order_refund
+      set 
+      refund_fee = #{refundFee,jdbcType=DECIMAL},
+      buyer_require = #{buyerRequire,jdbcType=INTEGER},
+      buyer_received = #{buyerReceived,jdbcType=BIT},
+      refund_reason = #{refundReason,jdbcType=VARCHAR},
+      refund_memo = #{refundMemo,jdbcType=VARCHAR},
+      updated_at = now()
+    where id = #{id, typeHandler=idHandler} and status = 'SUBMITTED'
+  
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.OrderRefund" >
+    update vdlm_order_refund
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="img != null" >
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="refundFee != null" >
+        refund_fee = #{refundFee,jdbcType=DECIMAL},
+      </if>
+      <if test="buyerRequire != null" >
+        buyer_require = #{buyerRequire,jdbcType=INTEGER},
+      </if>
+      <if test="buyerReceived != null" >
+        buyer_received = #{buyerReceived,jdbcType=BIT},
+      </if>
+      <if test="refundReason != null" >
+        refund_reason = #{refundReason,jdbcType=VARCHAR},
+      </if>
+      <if test="refundMemo != null" >
+        refund_memo = #{refundMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="returnAddress != null" >
+        return_address = #{returnAddress,jdbcType=VARCHAR},
+      </if>
+      <if test="returnName != null" >
+        return_name = #{returnName,jdbcType=VARCHAR},
+      </if>
+      <if test="returnMemo != null" >
+        return_memo = #{returnMemo,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      updated_at = now(),
+    </set>
+    where id = #{id, typeHandler=idHandler}
+  </update>
+  
+ 	<select id="listOrderRefundByAdmin" resultMap="OrderVRefundOMap">
+		select
+			<include refid="BaseVO_Column_List" />
+		from vdlm_order_refund r left join vdlm_order o 
+			on o.id = r.order_id
+		where 1 = 1
+		<include refid="condByAdmin"/>
+		order by r.created_at desc
+		limit #{page.offset}, #{page.size} 
+	</select>
+	
+	<select id="countOrderRefundByAdmin" resultType="Long">
+		select count(*) as c
+			from vdlm_order_refund r left join vdlm_order o 
+			on o.id = r.order_id
+		where 1 = 1
+		<include refid="condByAdmin"/>
+  	</select>
+  
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.UserBankMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.UserBank">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="id_card_num" property="idCardNum" jdbcType="VARCHAR" />
+		<result column="account_number" property="accountNumber" jdbcType="VARCHAR" />
+		<result column="account_name" property="accountName" jdbcType="VARCHAR" />
+		<result column="opening_bank" property="openingBank" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, user_id, id_card_num, account_number, account_name, opening_bank, archive,
+		created_at, updated_at
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_user_bank
+		where id = #{id, typeHandler=idHandler} and archive = false
+	</select>
+	<select id="listByUserId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_user_bank
+		where user_id = #{userId, typeHandler=idHandler} and archive = false
+	</select>
+	<update id="updateForArchive">
+		update vdlm_user_bank set archive=true,updated_at =
+		now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+	<update id="updateForUnArchive">
+		update vdlm_user_bank set archive=false,updated_at =
+		now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+	<insert id="insert" parameterType="com.vdlm.dal.model.UserBank">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_user_bank ( user_id, id_card_num, account_number,
+		account_name, opening_bank, created_at,
+		updated_at)
+		values ( #{userId,typeHandler=idHandler}, #{idCardNum,jdbcType=VARCHAR}, #{accountNumber,jdbcType=VARCHAR},
+		#{accountName,jdbcType=VARCHAR}, #{openingBank,jdbcType=VARCHAR},
+		now(), now())
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.UserBank">
+		update vdlm_user_bank
+		<set>
+		    <if test="idCardNum != null">
+                id_card_num = #{idCardNum,jdbcType=VARCHAR},
+            </if>
+			<if test="accountNumber != null">
+				account_number = #{accountNumber,jdbcType=VARCHAR},
+			</if>
+			<if test="accountName != null">
+				account_name = #{accountName,jdbcType=VARCHAR},
+			</if>
+			<if test="openingBank != null">
+				opening_bank = #{openingBank,jdbcType=VARCHAR},
+			</if>
+			<if test="archive != null">
+				archive = #{archive,jdbcType=BIT},
+			</if>
+			<if test="updatedAt != null">
+				updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+			</if>
+		updated_at = now()
+		</set>
+		where id = #{id,typeHandler=idHandler} and to_days(now()) - to_days(updated_at) > 0
+	</update>
+</mapper>

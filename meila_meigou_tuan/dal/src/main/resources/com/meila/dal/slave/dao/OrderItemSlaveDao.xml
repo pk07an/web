@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.OrderItemSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderItem" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="sku_str" property="skuStr" jdbcType="VARCHAR" />
+    <result column="product_img" property="productImg" jdbcType="VARCHAR" />
+    <result column="product_img_width" property="productImgWidth" jdbcType="INTEGER"/>
+    <result column="product_img_height" property="productImgHeight" jdbcType="INTEGER"/>
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, order_id, product_id, sku_id, product_name, sku_str, product_img, price, market_price, amount, created_at, updated_at, product_img_width, product_img_height
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_item
+    where id = #{id,typeHandler=idHandler}
+  </select>
+  
+   <select id="selectOrderItemsByOrderNoAndBuyerId" resultMap="BaseResultMap" >
+    select 
+    	 a.id, a.order_id, a.product_id, a.sku_id, a.product_name, a.sku_str, a.product_img, a.price, a.market_price, 
+    	 a.amount, a.created_at, a.updated_at, a.product_img_width, a.product_img_height
+    from 
+    	vdlm_order_item a 
+    left join 
+    	vdlm_order b 
+    on a.order_id=b.id
+    where 
+    	b.order_no = #{orderNo,jdbcType=VARCHAR}
+    and
+    	b.buyer_id =  #{buyerId,jdbcType=BIGINT}
+  </select>
+  
+</mapper>

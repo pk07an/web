@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:security="http://www.springframework.org/schema/security"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context" xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd
+http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.0.xsd
+http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd"
+	default-lazy-init="true" default-autowire="byName">
+
+	<task:annotation-driven />
+<aop:aspectj-autoproxy />
+
+	<context:component-scan base-package="com.vdlm,com.meila" />
+
+	<bean id="pwdEncoder" class="org.springframework.security.crypto.password.StandardPasswordEncoder">
+		<constructor-arg value="${pwd.encoder.seed}" />
+	</bean>
+
+	<bean class="org.springframework.validation.beanvalidation.MethodValidationPostProcessor" />
+
+
+	<security:authentication-manager alias="authenticationManager" erase-credentials="false">
+		<security:authentication-provider user-service-ref='userService'>
+			<security:password-encoder ref="pwdEncoder" />
+		</security:authentication-provider>
+	</security:authentication-manager>
+
+	<!-- spring data redis -->
+	<bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+		<property name="usePool" value="true"></property>
+		<property name="hostName" value="${redis.host}" />
+		<property name="port" value="${redis.port}" />
+		<property name="timeout" value="${redis.timeout}" />
+		<property name="database" value="${redis.default.db}" />
+		<constructor-arg index="0" ref="jedisPoolConfig" />
+	</bean>
+
+	<!-- jedis pool配置 -->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxTotal" value="${redis.maxActive}" />
+		<property name="maxIdle" value="${redis.maxIdle}" />
+		<property name="maxWaitMillis" value="${redis.maxWait}" />
+		<!-- <property name="testOnBorrow" value="${redis.testOnBorrow}" /> -->
+	</bean>
+	<!-- redis template definition -->
+	<bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" p:connection-factory-ref="jedisConnectionFactory" />
+	
+	<bean id="jedisPool" class="com.meila.meigou.cachehelper.JedisPoolHelper" autowire="byType">
+        <constructor-arg name="poolConfig">
+            <bean class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+                <property name="testOnBorrow" value="true"/>
+                <property name="maxIdle" value="${redis.maxIdle}"/>
+                <property name="minIdle" value="10"/>
+                <property name="maxTotal" value="${redis.maxActive}"/>
+                <property name="maxWaitMillis" value="${redis.maxWait}" />
+            </bean>
+        </constructor-arg>
+        <constructor-arg name="host" value="${redis.host}"/>
+        <constructor-arg name="port" value="${redis.port}"/>
+        <constructor-arg name="password" value="${redis.pass}"/>
+        <constructor-arg name="timeout" value="${redis.timeout}"/>
+        <constructor-arg name="database" value="${redis.default.db}"/>
+    </bean>
+    
+    <bean id="redisAdapter" class="com.meila.meigou.cachehelper.RedisAdapter" autowire="byType">
+        <constructor-arg name="pool" ref="jedisPool"/>
+    </bean>
+    
+    <bean id="syncTaskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+        <property name="corePoolSize" value="30" />
+        <property name="maxPoolSize" value="50" />
+        <property name="queueCapacity" value="50" />
+        <property name="keepAliveSeconds" value="10000" /> 
+        <property name="rejectedExecutionHandler">  
+            <bean class="java.util.concurrent.ThreadPoolExecutor$AbortPolicy" />  
+        </property> 
+    </bean>
+</beans>

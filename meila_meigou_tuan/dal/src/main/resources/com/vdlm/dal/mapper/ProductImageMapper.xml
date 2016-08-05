@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProductImageMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProductImage">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="product_id" property="productId" typeHandler="idHandler" />
+		<result column="img" property="img" jdbcType="VARCHAR" />
+		<result column="img_width" property="imgWidth" jdbcType="INTEGER"/>
+		<result column="img_height" property="imgHeight" jdbcType="INTEGER"/>
+		<result column="img_order" property="imgOrder" jdbcType="INTEGER" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="type" property="type" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, product_id, img, img_order, archive, created_at, type, img_width, img_height
+	</sql>
+	
+	<select id="selectByProductId" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_product_image
+		where product_id = #{productId,typeHandler=idHandler} 
+		and archive = false
+		order by img_order
+	</select>
+	
+	<delete id="updateForArchive">
+		update vdlm_product_image set archive = true
+		where id = #{id} and archive = false
+	</delete>
+	
+	<delete id="updateForUnArchive">
+		update vdlm_product_image set archive = false
+		where id = #{id} and archive = true
+	</delete>
+	
+	<update id="updateImgOrder">
+		update vdlm_product_image set img_order = #{imgOrder, jdbcType=INTEGER}
+		where product_id = #{productId,typeHandler=idHandler} and img = #{img, jdbcType=VARCHAR}
+	</update>
+	
+	<insert id="insert" parameterType="com.vdlm.dal.model.ProductImage">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_product_image
+		(product_id, img, img_width, img_height,  img_order, created_at, type)
+		values (
+		#{productId,typeHandler=idHandler},
+		#{img, jdbcType=VARCHAR},
+		#{imgWidth},
+		#{imgHeight},
+		#{imgOrder, jdbcType=INTEGER},
+		now(),
+		#{type, jdbcType=INTEGER})
+	</insert>
+	
+	<select id="getProductImgs" resultMap="BaseResultMap">
+        select img, img_width, img_height from 
+        	vdlm_product_image 
+        where product_id = #{productId} 
+        <if test="type != ''">
+        and type = #{type}
+        </if>
+        order by created_at desc
+    </select>
+    
+    <select id="selectByImg" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_product_image
+		where img = #{img} 
+		and archive = false
+		limit 1
+	</select>
+</mapper>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.NoticeSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.PublicNotice">
+	<id column="id" property="id" typeHandler="idHandler" />
+	<result column="title" property="title" jdbcType="VARCHAR" />
+	<result column="type" property="noticeType" jdbcType="VARCHAR" />
+	<result column="image_path" property="imagePath" jdbcType="VARCHAR" />
+	<result column="content" property="content" jdbcType="VARCHAR" />
+	<result column="jump_url" property="jumpUrl" jdbcType="VARCHAR" />
+	<result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+	<result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	<result column="archive" property="archive" jdbcType="TINYINT" />
+</resultMap>
+  
+
+  
+ <sql id="Base_Column_List" >
+   			id,title,type,image_path,content,jump_url,start_time,end_time,created_at,updated_at,archive
+  </sql>
+
+
+	<select id="selectCurrentNotice" resultMap="BaseResultMap">
+		select
+			<include refid="Base_Column_List"/>
+		from
+			vdlm_notice
+		where 
+			now() 
+		between 
+			start_time and end_time
+		and 
+			type = 'PUBLICNOTICE'
+		and 
+			archive = false
+		order by 
+			updated_at desc
+		limit 1 
+	</select>
+  </mapper>

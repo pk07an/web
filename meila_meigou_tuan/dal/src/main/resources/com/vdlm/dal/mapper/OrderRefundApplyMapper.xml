@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderRefundApplyMapper" >
+   <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderRefundApply" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="apply_no" property="applyNo" jdbcType="VARCHAR" />
+    <result column="order_id" property="orderId"  typeHandler="idHandler" />
+      <result column="seller_id" property="sellerId" typeHandler="idHandler" />
+      <result column="confirm_user_id" property="confirmUserId" typeHandler="idHandler" />
+      <result column="refund_status" property="refundStatus" jdbcType="VARCHAR" />
+	  <result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+  
+    <result column="refund_fee" property="refundFee" jdbcType="DECIMAL" />
+    <result column="refund_type" property="refundType" jdbcType="INTEGER" />
+    <result column="refund_reason" property="refundReason" jdbcType="VARCHAR" />
+    <result column="refund_remark" property="refundRemark" jdbcType="VARCHAR" />
+    <result column="reject_reason" property="rejectReason" jdbcType="VARCHAR" />
+    <result column="reject_remark" property="rejectRemark"  jdbcType="VARCHAR" />
+    <result column="request_by" property="requestBy" jdbcType="VARCHAR" />
+   
+    <result column="refund_time" property="refundTime" jdbcType="TIMESTAMP" />
+    <result column="cancel_time" property="cancelTime" jdbcType="TIMESTAMP" />
+    <result column="s_confirm_time" property="sellerConfirmTime" jdbcType="TIMESTAMP" />
+    <result column="p_confirm_time" property="plateConfirmTime" jdbcType="TIMESTAMP" />
+    <result column="transfer_time" property="transferTime" jdbcType="TIMESTAMP" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="TINYINT" />
+  </resultMap>
+ <sql id="Base_Column_List" >
+    id, apply_no, order_id, seller_id,confirm_user_id,refund_status, order_status, refund_fee, refund_type, refund_reason, refund_remark,
+    reject_reason, reject_remark, request_by, refund_time, cancel_time, s_confirm_time, p_confirm_time, transfer_time, created_at, updated_at
+  </sql>
+  <insert id="insertOrderRefundApply" parameterType="com.vdlm.dal.model.OrderRefundApply">
+  	insert into vdlm_order_refund_apply (apply_no,order_id,seller_id,confirm_user_id,refund_status,order_status,refund_fee,refund_type,refund_reason,refund_remark,
+  	request_by,refund_time,created_at,updated_at,archive) 
+	values(#{applyNo,jdbcType=VARCHAR},#{orderId,jdbcType=VARCHAR},null,null,#{refundStatus,jdbcType=VARCHAR},#{orderStatus,jdbcType=VARCHAR},
+	#{refundFee,jdbcType=DECIMAL},#{refundType,jdbcType=VARCHAR},#{refundReason,jdbcType=VARCHAR},#{refundRemark,jdbcType=VARCHAR},
+	#{requestBy,jdbcType=VARCHAR},now(),now(),now(),#{archive,jdbcType=TINYINT})
+  </insert>
+  <update id="updateOrderRefundStatusById">
+  	update vdlm_order_refund_apply 
+  	<set> 
+  			refund_status=#{refundStatus,jdbcType=VARCHAR},
+  			updated_at=now(),
+  		<if test="refundStatus != null and refundStatus != ''  and refundStatus.toString() == 'B_CANCEL'">
+  			cancel_time=now(),
+  		  </if>
+  	</set>
+  	where 
+  		id=#{id,typeHandler=idHandler}
+  	and 
+  		archive = false
+  </update>
+  
+  <update id="updateOrderRefundById">
+  	update vdlm_order_refund_apply 
+  	<set> 
+  			refund_status=#{refundStatus,jdbcType=VARCHAR},
+  			seller_id = #{sellerId,typeHandler=idHandler},
+  			updated_at=now(),
+  			s_confirm_time=now()
+	  		<if test="remark != null">
+	  			,reject_remark=#{remark,jdbcType=VARCHAR}
+	  		</if>
+  	</set>
+  	where 
+  		id=#{id,typeHandler=idHandler}
+  	and 
+  		archive = false
+  </update>
+</mapper>

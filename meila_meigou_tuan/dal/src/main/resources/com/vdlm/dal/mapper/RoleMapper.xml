@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.RoleMapper" >
+<select id="findAllRoles" resultType="com.vdlm.dal.model.Role">
+   select id,name from vdlm_bos_role
+</select>
+<insert id="insertUserRole">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+     insert vdlm_bos_userrole(user_id,role_id) values(#{userId},#{roleId})
+</insert>
+
+<update id="updateUserRole">
+   update vdlm_bos_userrole set role_id=#{roleId} where  user_id=#{userId}
+</update>
+<select id="findRoleByUserId"  resultType="com.vdlm.dal.model.Role">
+  select  r.id id,r.name name from vdlm_bos_userrole ur,vdlm_bos_role r  where ur.role_id=r.id
+  and ur.user_id=#{userId, typeHandler=idHandler}
+</select>
+</mapper>

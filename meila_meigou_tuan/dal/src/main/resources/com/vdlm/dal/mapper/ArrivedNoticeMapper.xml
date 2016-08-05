@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ArrivedNoticeMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.ArrivedNoticeVO">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="product_name" property="productName" jdbcType="VARCHAR" />
+		<result column="buyer_id" property="buyerId" typeHandler="idHandler" />
+		<result column="seller_id" property="sellerId" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" typeHandler="idHandler" />
+		<result column="product_id" property="productId" typeHandler="idHandler" />
+		<result column="product_code" property="productCode" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, buyer_id, seller_id, shop_id,product_id,product_name, product_code,archive,
+		created_at, updated_at
+	</sql>
+	<insert id="insert" parameterType="com.vdlm.dal.model.ArrivedNoticeVO">
+		insert into
+			vdlm_arrived_notice (buyer_id, seller_id, shop_id,product_id,product_code,product_name, archive,created_at, updated_at)
+		values
+		(
+		#{buyerId,typeHandler=idHandler },
+		#{sellerId,typeHandler=idHandler },
+		#{shopId,typeHandler=idHandler },
+		#{productId,typeHandler=idHandler },
+		#{productCode,jdbcType=VARCHAR},
+		#{productName,jdbcType=VARCHAR},
+		#{archive,jdbcType=TINYINT},
+		now(),null
+		)
+	</insert>
+</mapper>

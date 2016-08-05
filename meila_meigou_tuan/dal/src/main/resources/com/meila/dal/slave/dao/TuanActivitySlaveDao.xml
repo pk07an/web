@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.TuanActivitySlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.TuanActivity" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="actc_name" property="actcName" jdbcType="VARCHAR" />
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="img_width" property="imgWidth" jdbcType="INTEGER" />
+    <result column="img_height" property="imgHeight" jdbcType="INTEGER" />
+    <result column="begin_time" property="beginTime" jdbcType="TIMESTAMP" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="SMALLINT" />
+    <result column="product_id" property="productId" jdbcType="BIGINT" />
+    <result column="product_code" property="productCode" jdbcType="VARCHAR" />
+    <result column="sku_id" property="skuId" jdbcType="BIGINT" />
+    <result column="sku_code" property="skuCode" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="sku_price" property="skuPrice" jdbcType="DECIMAL" />
+    <result column="tuan_price" property="tuanPrice" jdbcType="DECIMAL" />
+    <result column="sku_stock" property="skuStock" jdbcType="INTEGER" />
+    <result column="sku_tuan_stock" property="skuTuanStock" jdbcType="INTEGER" />
+    <result column="total_num" property="totalNum" jdbcType="INTEGER" />
+    <result column="now_num" property="nowNum" jdbcType="INTEGER" />
+    <result column="lock_flag" property="lockFlag" jdbcType="INTEGER" />
+    <result column="member_num" property="memberNum" jdbcType="INTEGER" />
+    <result column="active_alive" property="activeAlive" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="TINYINT" />
+    <result column="created_user" property="createdUser" jdbcType="VARCHAR" />
+    <result column="img2" property="img2" jdbcType="VARCHAR" />
+    <result column="rank" property="rank" jdbcType="BIGINT" />
+    <result column="act_discount" property="discount" jdbcType="DECIMAL" />
+    <result column="tuan_type" property="tuanType" jdbcType="VARCHAR" />
+    <result column="is_hide_join" property="hideJoin" jdbcType="BIT" />
+  </resultMap>
+  <resultMap id="ResultMapWithBLOBs" type="com.vdlm.dal.model.TuanActivity" extends="BaseResultMap" >
+    <result column="description" property="description" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, actc_name, img, img_width, img_height, begin_time, end_time, status, product_id, 
+    product_code, sku_id, sku_code, product_name, sku_price, tuan_price, sku_stock, sku_tuan_stock, 
+    total_num, now_num, lock_flag, member_num, active_alive, created_at, updated_at, 
+    archive, created_user,img2,rank,act_discount,tuan_type,is_hide_join,description
+  </sql>
+
+   <sql id="join_skuprice_Column_List" >
+        act.id,act. actc_name,act. img,act. img_width,act. img_height,act. begin_time,act. end_time,act. status,act. product_id,act. product_code,
+        act. sku_id,act. sku_code,act. product_name,act. tuan_price,act. sku_stock,act. sku_tuan_stock,act. total_num,act. now_num,
+        act. lock_flag,act. member_num,act. active_alive,act. created_at,act. updated_at,act. archive,
+        act. created_user,act.img2,act.rank,act.act_discount,act.tuan_type,act.description,act.is_hide_join,
+        sku.price as sku_price
+   </sql>
+  
+  <select id="selectById" resultMap="ResultMapWithBLOBs" parameterType="java.lang.Long" >
+    select 
+	  <include refid="join_skuprice_Column_List" />
+    from 
+        vdlm_tuan_activity act
+    left join 
+        vdlm_sku sku 
+    on 
+        act.sku_id=sku.id
+    where 
+        act.id = #{id,jdbcType=BIGINT} 
+     and 
+        act.archive=false
+  </select>
+  
+  <select id="selectAllTuanActivityList" resultMap="ResultMapWithBLOBs" >
+    select 
+        <include refid="join_skuprice_Column_List" />
+    from 
+        vdlm_tuan_activity act
+    left join 
+        vdlm_sku sku 
+    on 
+        act.sku_id=sku.id
+    where 
+        now() >= act.begin_time 
+    and 
+        act.archive =false 
+    and 
+        act.is_test = #{isTest,jdbcType=BIT} 
+  </select>
+</mapper>

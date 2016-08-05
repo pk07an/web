@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.HelperMessageMapper" >
+
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.HelperMessage" >
+		<id column="id" property="id" typeHandler="idHandler" />
+        <result column="title" property="title" jdbcType="VARCHAR" />
+        <result column="intro" property="intro" jdbcType="VARCHAR" />
+        <result column="icon" property="icon" jdbcType="VARCHAR" />
+        <result column="url" property="url" jdbcType="VARCHAR" />
+        <result column="archive" property="archive" jdbcType="BIT" />
+        <result column="sort" property="sort" jdbcType="TINYINT" />
+    </resultMap>
+    
+    <sql id="Base_Column_List">
+        id, title, intro, icon, url, sort
+    </sql>
+	
+	<insert id="insert" parameterType="com.vdlm.dal.model.HelperMessage" >
+  		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_helper (title, intro, icon, url, archive, sort)
+    		values (#{params.title,jdbcType=VARCHAR}, #{params.intro,jdbcType=VARCHAR}, 
+      				#{icon,jdbcType=VARCHAR}, #{params.url,jdbcType=VARCHAR}, 
+      				false, 0)
+  	</insert>
+  	<update id="update">
+    	update vdlm_helper set 
+    		title = #{params.title,jdbcType=VARCHAR}, 
+    		intro = #{params.intro,jdbcType=VARCHAR}, 
+    		icon = #{icon,jdbcType=VARCHAR},
+    		url = #{params.url,jdbcType=VARCHAR}
+    	where id = #{id,typeHandler=idHandler}
+  	</update>
+  	<update id="delete">
+    	update vdlm_helper set archive=true
+    	where id = #{id,typeHandler=idHandler} and archive=false
+  	</update>
+  
+    <select id="selectAll" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_helper
+        where archive = false
+        order by id desc
+    	limit #{page.offset}, #{page.size}
+    </select>
+    
+    <select id="listMessageByAdmin" resultMap="BaseResultMap">
+        select 
+        <include refid="Base_Column_List" />
+        from vdlm_helper
+        where archive = false
+        order by id desc
+        limit #{page.offset}, #{page.size} 
+	</select>
+	
+	<select id="countMessageByAdmin" resultType="Long">
+    	select count(*) as c
+		from vdlm_helper
+		where archive = false
+  	</select>
+    
+</mapper>

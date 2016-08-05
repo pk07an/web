@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.TermMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Term" >
+    <id column="id" property="id" />
+    <result column="name" property="name" jdbcType="VARCHAR"/>
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, name, created_at, updated_at
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Term">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_term (name, created_at, updated_at)
+    values (#{name}, now(), now())
+  </insert>
+  
+  <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_term
+    where id = #{id}
+  </select>
+  
+  <select id="loadByName" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_term
+    where name = #{0}
+  </select>
+  
+</mapper>

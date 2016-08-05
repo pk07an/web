@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.AddressMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Address" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="user_id" property="userId" typeHandler="idHandler"/>
+    <result column="zone_id" property="zoneId" jdbcType="BIGINT" />
+    <result column="street" property="street" jdbcType="VARCHAR" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="zipcode" property="zipcode" jdbcType="VARCHAR" />
+    <result column="weixin_id" property="weixinId" jdbcType="VARCHAR" />
+    <result column="common" property="common" jdbcType="BIT" />
+    <result column="hash_code" property="hashCode" jdbcType="BIT" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR"/>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, user_id, zone_id, street, consignee, phone, zipcode, weixin_id, common, hash_code, archive, created_at, updated_at,id_card
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_address
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler} and archive=false
+  </select>
+
+  <select id="selectUserAddress" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_address
+    where user_id = #{0,typeHandler=idHandler} and id= #{1,typeHandler=idHandler} and archive=false
+  </select>  
+  
+  <select id="selectUserAddresses" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_address
+    where user_id = #{0,typeHandler=idHandler} and archive=false
+    order by common desc,created_at desc
+  </select>
+  
+  <select id="selectLatestUserAddresses" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_address
+    where user_id = #{0,typeHandler=idHandler} and archive=false
+    order by updated_at desc limit 1
+  </select>
+  
+  <update id="updateForArchive" parameterType="java.lang.Long" >
+    update vdlm_address set archive=true,updated_at = now()
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateForUnArchive" parameterType="java.lang.Long" >
+    update vdlm_address set archive=false,updated_at = now()
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateForUnCommon" parameterType="String" >
+    update vdlm_address set common=false, updated_at = now()
+    where user_id = #{userId, typeHandler=idHandler}
+  </update>
+  
+  <update id="updateForCommon" parameterType="java.lang.Long" >
+    update vdlm_address set common=true, updated_at = now()
+    where id = #{id, typeHandler=idHandler}
+  </update>
+
+  <insert id="insert" parameterType="com.vdlm.dal.model.Address" >
+	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into vdlm_address (user_id, zone_id, street, consignee, phone, zipcode, weixin_id,  
+      common, hash_code, created_at, updated_at,id_card
+      )
+    values (#{userId,jdbcType=BIGINT,typeHandler=idHandler}, #{zoneId,jdbcType=BIGINT}, 
+      #{street,jdbcType=VARCHAR}, #{consignee,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{zipcode,jdbcType=VARCHAR}, #{weixinId,jdbcType=VARCHAR},  
+      #{common,jdbcType=VARCHAR}, #{hashCode,jdbcType=VARCHAR}, now(),now(),#{idCard,jdbcType=VARCHAR}
+      )
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.Address" >
+    update vdlm_address
+    <set >
+      <if test="zoneId != null" >
+        zone_id = #{zoneId,jdbcType=BIGINT},
+      </if>
+      <if test="street != null" >
+        street = #{street,jdbcType=VARCHAR},
+      </if>
+      <if test="consignee != null" >
+        consignee = #{consignee,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="weixinId != null" >
+        weixin_id = #{weixinId,jdbcType=VARCHAR},
+      </if>
+      <if test="zipcode != null" >
+        zipcode = #{zipcode,jdbcType=VARCHAR},
+      </if>     
+      <if test="archive != null" >
+        archive = #{archive,jdbcType=BIT},
+      </if>
+      <if test="idCard != null" >
+        id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id, typeHandler=idHandler} and archive=false
+  </update>
+  
+   <update id="updateForArchiveByUserId"  >
+    update vdlm_address set archive=true,updated_at = now()
+    where 
+    	id = #{id,typeHandler=idHandler} 
+    and
+    	user_id=#{userId,typeHandler=idHandler}
+  </update>
+  
+    <select id="selectDefaultAddressByUser" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from 
+    	vdlm_address
+    where 
+    	user_id = #{userId,typeHandler=idHandler} and common = 1 and archive=false limit 1
+  </select>
+</mapper>

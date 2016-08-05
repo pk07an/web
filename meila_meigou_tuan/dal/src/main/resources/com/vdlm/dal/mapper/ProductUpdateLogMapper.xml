@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProductUpdateLogMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProductUpdateLog" >
+
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="type" property="type" jdbcType="BIT" />
+    <result column="pre_update" property="preUpdate" jdbcType="VARCHAR" />
+    <result column="after_update" property="afterUpdate" jdbcType="VARCHAR" />
+    <result column="op_user_id" property="opUserId" jdbcType="BIGINT" />
+    <result column="update_at" property="updateAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+
+    id, type, pre_update, after_update, op_user_id, update_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_product_updatelog
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+
+    delete from vdlm_product_updatelog
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.vdlm.dal.model.ProductUpdateLog" >
+
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into vdlm_product_updatelog (type, pre_update, after_update, 
+      op_user_id, update_at)
+    values (#{type,jdbcType=BIT}, #{preUpdate,jdbcType=VARCHAR}, #{afterUpdate,jdbcType=VARCHAR}, 
+      #{opUserId,jdbcType=BIGINT}, now())
+  </insert>
+  <insert id="insertSelective" parameterType="com.vdlm.dal.model.ProductUpdateLog" >
+
+    <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER" >
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into vdlm_product_updatelog
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="type != null" >
+        type,
+      </if>
+      <if test="preUpdate != null" >
+        pre_update,
+      </if>
+      <if test="afterUpdate != null" >
+        after_update,
+      </if>
+      <if test="opUserId != null" >
+        op_user_id,
+      </if>
+      <if test="updateAt != null" >
+        update_at,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="type != null" >
+        #{type,jdbcType=BIT},
+      </if>
+      <if test="preUpdate != null" >
+        #{preUpdate,jdbcType=VARCHAR},
+      </if>
+      <if test="afterUpdate != null" >
+        #{afterUpdate,jdbcType=VARCHAR},
+      </if>
+      <if test="opUserId != null" >
+        #{opUserId,jdbcType=BIGINT},
+      </if>
+      <if test="updateAt != null" >
+        #{updateAt,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.ProductUpdateLog" >
+
+    update vdlm_product_updatelog
+    <set >
+      <if test="type != null" >
+        type = #{type,jdbcType=BIT},
+      </if>
+      <if test="preUpdate != null" >
+        pre_update = #{preUpdate,jdbcType=VARCHAR},
+      </if>
+      <if test="afterUpdate != null" >
+        after_update = #{afterUpdate,jdbcType=VARCHAR},
+      </if>
+      <if test="opUserId != null" >
+        op_user_id = #{opUserId,jdbcType=BIGINT},
+      </if>
+      <if test="updateAt != null" >
+        update_at = #{updateAt,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.ProductUpdateLog" >
+
+    update vdlm_product_updatelog
+    set type = #{type,jdbcType=BIT},
+      pre_update = #{preUpdate,jdbcType=VARCHAR},
+      after_update = #{afterUpdate,jdbcType=VARCHAR},
+      op_user_id = #{opUserId,jdbcType=BIGINT},
+      update_at = now()
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+
+    <!--更新短名称，短描述,活动价，活动开售时间，
+        ms_price =#{map.ms_price,jdbcType=DECIMAL},
+        start_time = #{map.start_time,jdbcType=TIMESTAMP},
+        end_time = #{map.end_time,jdbcType=TIMESTAMP},
+    活动结束时间 by reese-->
+    <update id="updateSelectiveInfo">
+        update vdlm_product_info set
+        <if test="map.short_intro!=null">
+        short_intro = #{map.short_intro,jdbcType=VARCHAR},
+        </if>
+        <if test="map.short_name!=null">
+        short_name = #{map.short_name,jdbcType=VARCHAR},
+        </if>
+        updated_at = now()
+        where product_id = #{map.product_id, typeHandler=idHandler}
+    </update>
+
+    <insert id="insertInfo">
+        insert into vdlm_product_info (product_id,property,short_intro, short_name)
+        values (#{map.product_id,typeHandler=idHandler},
+        1,
+        #{map.short_intro,jdbcType=VARCHAR},
+        #{map.short_name,jdbcType=VARCHAR}
+        )
+    </insert>
+
+    <!--更新轮播首图key-->
+    <update id="updateImageById">
+        update vdlm_product_image set
+        img = #{key,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+</mapper>

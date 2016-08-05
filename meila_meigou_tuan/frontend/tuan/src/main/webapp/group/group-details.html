@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>美啦拼团</title>
+	<meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<script type="text/javascript">
+	!function(J){function H(){var d=E.getBoundingClientRect().width;var e=(d/7.5>100*B?100*B:(d/7.5<42?42:d/7.5));E.style.fontSize=e+"px",J.rem=e}var G,F=J.document,E=F.documentElement,D=F.querySelector('meta[name="viewport"]'),B=0,A=0;if(D){var y=D.getAttribute("content").match(/initial\-scale=([\d\.]+)/);y&&(A=parseFloat(y[1]),B=parseInt(1/A))}if(!B&&!A){var u=(J.navigator.appVersion.match(/android/gi),J.navigator.appVersion.match(/iphone/gi)),t=J.devicePixelRatio;B=u?t>=3&&(!B||B>=3)?3:t>=2&&(!B||B>=2)?2:1:1,A=1/B}if(E.setAttribute("data-dpr",B),!D){if(D=F.createElement("meta"),D.setAttribute("name","viewport"),D.setAttribute("content","initial-scale="+A+", maximum-scale="+A+", minimum-scale="+A+", user-scalable=no"),E.firstElementChild){E.firstElementChild.appendChild(D)}else{var s=F.createElement("div");s.appendChild(D),F.write(s.innerHTML)}}J.addEventListener("resize",function(){clearTimeout(G),G=setTimeout(H,300)},!1),J.addEventListener("pageshow",function(b){b.persisted&&(clearTimeout(G),G=setTimeout(H,300))},!1),H()}(window);
+	</script>
+	<link rel="stylesheet" type="text/css" href="../resources/css/meila.css">
+	<link rel="stylesheet" type="text/css" href="../resources/css/main.css">
+	<style type="text/css">
+        .wrapper{width:7.5rem;}
+        .outer-footer{ width: 7.5rem; }
+        .download-bar{ width: 7.5rem; }
+        .download-bar div{width:7.5rem;}
+        .wechat-share-prompt{ max-width: 7.5rem; }
+         /*图文详情*/
+        .ware-details{background-color:#fff;margin-bottom: 1rem;}
+        .ware-details .pro-info-title{text-align:left;padding:0 0.24rem;height: .98rem;line-height: .98rem;font-size:.3rem;color:rgba(0,0,0,0.9);}
+        /*图文详情结束*/
+        .ptuan-process {
+            background-color: #fff;
+            padding: .28rem .28rem 0;
+        }
+        .ptuan-process a {
+            color:inherit;
+        }
+        .ptuan-process header {
+            margin-bottom: .3rem;
+            font-size: .3rem;
+        }
+        .ptuan-process header .tit {
+            font-size: .3rem;
+        }
+        .ptuan-process header span {
+            color:rgba(0,0,0,.9);
+        }
+        .ptuan-process footer {
+            text-align: center;
+            font-size: .26rem;
+            font-weight: 400;
+            color:#f94972;
+            height:.98rem;
+        }
+        .ptuan-process .see-details {
+            font-size: .26rem;
+            vertical-align: top;
+        }
+        .process-flow {
+            padding: 0 .25rem;
+        }
+        .process-item {
+            box-sizing: border-box;
+            position: relative;
+            width:1.66rem;
+            height: .98rem;
+            padding: .16rem .23rem .16rem .35rem;
+            background:url('../resources/images/rectBg.png') no-repeat center;
+            background-size: 1.64rem .96rem;
+            font-size: .26rem;
+            color:rgba(0,0,0,.8);
+            line-height: 1.4;
+        }
+        .process-num {
+            position: absolute;
+            top:50%;
+            left: 0;
+            transform: translate(-50%,-50%);
+            -webkit-transform:translate(-50%,-50%);
+            -moz-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+            -o-transform:translate(-50%,-50%);
+            width:.5rem;
+            height: .5rem;
+            background:url('../resources/images/invite.png') no-repeat;
+            background-size: .54rem 1.9rem;
+            background-color: #fff;
+        }
+        .process-num1 {
+            background-position: -0.04rem -.35rem;
+        }
+        .process-num2 {
+            background-position: -0.02rem -.86rem;
+        }
+        .process-num3 {
+            background-position: -0.02rem -1.38rem;
+        }
+        .arrow-right {
+            display: inline-block;
+            width: .16rem;
+            height: .3rem;
+            margin-left: .16rem;
+            background:url('../resources/images/invite.png') no-repeat;
+            background-position: -.04rem -.04rem;
+            background-size: .54rem 1.9rem;
+            vertical-align: top;
+        }
+        .arrow-process {
+            /*margin-top:.06rem;*/
+        }
+        .group-bottom-fixed .originprice-buy {
+            width:2.6rem;
+        }
+        .ptuan-join {
+            width:100%;
+            padding:.48rem 0;
+            text-align: center;
+            font-size: .26rem;
+            color:rgba(0,0,0,.9);
+            font-weight: 400;
+        }
+        .ptuan-join img{
+            display: inline-block;
+            width:.42rem;
+            height: .42rem;
+            border-radius: .42rem;
+            border:1px solid rgba(0,0,0,.08);
+            margin-right: .12rem;
+        }
+        .tuan-img:nth-child(n+6){
+            display: none;
+        }
+        .join-info {
+            padding-bottom:.16rem
+        }
+        .join-info em {
+            display: inline-block;
+            color:#f94972;
+            margin:0 .05rem;
+        }
+        .ptuan-join button {
+            box-sizing: border-box;
+            width:2.82rem;
+            height:.6rem;
+            border-radius:.36rem;
+            border:1px solid #f94972;
+            margin-top:.36rem;
+            font-size: .3rem;
+            font-weight: 400;
+            color:#f94972;
+        }
+        .my-ptuan header {
+            height:.98rem;
+            padding: 0 .28rem;
+            font-size: .3rem;
+            font-weight: 400;
+            color:rgba(0,0,0,.9);
+            border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+        .my-ptuan header span:before{
+            content: '';
+            display: inline-block;
+            width:0;
+            height:.24rem;
+            border-left: 1px solid rgba(0,0,0,.08);
+            vertical-align: middle;
+            margin-right: .12rem;
+        }
+        .my-ptuan header span {
+            display: inline-block;
+            margin-left: .12rem;
+            font-size: .22rem;
+            color:rgba(0,0,0,.45);
+        }
+        .my-ptuan li {
+            height:1.36rem;
+            padding: 0 .28rem 0 .36rem;
+            border-bottom: 1px solid rgba(0,0,0,.08);
+        }
+        .my-ptuan li:last-child {
+            border-bottom: none;
+        }
+        .left-sec .avatars {
+            flex-wrap: wrap;
+            width:.88rem;
+        }
+        .left-sec .avatars img {
+            width:.38rem;
+            height: .38rem;
+            border-radius: .38rem;
+            border:1px solid rgba(0,0,0,.08);
+        }
+        .left-sec .tuan-info {
+            margin-left: .26rem;
+        }
+        .left-sec .tuan-info h1{
+            font-size: .3rem;
+            font-weight: 400;
+            color:rgba(0,0,0,.9);
+        }
+        .left-sec .tuan-info h1 em {
+            color:#f94972;
+        }
+        .left-sec .tuan-info p{
+            font-size: .26rem;
+            color:rgba(0,0,0,.6);
+        }
+        .right-btn button{
+            box-sizing: border-box;
+            width:1.92rem;
+            height: .62rem;
+            border-radius:.44rem;
+            border:1px solid #f94972;
+            font-size: .26rem;
+            font-weight: 400;
+            color:#f94972;
+            /*妈蛋，魅族手机flex布局space-between超出父元素宽度了*/
+            float:right;
+        }
+        .order-btn button{
+            border-color:rgba(0,0,0,.3);
+            color:rgba(0,0,0,.9);
+        }
+        .share-mask {
+            position: fixed;
+            display: none;
+            width:100%;
+            top:0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 100;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .share-box {
+            box-sizing: border-box;
+            position: fixed;
+            width:100%;
+            bottom: 0;
+            transition: transform 0.12s;
+            -moz-transition: transform 0.12s;
+            -webkit-transition: transform 0.12s;
+            -o-transition: transform 0.12s;
+            padding: .4rem;
+            background-color: #fff;
+            z-index: 9999;
+        }
+        .share-hidden {
+            transform:translateY(100%);
+            -webkit-transform:translateY(100%);
+            -moz-transform: translateY(100%);
+            -ms-transform: translateY(100%);
+            -o-transform:translateY(100%);
+        }
+        .share-item {
+            width:1rem;
+            font-size: .22rem;
+        }
+        .share-item img{
+            width: .94rem;
+            height: .94rem;
+        }
+        .share-info {
+            display: inline-block;
+            margin-top:.16rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <img class="small-loading" src="../resources/images/small-loading.gif" height="32" width="32">
+    <div class="main details group-details"></div>
+</div>
+<script type="text/template" id="main">
+    <div class="banner">
+        <a href="javascript:void(0);">
+            <img relSrc="{{=it.group.data.img}}?imageMogr2/thumbnail/750x" alt="">
+        </a>
+        <div class="logo"><img src="../resources/images/meila_logo.png" alt=""></div>
+        {{?it.group.data.tuanActStatus == "END" || it.group.data.tuanActStatus == "OVERLOAD"}}
+            <div class="sell-out"><img src="../resources/images/sell-out.png" alt=""></div>
+        {{?}}
+    </div>
+    <div class="g-border-bottom">
+        <div class="info">
+            <h2 class="tit">{{=it.group.data.productName}}</h2>
+            <p class="text">{{=it.group.data.description}}</p>
+        </div>
+        <div class="result-select">
+            <div class="select-num">{{=it.group.data.memberNum}}人团</div>
+            <div class="select-price"><span>¥<em>{{=it.group.data.tuanPrice}}</em></span><del>¥{{=it.group.data.skuPrice}}</del>
+            </div>
+        </div>
+    </div>
+    <div class="ptuan-process g-border-bottom">
+        <header class="flexbox pack-justify">
+            <h3 class="tit">拼团流程</h3>
+            <a href="./group-process.html"><span class="see-details">查看详情<i class="arrow-right arrow-process"></i></span></a>
+        </header>
+        <section class="process-flow">
+            <ul class="flexbox pack-justify">
+                <li class="process-item"><i class="process-num process-num1"></i>支付开团或参团</li>
+                <li class="process-item"><i class="process-num process-num2"></i>邀请好友参团</li>
+                <li class="process-item"><i class="process-num process-num3"></i>达成人数拼团成功</li>
+            </ul>
+        </section>
+        <footer class="flexbox pack-center align-center">{{=it.group.data.memberNum}}人支付即可成团，不成团自动退款</footer>
+    </div>
+    <div id="userExt">
+        {{? !it.userExt.tuanOrderVoList.length && it.userExt.joinTuanList.length}}
+        <div class="ptuan-join g-border-bottom">
+            <div class="join-info flexbox pack-center align-center">
+                {{~it.userExt.joinTuanList:value:index}}
+                <img class="tuan-img" src="{{=value.userImg}}" alt="">
+                {{~}}
+                {{?it.userExt.joinTuanList.length > 5}}
+                <img src="../resources/images/avatar_more.png" alt="">
+                {{?}}
+                <span>有<em>{{=it.userExt.joinTuanList.length}}</em>个团正在进行</span>
+            </div>
+            <p>你可以直接参团</p>
+            <button class="join-ptuan">立即参团&nbsp;&yen;{{=it.group.data.tuanPrice}}</button>
+        </div>
+        {{?}}
+        {{? it.userExt.tuanOrderVoList.length}}
+        <div class="my-ptuan g-border-bottom">
+            <header class="flexbox align-center">我的拼团<span>只显示该商品的拼团</span></header>
+            <ul>
+            {{~it.userExt.tuanOrderVoList:value:index}}
+                <li class="flexbox pack-justify align-center">
+                    <div class="left-sec flexbox">
+                        <div class="avatars flexbox pack-justify">
+                            {{? value.tuanUser === null}}
+                            <div class="flexbox pack-center">
+                                <img src="../resources/images/default-avatar.png" alt="">
+                            </div>
+                            <img src="../resources/images/default-avatar.png" alt="">
+                            {{?}}
+                            {{~value.tuanUser:user:index1}}
+                            {{?index1 == 0}}
+                            <div class="flexbox pack-center">
+                                {{? user.userImg}}
+                                <img src="{{=user.userImg}}" alt="">
+                                {{??}}
+                                <img src="../resources/images/default-avatar.png" alt="">
+                                {{?}}
+                            </div>
+                            {{?? index1 == 1}}
+                                {{? user.userImg}}
+                                <img src="{{=user.userImg}}" alt="">
+                                {{??}}
+                                <img src="../resources/images/default-avatar.png" alt="">
+                                {{?}}
+                            {{?}}
+                            {{?value.tuanUser.length === 1}}
+                               <img src="../resources/images/default-avatar.png" alt=""> 
+                            {{?}}
+                            {{~}}
+                            <img src="../resources/images/avatar_more.png" alt="">
+                        </div>
+                        <div class="tuan-info">
+                            {{? value.status == 'PROCESS'}}
+                                <h1>拼团中，还差<em>{{=value.count}}</em>人</h1>
+                            {{?? value.status == 'WAIT_PAID'}}
+                                <h1>等待支付</h1>
+                            {{??}}
+                                <h1>{{=value.statusDesc}}</h1>
+                            {{?}}
+                            <p>{{=(new Date(value.createdAt)).getHours()}}:{{=(new Date(value.createdAt)).getMinutes()<10?('0'+(new Date(value.createdAt)).getMinutes()):(new Date(value.createdAt)).getMinutes()}}:{{=(new Date(value.createdAt)).getSeconds()<10?('0'+(new Date(value.createdAt)).getSeconds()):(new Date(value.createdAt)).getSeconds()}}&nbsp;开团</p>
+                        </div>
+                    </div>
+                    {{? value.status == 'PROCESS'}}
+                    <div class="right-btn share"><button>邀请好友</button></div>
+                    {{?? value.status == 'WAIT_PAID'}}
+                    <a href="../../wareorder/pay/?trade_no={{=value.payNo + '&time=' + new Date().getTime()}}">
+                    <div class="right-btn"><button>立即支付</button></div>
+                    </a>
+                    {{??}}
+                    <a href="/m/buyer/order/detail/?orderNo={{=value.orderNo}}"><div class="right-btn order-btn"><button>查看订单</button></div></a>
+                    {{?}}
+                </li>
+                {{~}}
+            </ul>
+        </div>
+        {{?}}
+    </div>
+    {{?it.ware.length}}
+    <div class="ware-details">
+        <div class="pro-info-title">商品详情</div>
+        {{~it.ware:value:index1}}
+                {{?it.ware[index1].imgs.length}}
+                <div class="desc-img">
+                {{~it.ware[index1].imgs:value:index2}}
+                    <img alt="" relSrc="{{=it.ware[index1].imgs[index2].imgUrl}}?imageMogr2/thumbnail/750x"/>
+                {{~}}
+                </div>
+                {{?}}
+                {{?it.ware[index1].description}}
+                <p class="desc-text">{{=it.ware[index1].description}}</p>
+                {{?}}
+        {{~}}
+    </div>
+    {{?}}
+    <div class="group-bottom-fixed">
+        {{? it.group.data.discount}}
+        <div class="fixed-tip">开团立减{{=it.group.data.discount}}元</div>
+        {{?}}
+        <div class="inner flexbox">
+            <a href="/ware/{{=it.group.data.productCode}}/?in_channel=pintuan.{{=it.group.data.id}}" class="link originprice-buy">
+                <div>
+                    <span class="sp-2">原价购买</span>
+                    <span class="sp-1">¥{{=it.group.data.skuPrice}}</span>
+                </div>
+            </a>
+            {{?it.group.data.tuanActStatus == "END" || it.group.data.tuanActStatus == "OVERLOAD"}}
+            <a href="javascript:;" class="link flex1 forbid">
+                <div>
+                    <span class="sp-2">开团购买</span>
+                    <span class="sp-1">¥{{=it.group.data.tuanPrice}}</span>
+                </div>
+            </a>
+            {{??}}
+            <a href="/ptuan/group/group-order.html?actId={{=it.group.data.id}}&orderType=0" class="link flex1">
+                <div>
+                    <span class="sp-2">开团购买</span>
+                    <span class="sp-1">¥{{=it.group.data.tuanPrice}}</span>
+                </div>
+            </a>
+            {{?}}
+        </div>
+    </div>
+</script>
+<script type="text/javascript" src="../resources/js/wx/jweixin-1.0.0.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/zepto.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/all/M.js"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/dot/doT.js"></script>
+<script src="../resources/js/utils.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" src="../resources/js/group-details.js"></script>
+<script type="text/javascript">
+    $(".group-bottom-fixed .link").bind("touchstart",function(){})
+</script>
+<script>
+    var _hmt = _hmt || [];
+    (function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?ee90c8579d6c84f05e2d6da016ecd53c";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+<script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1254190362'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "w.cnzz.com/q_stat.php%3Fid%3D1254190362%26l%3D3' type='text/javascript'%3E%3C/script%3E"));
+</script>
+</body>
+</html>

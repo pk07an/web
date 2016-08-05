@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.DealMapper">
+
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Deal">
+		<id column="id" property="id" />
+		<result column="deal_no" property="dealNo" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" typeHandler="idHandler" />
+		<result column="pay_deal_no" property="payDealNo" typeHandler="idHandler" />
+		<result column="withdraw_id" property="withdrawId" typeHandler="idHandler" />
+		<result column="deal_type" property="dealType" jdbcType="VARCHAR" />
+		<result column="account_from" property="accountFrom" typeHandler="idHandler" />
+		<result column="account_to" property="accountTo" typeHandler="idHandler" />
+		<result column="fee" property="fee" jdbcType="DECIMAL" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	<resultMap id="DealHistoryVOMap" type="com.vdlm.dal.vo.DealHistoryVO">
+		<result column="order_status" property="orderStatus" jdbcType="VARCHAR" />
+		<result column="fee_from" property="feeFrom" jdbcType="VARCHAR" />
+		<result column="deal_type" property="dealType" jdbcType="VARCHAR" />
+		<result column="withdraw_bank" property="withdrawBank" jdbcType="VARCHAR" />
+		<result column="fee" property="fee" jdbcType="DECIMAL" />
+		<result column="date" property="date" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		id, deal_no, order_id, withdraw_id, pay_deal_no, deal_type, account_from,
+		account_to, fee, status, created_at, updated_at
+	</sql>
+	
+	<select id="initDeal2PayRequest" resultMap="BaseResultMap">
+select 
+<include refid="Base_Column_List" />
+ from vdlm_deal where order_id in(
+select order_id from vdlm_deal where deal_type in('DEPOSIT', 'DIRECT_PAY')
+and order_id is not null 
+group by order_id 
+having count(*) = 2)
+and deal_type in('DEPOSIT', 'DIRECT_PAY')
+order by deal_type
+	</select>
+
+	<!-- 取用户的交易记录，保存订单和提现，用于我的收入页面 -->
+	<select id="listDealByUserId" resultMap="DealHistoryVOMap">
+		select * from (
+		SELECT o.`status` AS order_status, d.deal_type, d.fee,
+		d.updated_at AS date, u.loginname AS fee_from, '' as withdraw_bank
+		FROM vdlm_deal d
+		JOIN vdlm_order o ON d.order_id = o.id
+		JOIN vdlm_user u ON o.buyer_id = u.id
+		WHERE d.`status` = 'SUCCESS' and o.seller_id = #{userId, typeHandler=idHandler}
+		limit #{page.offset}, #{page.size}
+		Union All
+		SELECT null as order_status, d1.deal_type, d1.fee,
+		d1.updated_at AS date, '' as fee_from, a1.opening_bank as withdraw_bank
+		FROM vdlm_deal d1 JOIN vdlm_withdraw_apply a1 ON d1.withdraw_id = a1.id
+		where a1.status = 'SUCCESS' and a1.user_id = #{userId, typeHandler=idHandler}
+		limit #{page.offset}, #{page.size}) t
+		order by date desc
+		limit #{page.offset}, #{page.size}
+	</select>
+
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_deal
+		where id = #{id}
+	</select>
+
+	<select id="selectByOrder" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_deal
+		where order_id = #{orderId, typeHandler=idHandler}
+	</select>
+	
+	<select id="selectByWithdraw" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_deal
+		where withdraw_id = #{withdrawId, typeHandler=idHandler}
+	</select>
+
+	<select id="selectByAccount" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_deal
+		where (account_from = #{accountFrom}
+		or account_to = #{accountTo})
+		<if test="status != null">
+			and status = #{status}
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="com.vdlm.dal.model.Deal">
+		<selectKey resultType="String" keyProperty="id">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_deal (deal_no, order_id, withdraw_id, pay_deal_no,
+		deal_type, account_from, account_to, fee, status, created_at,
+		updated_at)
+		values (#{dealNo}, #{orderId, typeHandler=idHandler}, #{withdrawId,
+		typeHandler=idHandler}, #{payDealNo}, #{dealType}, #{accountFrom, typeHandler=idHandler},
+		#{accountTo, typeHandler=idHandler}, #{fee}, #{status}, now(), now())
+	</insert>
+
+	<update id="update" parameterType="com.vdlm.dal.model.Deal">
+		update vdlm_deal
+		<set>
+			<if test="dealNo != null">
+				deal_no = #{dealNo,jdbcType=VARCHAR},
+			</if>
+			<if test="orderId != null">
+				order_id = #{orderId},
+			</if>
+			<if test="withdrawId != null">
+				withdraw_id = #{withdrawId, typeHandler=idHandler},
+			</if>
+			<if test="payDealNo != null">
+				pay_deal_no = #{payDealNo},
+			</if>
+			<if test="dealType != null">
+				deal_type = #{dealType,jdbcType=VARCHAR},
+			</if>
+			<if test="accountFrom != null">
+				account_from = #{accountFrom,typeHandler=idHandler},
+			</if>
+			<if test="accountTo != null">
+				account_to = #{accountTo,typeHandler=idHandler},
+			</if>
+			<if test="fee != null">
+				fee = #{fee},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			updated_at = now()
+		</set>
+		where id = #{id}
+	</update>
+
+	<update id="updateStatus" parameterType="com.vdlm.dal.model.Deal">
+		update vdlm_deal
+		set status = #{status},updated_at = now()
+		where id = #{id}
+	</update>
+	
+	<select id="selectByOrderAndType" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_deal
+        where order_id = #{orderId, typeHandler=idHandler}
+        and deal_type = #{type}
+    </select>
+
+</mapper>

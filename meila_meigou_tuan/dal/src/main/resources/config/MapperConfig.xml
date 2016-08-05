@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <!DOCTYPE configuration
+    PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <!-- <plugins>
+        <plugin interceptor="com.vdlm.dal.interceptor.MyBatisInterceptor">
+            <property name="someProperty" value="100" />
+        </plugin>
+    </plugins> -->
+    
+	<mappers>
+		<mapper resource="com/vdlm/dal/mapper/AccountMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/DealMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/DealLogMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/AddressMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/CartItemMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/OrderAddressMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/OrderItemMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/OrderMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProductDescMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProductMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProductUpdateLogMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ShopMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/SkuMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/SkuMappingMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/UserMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ZoneMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/AppVersionMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ImageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/FeedbackMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProductTagMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/TagMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProductImageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/TinyUrlMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PaymentMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ShopAccessMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/MessageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/UserMessageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/UserBankMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/WithdrawApplyMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PushMessageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/SmsMessageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/AccessReportMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/SubAccountLogMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/SubAccountMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/SubAccountSnapshotMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/OutpayMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PayRequestMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/CommissionMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ActivityMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/TermMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/TermRelationshipMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/CategoryMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PosterMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PosterTagMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ShopStyleMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PayBankMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/OutpayAgreementMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/CustomerServiceMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/PromotionMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProdSyncMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/CouponMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/CouponActivityMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/OrderMessageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/UserAlipayMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ApiVisitorLogMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/SmsSendRecordMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/CashierItemMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ActivityOrderMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/SmsTplMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/UserSigninLogMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/SmsVarTplMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ActivityMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/CampaignProductMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ActivityTicketMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ActivitySPMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/PostAgeSetMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/FragmentMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/FragmentImageMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/ProductFragmentMapper.xml" />
+		<mapper resource="com/vdlm/dal/mapper/HelperMessageMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/PersonnelMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OrderRefundMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OrderRefundAttachMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OrderItemCommentMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/UserCouponMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/PromotionModelMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/VoucherMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OrderExtMapper.xml"/>
+		<mapper resource="com/vdlm/dal/dao/MeiLaCartDao.xml"/>
+		<mapper resource="com/vdlm/dal/dao/MeiLaProductDao.xml"/>
+		<mapper resource="com/vdlm/dal/dao/MeiLaOrderDao.xml"/>
+		<mapper resource="com/vdlm/dal/dao/MeiLaSkuDao.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ProductInfoMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/PromotionTagMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/PromotionProTagMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ShopExtMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OrderItemPromotionMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/RoleMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/BizConfigMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/PaymentRequestLogsMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OrderRefundApplyMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/ArrivedNoticeMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/OmsMonitorMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/TuanStatusMapper.xml"/>
+		<mapper resource="com/vdlm/dal/mapper/TuanOrderMapper.xml"/>
+	</mappers>
+
+</configuration>

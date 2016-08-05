@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.CategoryMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Category" >
+    <id column="id" property="id" jdbcType="BIGINT"/>
+    <result column="term_id" property="termId" jdbcType="BIGINT"/>
+    <result column="name" property="name"/>
+    <result column="taxonomy" property="taxonomy"/>
+    <result column="parent_id" property="parentId"/>
+    <result column="tree_path" property="treePath"/>
+    <result column="shop_id" property="shopId" typeHandler="idHandler"/>
+    <result column="idx" property="idx"/>
+    <result column="creator_id" property="creatorId" typeHandler="idHandler" />
+    <result column="created_at" property="createdAt"/>
+    <result column="updated_at" property="updatedAt"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.vo.CategoryVO" id="categoryVO">
+  	<id column="id" property="id" jdbcType="BIGINT"/>
+  	<result column="name" property="name"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, term_id, name, taxonomy, parent_id, tree_path, shop_id, idx, creator_id, created_at, updated_at
+  </sql>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Category">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_category (term_id, name, taxonomy, parent_id, tree_path, shop_id, idx, creator_id, created_at, updated_at)
+    values (#{termId}, #{name}, #{taxonomy}, #{parentId}, #{treePath}, #{shopId, typeHandler=idHandler}, #{idx}, #{creatorId, typeHandler=idHandler}, now(), now())
+  </insert>
+
+  <update id="updateCategoryTerm" parameterType="com.vdlm.dal.model.Category">
+    update vdlm_category
+    set term_id = #{1}, name = #{2}, updated_at = now()
+    where id = #{0} and creator_id = #{3, typeHandler=idHandler} 
+  </update>
+  
+  <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where id = #{id}
+  </select>
+  
+  <select id="listRootsByUser" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where parent_id is null and taxonomy = #{0} and creator_id = #{1, typeHandler=idHandler}
+    order by idx;
+  </select>
+
+  <select id="selectByTermAndTaxonomy" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where term_id = #{termId} and taxonomy = #{taxo} 
+    <if test="shopId != null">
+    and shop_id = #{shopId, typeHandler=idHandler}
+    </if>
+    <if test="shopId == null">
+    and shop_id is null
+    </if>
+  </select>
+  
+  <select id="selectRootNodes" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where parent_id is null and taxonomy = #{0}
+  </select>
+
+  <select id="selectByTaxonomy" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where taxonomy = #{0}
+  </select>
+  
+  <select id="loadParent" resultMap="BaseResultMap">
+    select 
+    vc2.id, vc2.term_id, vc2.name, vc2.taxonomy, vc2.parent_id, vc2.tree_path, vc2.creator_id, vc2.created_at, vc2.updated_at
+    from vdlm_category vc1
+    join vdlm_category vc2 on vc2.id = vc1.parent_id
+    where vc1.id = #{0}
+  </select>
+
+  <select id="loadSubs" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where parent_id = #{0}
+  </select>
+  
+  <select id="selectSiblings" resultMap="BaseResultMap">
+    select 
+    vc2.id, vc2.term_id, vc2.name, vc2.taxonomy, vc2.parent_id, vc2.tree_path, vc2.creator_id, vc2.created_at, vc2.updated_at
+    from vdlm_category vc1
+    join vdlm_category vc2 on vc2.tree_path = vc1.tree_path and vc2.id &lt;&gt; vc1.id
+    where vc1.id = #{0}
+  </select>
+
+  <select id="loadDescendants" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where tree_path like (select concat(tree_path, #{0}, '>%') from vdlm_category where id = #{0});
+  </select>
+
+  <select id="loadByTermIdAndTaxonomy" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_category
+    where term_id = #{0} and taxonomy = #{1} and creator_id = #{2, typeHandler=idHandler}
+  </select>
+  
+  <select id="selectMaxIdx" resultType="Integer">
+    select max(idx) from vdlm_category
+    where shop_id = #{shopId, typeHandler=idHandler}
+    <if test="parentId != null" >
+        and parent_id = #{parentId}
+    </if>
+    <if test="parentId == null">
+        and parent_id is null
+    </if>
+  </select>
+
+  <delete id="delete">
+    delete from vdlm_category
+    where id = #{0} and creator_id = #{1, typeHandler=idHandler}
+  </delete>
+  
+  <update id="updateIdx">
+    update vdlm_category
+    set idx = #{1}, updated_at = now()
+    where id = #{0}
+  </update>
+  
+  <update id="updateIdxNotBeforeDest">
+    update vdlm_category
+    set idx = idx + #{increment}, updated_at = now()
+    where idx >= #{idx} and shop_id = #{shopId, typeHandler=idHandler}
+    <if test="parentId != null">
+    and parent_id = #{parentId}
+    </if>
+    <if test="parentId == null">
+    and parent_id is null
+    </if>
+  </update>
+  
+  <update id="updateIdxAfterDest">
+    update vdlm_category
+    set idx = idx + #{increment}, updated_at = now()
+    where idx > #{idx} and shop_id = #{shopId, typeHandler=idHandler}
+    <if test="parentId != null">
+    and parent_id = #{parentId}
+    </if>
+    <if test="parentId == null">
+    and parent_id is null
+    </if>
+  </update>
+  
+  <!-- 根据商品id获取类目 -->
+  <select id="loadCategoryByProductId" resultMap="categoryVO">
+  	select c.id, c.name from vdlm_category c
+  	join vdlm_term_relationship tr on tr.category_id = c.id
+  	where tr.obj_type='product' and tr.obj_id=#{productId, typeHandler=idHandler}
+  </select>
+</mapper>

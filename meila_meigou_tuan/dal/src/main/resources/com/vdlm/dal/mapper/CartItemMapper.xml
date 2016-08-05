@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.vdlm.dal.mapper.CartItemMapper">
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.CartItem">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" typeHandler="idHandler"/>
+    <result column="sku_id" jdbcType="BIGINT" property="skuId" typeHandler="idHandler"/>
+    <result column="product_id" jdbcType="BIGINT" property="productId" typeHandler="idHandler"/>
+    <result column="shop_id" jdbcType="BIGINT" property="shopId" typeHandler="idHandler"/>
+    <result column="seller_id" jdbcType="BIGINT" property="sellerId" typeHandler="idHandler"/>
+    <result column="amount" jdbcType="INTEGER" property="amount" />
+    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="archive" jdbcType="BIT" property="archive" />
+    <result column="created_at" jdbcType="TIMESTAMP" property="createdAt" />
+    <result column="updated_at" jdbcType="TIMESTAMP" property="updatedAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, user_id, sku_id, product_id, shop_id, seller_id, amount, status, archive, created_at, updated_at
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_cart_item
+    where id = #{id}
+    and archive=false
+  </select>
+
+  <select id="selectCount" resultType="Integer">
+    select count(*)
+    from vdlm_cart_item ci
+    join vdlm_sku s on s.id = ci.sku_id
+    join vdlm_product p on p.id = ci.product_id
+    where s.archive = 0 and s.amount > 0
+    and p.archive = 0 and p.status = 'ONSALE'
+    and ci.user_id = #{userId,typeHandler=idHandler}
+    and ci.archive = 0
+  </select>
+  
+  <update id="deleteByPrimaryKey">
+    update vdlm_cart_item set archive=true,updated_at = now()
+    where id = #{id}
+  </update>
+  
+  <update id="undeleteByPrimaryKey">
+    update vdlm_cart_item set archive=false,updated_at = now()
+    where id = #{id}
+  </update>
+  
+  <update id="deleteByUserId">
+    update vdlm_cart_item set archive = true,updated_at = now()
+    where user_id = #{userId,typeHandler=idHandler}
+  </update>
+
+  <insert id="insert" parameterType="com.vdlm.dal.model.CartItem">
+    <selectKey resultType="string" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_cart_item (user_id, product_id, 
+      sku_id, shop_id, seller_id, amount, status, 
+      created_at, updated_at
+    )
+    values (#{userId,typeHandler=idHandler}, #{productId,typeHandler=idHandler}, 
+      #{skuId,typeHandler=idHandler},#{shopId,typeHandler=idHandler},#{sellerId,typeHandler=idHandler}, 
+      #{amount,jdbcType=INTEGER}, #{status,jdbcType=VARCHAR}, now(),now()
+    )
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.CartItem">
+    update vdlm_cart_item
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,typeHandler=idHandler},
+      </if>
+      <if test="productId != null">
+        product_id = #{productId,typeHandler=idHandler},
+      </if>
+      <if test="skuId != null">
+        sku_id = #{skuId,typeHandler=idHandler},
+      </if>
+      <if test="amount != null">
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="status != null">
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="archive != null">
+        archive = #{archive,jdbcType=BIT},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id} and archive=false
+  </update>
+  
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.CartItem">
+    update vdlm_cart_item
+    set user_id = #{userId,typeHandler=idHandler},
+      product_id = #{productId,typeHandler=idHandler},
+      sku_id = #{skuId,typeHandler=idHandler},
+      amount = #{amount,jdbcType=INTEGER},
+      status = #{status,jdbcType=VARCHAR},
+      archive = #{archive,jdbcType=BIT},
+      updated_at = now()
+    where id = #{id} and archive=false
+  </update>
+  
+  <select id="selectByUserId" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_cart_item
+    where user_id = #{userId,typeHandler=idHandler}
+    and archive = 0
+  </select>
+  
+  <select id="selectByUserIdAndShopId" resultMap="BaseResultMap">
+    select 
+    ci.id, ci.user_id, ci.product_id, ci.sku_id, ci.amount, ci.status, ci.archive, ci.created_at, ci.updated_at
+    from vdlm_cart_item ci
+    join vdlm_product p on p.id = ci.product_id
+    where ci.user_id = #{0,typeHandler=idHandler}
+      and p.shop_id = #{1,typeHandler=idHandler}
+      and ci.archive = 0
+  </select>
+  
+  <select id="selectByUserIdAndSku" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from vdlm_cart_item
+    where user_id = #{0,typeHandler=idHandler}
+    and sku_id = #{1,typeHandler=idHandler}
+    and archive = 0
+    limit 0,1; 
+  </select>
+  
+  <update id="deleteByUserIdAndSkuId">
+    update vdlm_cart_item set archive=true,updated_at = now()
+    where user_id = #{0, typeHandler=idHandler} and sku_id = #{1, typeHandler=idHandler}
+  </update>
+  
+</mapper>

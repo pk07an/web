@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.VoucherMapper" > 
+  <resultMap type="com.vdlm.dal.model.promotion.Voucher" id="BaseResultMap">
+     <id column="id" property="id" typeHandler="idHandler" />
+	 <result column="code" property="code" jdbcType="VARCHAR"/>
+     <result column="pro_id" property="proID" jdbcType="VARCHAR" typeHandler="idHandler"  />
+     <result column="title" property="title"  jdbcType="VARCHAR"  />
+     <result column="discount" property="discount" jdbcType="DECIMAL"/>
+     <result column="platform_ratio" property="platFormRatio" jdbcType="DECIMAL"/>
+     <result column="status" property="status" jdbcType="VARCHAR"/>
+     <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+     <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+ </resultMap>
+  <resultMap id="VoucherMap" type="com.vdlm.dal.vo.VoucherVo" extends="BaseResultMap">
+ 		<result column="description" property="description" jdbcType="VARCHAR" />	 
+  </resultMap>
+ 
+  <sql id="Base_Column_List">
+   id,code,title,pro_id,discount,platform_ratio,status,created_at,updated_at
+  </sql>   
+  <insert id="insert" parameterType="com.vdlm.dal.model.promotion.Voucher">
+  	<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+	 </selectKey>
+      insert into  vdlm_promotion_voucher(code,title,pro_id,discount,platform_ratio,status,created_at,archive)
+      values(#{code},#{title},#{proID},#{discount},#{platFormRatio},'UNBOUND',now(),0)
+  </insert>
+  <update id="bound">
+     UPDATE vdlm_promotion_voucher SET status='BOUND' ,updated_at=now() WHERE code=#{code}
+  </update>
+  <update id="used">
+     UPDATE vdlm_promotion_voucher SET status='USED' ,updated_at=now() WHERE id=#{id,typeHandler=idHandler}
+  </update> 
+  <select id="getListByProID"  resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"></include>
+     FROM vdlm_promotion_voucher WHERE pro_id=#{proID,typeHandler=idHandler} and status='BOUND' and archive=false
+  </select>
+  
+  <select id="getVoucherByID" resultMap="BaseResultMap">
+     SELECT <include refid="Base_Column_List"></include>  
+      FROM vdlm_promotion_voucher WHERE id=#{id,typeHandler=idHandler}
+  </select>
+  
+   <select id="getVoucherByIDList"  resultMap="BaseResultMap">
+   SELECT <include refid="Base_Column_List"></include>  
+      FROM vdlm_promotion_voucher WHERE 
+      id in
+	<foreach collection="ids" item="id" open="(" close=")" separator=",">
+     	#{id,typeHandler=idHandler} 
+     </foreach>
+  </select>
+  
+  <select id="getVoucherByCode" resultMap="BaseResultMap">
+     SELECT <include refid="Base_Column_List"></include>  
+      FROM vdlm_promotion_voucher WHERE code=#{code}
+  </select>
+  <select id="getList" resultMap="BaseResultMap">
+      select <include refid="Base_Column_List"></include>
+       from vdlm_promotion_voucher limit 
+  </select>
+  <update id="changeIdToCode">
+    update vdlm_promotion_voucher set code=#{id} where id=#{id,typeHandler=idHandler}    
+  </update>
+  <select id="voucherList" resultMap="VoucherMap">
+     select  
+     v.id,v.code,v.title,v.pro_id,v.discount,v.platform_ratio,v.status,v.created_at,v.updated_at,
+     p.description    
+     from vdlm_promotion_voucher v left join vdlm_promotion_model p on v.pro_id=p.id
+      where v.archive=false
+      <if test="params.code!=null">
+          and v.code like #{params.code}
+      </if>
+      <if test="params.activityId">
+      	and v.pro_id=#{params.activityId,typeHandler=idHandler}
+      </if>
+      <if test="params.title!=null">
+          and v.title like #{params.title}
+      </if>
+      <if test="params.discount!=null">
+          and v.discount = #{params.discount}
+      </if>
+      <if test="params.description!=null">
+          and p.description like #{params.desc}
+      </if>
+      <if test="params.status!=null">
+          and v.status = #{params.status}
+      </if>
+       order by v.created_at desc
+       limit #{page.offset}, #{page.size}
+  </select>
+  
+    <select id="countVoucherList" resultType="Long">
+		select count(*) as c
+		from vdlm_promotion_voucher v left join vdlm_promotion_model p  on v.pro_id=p.id
+		where v.archive=false
+      <if test="params.code!=null">
+          and v.code like #{params.code}
+      </if>
+      <if test="params.discount!=null">
+          and v.discount = #{params.discount}
+      </if>
+      <if test="params.description!=null">
+          and p.description like #{params.desc}
+      </if>
+      <if test="params.status!=null">
+          and v.status = #{params.status}
+      </if>
+	</select>
+  
+  <update id="del">
+    update vdlm_promotion_voucher  set archive=true,updated_at=now()  where id=#{id,typeHandler=idHandler} and status='UNBOUND'
+  </update>
+  </mapper>

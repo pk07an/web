@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.FeedbackMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Feedback" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="user_id" property="userId" typeHandler="idHandler" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="contact" property="contact" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="FeedbackVOMap" type="com.vdlm.dal.vo.FeedbackVO" extends="BaseResultMap">
+  	 <result column="phone" property="phone" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, user_id, name, content, contact, created_at, updated_at, type, status, replay 
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_feedback
+    where id = #{id, typeHandler=idHandler}
+  </select>
+  
+  <select id="listFeedbacksByAdmin" resultMap="FeedbackVOMap">
+    select f.id,f.user_id,f.content,f.contact,f.created_at,f.updated_at,f.status,f.type,f.replay,u.phone
+	from vdlm_feedback f ,vdlm_user u
+	where f.user_id=u.id
+	<if test="params.phone != null" >
+		and u.phone like #{params.phone}
+	</if>
+    <if test="params.status != null" >
+		and f.status = #{params.status}
+	</if>
+	<if test="params.type != null" >
+		and f.type = #{params.type}
+	</if>
+    order by updated_at desc
+    limit #{page.offset}, #{page.size} 
+  </select>
+  
+  <select id="countFeedbacksByAdmin" resultType="Long">
+    select count(*) as c
+	from vdlm_feedback f ,vdlm_user u
+	where f.user_id=u.id
+	<if test="params.phone != null" >
+		and u.phone like #{params.phone}
+	</if>
+    <if test="params.status != null" >
+		and f.status = #{params.status}
+	</if>
+	<if test="params.type != null" >
+		and f.type = #{params.type}
+	</if>
+  </select>  
+
+  <insert id="insert" parameterType="com.vdlm.dal.model.Feedback">
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_feedback (user_id, content, contact, status, created_at, updated_at, type)
+    values (#{userId, typeHandler=idHandler}, #{content}, #{contact}, #{status}, now(), now(), #{type,jdbcType=VARCHAR})
+  </insert>
+  <update id="updateForClosed">
+		update vdlm_feedback set status='${status.name()}', replay=#{1}, updated_at = now()
+		where id = #{0, typeHandler=idHandler}
+	</update>
+  
+</mapper>

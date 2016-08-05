@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProdSyncMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProdSync" >
+    <id column="id" property="id"  typeHandler="idHandler" />
+    <result column="shop_id" property="shopId"  typeHandler="idHandler" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="synced" property="synced"  jdbcType="TINYINT" />
+    <result column="union_id" property="unionId"  typeHandler="idHandler" />
+    <result column="commission_rate" property="commissionRate"  jdbcType="DECIMAL" />
+    <result column="audit_sts" property="auditSts" jdbcType="VARCHAR" />
+    <result column="audit_note" property="auditNote" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" />
+    <result column="updated_at" property="updatedAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, shop_id, name,  synced, union_id, commission_rate, audit_sts, audit_note, created_at, updated_at
+  </sql>
+  
+  <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_prodsync
+    where id = #{id, typeHandler=idHandler} and archive = false
+  </select>
+  
+  <select id="loadAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_prodsync
+    where  archive = false
+  </select>
+  
+  <select id="loadByAuditSts" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_prodsync
+    where 1=1
+    and audit_sts = ${0, jdbcType=VARCHAR}
+    and  archive = false
+  </select>
+  
+  <select id="selectUnsynced" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_prodsync
+    where 1=1
+    and synced = false 
+	<if test="auditSts != null">
+		and audit_sts = #{auditSts,jdbcType=VARCHAR}
+	</if>
+    and archive = false
+  </select>
+
+  <select id="selectByPassedShopId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_prodsync
+    where shop_id = #{0, typeHandler=idHandler} 
+    and audit_sts = 'PASS'
+    and archive = false
+    order by created_at desc;
+  </select>
+  
+  <select id="selectByShopId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_prodsync
+    where shop_id = #{shopId, typeHandler=idHandler} 
+	<if test="auditSts != null">
+		and audit_sts = #{auditSts,jdbcType=VARCHAR}
+	</if>
+    and archive = false
+    order by created_at desc;
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.ProdSync">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_prodsync (shop_id, name, synced, union_id, commission_rate, audit_sts, audit_note, archive, created_at, updated_at)
+    values (#{shopId,jdbcType=BIGINT, typeHandler=idHandler},
+    			#{name, jdbcType=VARCHAR}, 
+    			#{synced, jdbcType=TINYINT}, 
+    			#{unionId, jdbcType=BIGINT, typeHandler=idHandler}, 
+    			#{commissionRate, jdbcType=DECIMAL}, 
+    			#{auditSts, jdbcType=VARCHAR}, 
+    			null, false, now(), now())
+  </insert>
+  
+  <update id="delete">
+  	update vdlm_prodsync set archive=true,updated_at = now()
+	where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <update id="updateForSynced">
+  	update vdlm_prodsync set synced = #{synced, jdbcType=TINYINT} ,updated_at = now()
+	where shop_id = #{shopId,typeHandler=idHandler}
+  </update>
+
+	<update id="update" parameterType="com.vdlm.dal.model.ProdSync">
+		update vdlm_prodsync
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="synced != null">
+				synced = #{synced,jdbcType=TINYINT},
+			</if>
+			<if test="unionId != null">
+				union_id = #{unionId, typeHandler="idHandler"},
+			</if>
+			<if test="commissionRate != null">
+				commission_rate = #{commissionRate,jdbcType=DECIMAL},
+			</if>
+			<if test="auditSts != null">
+				audit_sts = #{auditSts,jdbcType=VARCHAR},
+			</if>
+			<if test="auditNote != null">
+				audit_note = #{auditNote,jdbcType=VARCHAR},
+			</if>
+			updated_at = now()
+		</set>
+		where id = #{id,typeHandler=idHandler} and archive=false
+	</update>
+	
+  	<update id="updateShopName" >
+	  	update vdlm.vdlm_prodsync vp set name = (select vs.name from vdlm.vdlm_shop vs where vs.id = vp.shop_id);
+  	</update>
+  
+  <select id="existShop" resultType="boolean">
+    select count(1)
+    from vdlm_prodsync
+    where shop_id = #{shopId, typeHandler=idHandler} 
+    and synced = true
+  </select>
+  
+  <select id="countSyncShops" resultType="Long">
+    select count(1)
+    from vdlm_prodsync vp, vdlm_shop vs
+	where 1=1 
+	and vp.shop_id = vs.id
+	and vp.archive = false
+	and vs.archive = false
+	<if test="params.shopName != null" >
+		and vs.name like CONCAT('%', #{params.shopName, jdbcType=VARCHAR}, '%')   
+	</if>
+    <if test="params.shopId != null" >
+		and vp.shop_id = #{params.shopId, typeHandler=idHandler}
+	</if>
+    <if test="params.syncStatus != null" >
+		and vp.synced = #{params.syncStatus}
+	</if>
+    <if test="params.auditSts != null" >
+		and vp.audit_sts = #{params.auditSts}
+	</if>
+    <if test="params.commissionRate != null" >
+		and vp.commission_rate = #{params.commissionRate}
+	</if>
+    <if test="params.unionId != null" >
+		and vp.union_id = #{params.unionId, typeHandler=idHandler}
+	</if>
+  </select>
+  
+  <select id="findByParmas" resultMap="BaseResultMap">
+    select  vp.id, vp.shop_id, vp.synced, vp.union_id, vp.commission_rate, vp.audit_sts, vp.audit_note, vs.name, vp.created_at, vp.updated_at
+    from vdlm_prodsync vp, vdlm_shop vs
+	where 1=1 
+	and vp.shop_id = vs.id
+	and vp.archive = false
+	and vs.archive = false
+	<if test="params.shopName != null" >
+		and vs.name like CONCAT('%', #{params.shopName, jdbcType=VARCHAR}, '%')   
+	</if>
+    <if test="params.shopId != null" >
+		and vp.shop_id = #{params.shopId, typeHandler=idHandler}
+	</if>
+    <if test="params.syncStatus != null" >
+		and vp.synced = #{params.syncStatus}
+	</if>
+    <if test="params.auditSts != null" >
+		and vp.audit_sts = #{params.auditSts}
+	</if>
+    <if test="params.commissionRate != null" >
+		and vp.commission_rate = #{params.commissionRate}
+	</if>
+    <if test="params.unionId != null" >
+		and vp.union_id = #{params.unionId, typeHandler=idHandler}
+	</if>
+	group by vp.shop_id
+    order by vp.updated_at desc
+    <if test="page != null" >
+	    limit #{page.offset}, #{page.size}
+    </if>
+  </select>
+  
+</mapper>

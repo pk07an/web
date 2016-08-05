@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PayRequestMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.PayRequest" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="biz_id" property="bizId" jdbcType="VARCHAR" />
+    <result column="biz_type" property="bizType" jdbcType="VARCHAR" />
+    <result column="pay_type" property="payType" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="from_sub_account_id" property="fromSubAccountId" typeHandler="idHandler" />
+    <result column="to_sub_account_id" property="toSubAccountId" typeHandler="idHandler" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="statusEx" property="statusex" jdbcType="VARCHAR" />
+    <result column="outPay_type" property="outpayType" jdbcType="VARCHAR" />
+    <result column="outPay_info" property="outpayInfo" jdbcType="VARCHAR" />
+    <result column="for_request_id" property="forRequestId" typeHandler="idHandler" />
+    <result column="callback_status" property="callbackStatus" jdbcType="VARCHAR" />
+    <result column="callback" property="callback" jdbcType="VARCHAR" />
+    <result column="callback_type" property="callbackType" jdbcType="INTEGER" />
+    <result column="callback_param" property="callbackParam" jdbcType="VARCHAR" />
+    <result column="comment" property="comment" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, pay_no, biz_id, biz_type, pay_type, amount, from_sub_account_id, to_sub_account_id, 
+    status, statusEx, outPay_type, outPay_info, for_request_id, callback_status, callback, 
+    callback_type, callback_param, comment, created_at, updated_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_pay_request
+    where id = #{id, typeHandler=idHandler} 
+  </select>
+  <select id="listByPayNo" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_pay_request
+    where pay_no = #{payNo}
+  </select>
+  <insert id="insert" parameterType="com.vdlm.dal.model.PayRequest" >
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_pay_request (pay_no, 
+      biz_id, biz_type, pay_type, 
+      amount, from_sub_account_id, to_sub_account_id, 
+      status, statusEx, outPay_type, 
+      outPay_info, for_request_id, callback_status, 
+      callback, callback_type, callback_param, 
+      comment, created_at, updated_at
+      )
+    values (#{payNo,jdbcType=VARCHAR}, 
+      #{bizId,jdbcType=VARCHAR}, #{bizType,jdbcType=VARCHAR}, #{payType,jdbcType=VARCHAR},
+      #{amount,jdbcType=DECIMAL}, #{fromSubAccountId,typeHandler=idHandler}, #{toSubAccountId,typeHandler=idHandler}, 
+      #{status,jdbcType=VARCHAR}, #{statusex,jdbcType=VARCHAR}, #{outpayType,jdbcType=VARCHAR}, 
+      #{outpayInfo,jdbcType=VARCHAR}, #{forRequestId,typeHandler=idHandler}, #{callbackStatus,jdbcType=VARCHAR}, 
+      #{callback,jdbcType=VARCHAR}, #{callbackType,jdbcType=INTEGER}, #{callbackParam,jdbcType=VARCHAR}, 
+      #{comment,jdbcType=VARCHAR}, now(), now()
+      )
+  </insert>
+  <update id="updateByPay"  parameterType="com.vdlm.dal.model.PayRequest">
+  	update vdlm_pay_request set status = 'PAID',  updated_at = now() 
+  	where id = #{id, typeHandler=idHandler} AND status = 'SUBMITTED'
+  </update>
+  <update id="updateBySuccess"  parameterType="com.vdlm.dal.model.PayRequest">
+  	update vdlm_pay_request set status = 'SUCCESS',  updated_at = now() 
+  	where id = #{id, typeHandler=idHandler} AND status = 'PAID' 
+  </update>
+  <update id="updateByFailed"  parameterType="com.vdlm.dal.model.PayRequest">
+  	update vdlm_pay_request set status = 'FAILED',  updated_at = now() 
+  	where pay_no = #{payNo} AND status = 'PAID' 
+  </update>
+  <select id="queryPaidPayInfoByBizId" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" /> 
+  	from vdlm_pay_request where biz_id = #{bizId} and status = 'PAID'
+  </select>
+  <select id="findPayNoByBizId">
+  	select payNo from vdlm_pay_request where biz_id = #{bizId} and pay_type != 'RECHARGE'
+  </select>
+  <select id="queryRefundByOutPayId">
+  	select 
+  	<include refid="Base_Column_List" /> 
+  	from vdlm_pay_request r where pay_type='REFUND' 
+  	and exists (select 1 from vdlm_outpay o where r.id = o.request_id 
+  	and o.id=#{id, typeHandler=idHandler})
+  </select>
+  
+    <select id="loadDanbaoRequest" resultMap="BaseResultMap" parameterType="com.vdlm.dal.model.PayRequest">
+  	select 
+	<include refid="Base_Column_List" />
+ 	from vdlm_pay_request 
+ 	where pay_type = 'DANBAO' and status = 'SUCCESS'
+ 	 <if test="payNo != null" >
+        and pay_no = #{payNo}
+     </if>
+ 	 <if test="bizId != null" >
+        and biz_id = #{bizId}
+     </if>
+  </select>
+  
+  <select id="loadConsumeReqeustByPayNo" resultMap="BaseResultMap">
+  	select 
+	<include refid="Base_Column_List" />
+ 	from vdlm_pay_request where pay_no = #{payNo} and pay_type in('HONGBAO2CONSUME', 'AVAILABLE2CONSUME')
+ 	and status = 'SUCCESS'
+  </select>
+  
+  <select id="loadRefundRequest" resultMap="BaseResultMap" parameterType="com.vdlm.dal.model.PayRequest">
+  	select 
+	<include refid="Base_Column_List" />
+ 	from vdlm_pay_request 
+ 	where biz_type = 'REFUND' and status = 'SUCCESS'
+ 	<if test="payNo != null" >
+        and pay_no = #{payNo}
+     </if>
+ 	 <if test="bizId != null" >
+        and biz_id = #{bizId}
+     </if>
+	<if test="payType != null" >
+        and pay_type = #{payType}
+     </if>     
+  </select>
+  
+</mapper>

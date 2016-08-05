@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ShopMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Shop" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="owner_id" property="ownerId" typeHandler="idHandler"/>
+    <result column="img" property="img" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="wechat" property="wechat" jdbcType="VARCHAR" />
+    <result column="banner" property="banner" jdbcType="VARCHAR" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="bulletin" property="bulletin" jdbcType="VARCHAR" />
+    <result column="bulletin_at" property="bulletinAt" jdbcType="TIMESTAMP" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="danbao" property="danbao" jdbcType="BIT" />
+    <result column="commision_rate" property="commisionRate" jdbcType="DECIMAL" />
+	<result column="archive" property="archive" jdbcType="BIT" />
+	<result column="province_id" property="provinceId" jdbcType="BIGINT" />
+	<result column="city_id" property="cityId" jdbcType="BIGINT" />
+	<result column="postage_status" property="postageStatus" jdbcType="BIT" />
+	<result column="free_zone" property="freeZone" jdbcType="VARCHAR" />
+	<result column="postage" property="postage" jdbcType="DECIMAL" />
+	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="fragment_status" property="fragmentStatus" jdbcType="BIT"/>
+    <result column="code" property="code" jdbcType="VARCHAR"/>
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, owner_id, img, name, wechat, banner, description, bulletin, bulletin_at, status, archive, danbao, 
+    commision_rate, province_id, city_id, postage_status, free_zone, postage, created_at, updated_at, fragment_status, code
+  </sql>
+  
+  <resultMap id="AdminMap" type="com.vdlm.dal.vo.ShopAdmin" extends="BaseResultMap">
+  	<result column="op_remark" property="opRemark" jdbcType="VARCHAR" />
+	<result column="phone" property="phone" jdbcType="VARCHAR"  />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop
+    where id = #{id,typeHandler=idHandler}
+  </select>
+  
+  
+  <select id="selectByCode" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop
+    where code = #{code}
+  </select>
+  
+  <select id="selectByShopName" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop
+    where name = #{name} and archive=false
+  </select>
+  
+  <update id="deleteByPrimaryKey">
+    update vdlm_shop set archive=true, op_remark = #{opRemark}, updated_at = now()
+    where id = #{id,typeHandler=idHandler} and archive = false
+  </update>
+  <update id="undeleteByPrimaryKey">
+    update vdlm_shop set archive=false, op_remark = #{opRemark}, updated_at = now()
+    where id = #{id,typeHandler=idHandler} and archive = true
+  </update>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Shop">
+    <selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into vdlm_shop (owner_id, img, name, wechat, banner, description,
+      bulletin, bulletin_at, status, commision_rate, archive, danbao,
+      created_at, updated_at, fragment_status,code)
+    values (#{ownerId,typeHandler=idHandler}, #{img,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
+      #{wechat,jdbcType=VARCHAR},#{banner,jdbcType=VARCHAR},#{description,jdbcType=VARCHAR},
+      #{bulletin,jdbcType=VARCHAR}, now(), #{status,jdbcType=VARCHAR}, #{commisionRate}, false, #{danbao}, now(), now(), 1, #{code,jdbcType=VARCHAR})
+  </insert>
+  
+  <update id="openDanbao">
+   	update vdlm_shop set danbao = true 
+   	where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="closeDanbao">
+    update vdlm_shop set danbao = false 
+    where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.Shop" >
+    update vdlm_shop
+    <set >
+      <if test="name != null" >
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="wechat != null" >
+        wechat = #{wechat,jdbcType=VARCHAR},
+      </if>
+      <if test="banner != null" >
+        banner = #{banner,jdbcType=VARCHAR},
+      </if>
+      <if test="description != null" >
+        description = #{description,jdbcType=VARCHAR},
+      </if>            
+      <if test="img != null" >
+        img = #{img,jdbcType=VARCHAR},
+      </if>
+      <if test="bulletin != null" >
+        bulletin = #{bulletin,jdbcType=VARCHAR},
+      </if>
+	  <if test="bulletinAt != null" >
+        bulletin_at = #{bulletinAt,jdbcType=TIMESTAMP},
+      </if>         
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="commisionRate != null" >
+        commision_rate = #{commisionRate,jdbcType=DECIMAL},
+      </if>
+      <if test="provinceId != null" >
+        province_id = #{provinceId,jdbcType=BIGINT},
+      </if>
+      <if test="cityId != null" >
+        city_id = #{cityId,jdbcType=BIGINT},
+      </if>
+      <if test="danbao != null" >
+        danbao = #{danbao,jdbcType=TINYINT},
+      </if>
+      <if test="postageStatus != null" >
+        postage_status = #{postageStatus,jdbcType=BIT},
+      </if>
+      <if test="freeZoneId != null" >
+        free_zone_id = #{freeZoneId,jdbcType=VARCHAR},
+      </if>
+      <if test="freeZone != null" >
+        free_zone = #{freeZone,jdbcType=VARCHAR},
+      </if>
+      <if test="postage != null" >
+        postage = #{postage,jdbcType=DECIMAL},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler} and archive=false
+  </update>
+  
+  <select id="selectByUserId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop
+    where owner_id = #{userId,typeHandler=idHandler} and archive=false
+  </select>
+  
+  <select id="countByShop" resultType="Long">
+    select count(*) c
+    from vdlm_shop
+    where archive=false
+  </select>
+  
+  <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop
+    where archive = false
+    order by updated_at desc, created_at desc
+    limit #{page.offset}, #{page.size}
+  </select>
+  
+  <update id="updateImgByPrimaryKey">
+    update vdlm_shop set img = #{img,jdbcType=VARCHAR}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updateNameByPrimaryKey">
+    update vdlm_shop set name = #{name,jdbcType=VARCHAR}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updateWechatByPrimaryKey">
+    update vdlm_shop set wechat = #{wechat,jdbcType=VARCHAR}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updateDescByPrimaryKey">
+    update vdlm_shop set description = #{description,jdbcType=VARCHAR}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updateBulletinByPrimaryKey">
+    update vdlm_shop set bulletin = #{bulletin,jdbcType=VARCHAR}, bulletin_at = now(), updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updateLocalByPrimaryKey">
+    update vdlm_shop set province_id = #{provinceId,jdbcType=BIGINT}, city_id = #{cityId,jdbcType=BIGINT}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updatePostageStatusByPrimaryKey">
+    update vdlm_shop set postage_status = #{postageStatus,jdbcType=BIT}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  <update id="updatePostageByPrimaryKey">
+    update vdlm_shop set free_zone = #{freeZoneId,jdbcType=VARCHAR}, postage = #{postage,jdbcType=DECIMAL}, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+   <select id="listShopsByAdmin" resultMap="AdminMap">
+  		select s.id, s.name, u.phone, s.commision_rate, s.danbao, s.op_remark, s.created_at, s.updated_at
+		from vdlm_shop s join vdlm_user u on s.owner_id = u.id
+		where 1 = 1
+		<include refid="condByAdmin"/>
+		order by s.created_at desc, s.updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<select id="countShopsByAdmin" resultType="Long">
+		select count(*) as c
+		from vdlm_shop s join vdlm_user u on s.owner_id = u.id
+		where 1 = 1
+		<include refid="condByAdmin"/>
+	</select>
+	
+	<sql id="condByAdmin">
+		<if test="params.archive != null">
+				and s.archive = #{params.archive}
+			</if>
+			<if test="params.shopName != null">
+				and s.name like #{params.shopName}
+			</if>		
+			<if test="params.phone != null">
+				and u.phone like #{params.phone}
+			</if>
+			<if test="params.commision != null">
+			<choose>
+					<when test="params.commision == 1">and s.commision_rate > 0</when>
+					<otherwise>and (commision_rate = 0 or commision_rate is null)</otherwise>
+				</choose>
+			</if>
+			<if test="params.danbao != null">
+				<choose>
+					<when test="params.danbao == 1">and s.danbao = true
+					</when>
+					<otherwise>and (s.danbao = false or s.danbao is null)</otherwise>
+				</choose>
+			</if>
+		  	<if test="params.created1 != null">
+				and s.created_at >= #{params.created1}
+		  	</if>
+		  	<if test="params.created2 != null">
+		  		<![CDATA[ 
+					and s.created_at < #{params.created2}
+				]]>
+		  	</if>
+		</sql>
+	
+	  	<!-- 用于后台管理 -->
+  		<select id="selectByAdmin" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_product
+		where id = #{id,typeHandler=idHandler}
+	</select>
+  
+  	<update id="saveFragmentById">
+  		update vdlm_shop set fragment_status=#{fragmentStatus} where id=#{id,typeHandler=idHandler}
+  	</update>
+  	
+  	<update id="addCode">
+		update vdlm_shop set code = #{id, jdbcType=VARCHAR}
+		where id =#{id, typeHandler=idHandler}
+	</update>
+    <select id="countByCode" resultType="Long">
+		select count(1) as c
+		from vdlm_shop s
+		where code = #{code,jdbcType=VARCHAR}
+    </select>
+</mapper>

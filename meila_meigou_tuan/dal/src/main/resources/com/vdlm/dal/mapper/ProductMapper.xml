@@ -1,0 +1,935 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProductMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.Product">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="img" property="img" jdbcType="VARCHAR" />
+		<result column="img_width" property="imgWidth" jdbcType="INTEGER" />
+		<result column="img_height" property="imgHeight" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" typeHandler="idHandler" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="sales" property="sales" jdbcType="BIGINT" />
+		<result column="fake_sales" property="fakeSales" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="BIGINT" />
+		<result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="postage" property="postage" jdbcType="DECIMAL" />
+		<result column="recommend" property="recommend" jdbcType="BIT" />
+		<result column="recommend_at" property="recommendAt" jdbcType="TIMESTAMP" />
+		<result column="discount" property="discount" jdbcType="DECIMAL" />
+		<result column="commission_rate" property="commissionRate" jdbcType="DECIMAL" />
+		<result column="forsale_at" property="forsaleAt" jdbcType="TIMESTAMP" />
+		<result column="onsale_at" property="onsaleAt" jdbcType="TIMESTAMP" />
+		<result column="instock_at" property="instockAt" jdbcType="TIMESTAMP" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+		<result column="isDelay" property="delayed" jdbcType="BIT" />
+		<result column="delayDays" property="delayAt" jdbcType="INTEGER" />
+		<result column="update_lock" property="updateLock" jdbcType="BIT" />
+		<result column="synchronousFlag" property="synchronousFlag" jdbcType="VARCHAR" />
+		<result column="third_item_id" property="thirdItemId" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="ResultMapWithBLOBs" type="com.vdlm.dal.model.Product" extends="BaseResultMap">
+		<result column="description" property="description" jdbcType="LONGVARCHAR" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, name,code, img, img_width, img_height, user_id, shop_id, status, archive, sales,
+		amount, market_price, price,postage, recommend, recommend_at, discount, commission_rate,
+		forsale_at, onsale_at, instock_at, created_at,fake_sales,
+		updated_at, isDelay, delayDays, update_lock, synchronousFlag
+	</sql>
+	
+	<!-- 取列表 -->
+	<sql id="List_Column_List">
+		id, shop_id, name,code, sales, fake_sales, amount, img, img_width, img_height, market_price, price,postage, status, discount, onsale_at, forsale_at, created_at, updated_at, update_lock, synchronousFlag 
+	</sql>
+	
+	<sql id="Blob_Column_List">
+		description
+	</sql>
+	
+	<resultMap id="AdminMap" type="com.vdlm.dal.vo.ProductAdmin" extends="BaseResultMap">
+	    <result column="shop_name" property="shopName" jdbcType="VARCHAR"  />
+	    <result column="phone" property="phone" jdbcType="VARCHAR"  />
+	    <result column="img" property="img" jdbcType="VARCHAR"  />
+  	</resultMap>
+  	
+	<select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where id = #{id,typeHandler=idHandler} and archive = false
+	</select>
+	
+	<select id="selectOriginalById" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where id = #{id,typeHandler=idHandler}
+	</select>
+	
+<!-- 	<select id="selectByCode" resultMap="ResultMapWithBLOBs"> -->
+<!-- 		select -->
+<!-- 		<include refid="Base_Column_List" /> -->
+<!-- 		, -->
+<!-- 		<include refid="Blob_Column_List" /> -->
+<!-- 		from vdlm_product -->
+<!-- 		where code = #{code} and archive = false -->
+<!-- 	</select> -->
+	
+	<select id="selectOriginalByCode" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where code = #{code}
+	</select>
+
+	<select id="selectAll" resultMap="BaseResultMap">
+        select
+        <include refid="List_Column_List" />
+        ,
+		<include refid="Blob_Column_List" />
+        from vdlm_product
+        where shop_id = #{shopId,typeHandler=idHandler} and
+        status = 'ONSALE'
+        and archive = false
+        order by updated_at desc
+    </select>
+    
+    <update id="instockByAdmin">
+		update vdlm_product set status = 'INSTOCK',
+		instock_at = now(),updated_at = now()
+		where id in <foreach collection="ids" item="item" index="index"
+		open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach> 
+		and archive=false
+	</update>
+	
+	<update id="deleteByAdmin">
+		update vdlm_product set archive=true,updated_at = now()
+		where id in <foreach collection="ids" item="item" index="index"
+		open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach> 
+	</update>
+	
+	<update id="undeleteByAdmin">
+		update vdlm_product set archive=false,updated_at = now()
+		where id in <foreach collection="ids" item="item" index="index"
+		open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach> 
+	</update>
+    
+	<!-- 按上架时间获取商品列表 -->
+	<sql id="onstock_cond">
+		and shop_id = #{shopId, typeHandler=idHandler}
+		and status = 'ONSALE'
+		and archive = false
+		<!-- 首页商品发布取最近发布的商品时用到(按查询)-->
+		<!-- 先group by y -->
+		<if test="params != null">
+			<if test="params.onsaleAt1 != null">
+			and (onsale_at &gt;= #{params.onsaleAt1,jdbcType=DATE} and onsale_at &lt; #{params.onsaleAt2,jdbcType=DATE})
+			</if>
+		</if>
+	</sql>
+	<select id="listProductsByOnsaleAt" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1 
+		<include refid="onstock_cond"/>
+		order by onsale_at desc, updated_at desc
+	    <if test="page != null" >
+		    limit #{page.offset}, #{page.size}
+	    </if>
+	</select>
+
+
+	<!-- 按销量获取商品列表 -->
+	<sql id="onsales_cond">
+		and shop_id = #{shopId,typeHandler=idHandler} and
+		status = 'ONSALE'
+		and archive = false
+	</sql>
+	<select id="listProductsBySales" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+				,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1 
+		<include refid="onsales_cond"/>
+		order by sales ${direction}, updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<select id="countProductsBySales" resultType="Long">
+		select count(1) from vdlm_product
+		where 1=1 
+		<include refid="onsales_cond"/>
+	</select>
+
+	<!-- 按库存取商品列表 -->
+	<sql id="onamount_cond">
+		and shop_id = #{shopId,typeHandler=idHandler} and
+		status = 'ONSALE'
+		and archive = false
+	</sql>
+	
+	<select id="listProductsByAmount" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+				,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1
+		<include refid="onamount_cond"/>
+		order by amount ${direction}, updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<!-- 按下架时间获取商品列表 -->
+	<sql id="onsoldout_cond">
+		and shop_id = #{shopId,typeHandler=idHandler} and status = 'INSTOCK'
+		and archive=false
+	</sql>
+	
+	<select id="listProductsBySoldout" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+				,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1
+		<include refid="onsoldout_cond"/>
+		order by instock_at ${direction}, updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<!-- 店长推荐商品 -->
+	<select id="listProductsByRecommend" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+				,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where shop_id = #{shopId, typeHandler=idHandler} and recommend = true
+		and archive = false and status = 'ONSALE'
+		order by recommend_at desc, updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<select id="countByRecommend" resultType="Long">
+		select count(1) from vdlm_product
+		where shop_id = #{shopId, typeHandler=idHandler} and recommend = true
+		and archive = false and status = 'ONSALE'
+	</select>
+	
+	<!-- 按相关产品获取商品列表 -->
+	<select id="listProductsByRelated" resultMap="BaseResultMap">
+		select d.id, d.name, d.img, d.img_width, d.img_height, d.sales, d.amount, d.price, d.onsale_at from (
+		select a.product_id, count(*) c from vdlm_product_tag a join vdlm_product_tag b on a.shop_id = b.shop_id 
+		join vdlm_product p on (p.id = a.product_id and p.id = b.product_id)
+		where a.shop_id = #{0,typeHandler=idHandler} and a.tag_id in(select tag_id from vdlm_product_tag where product_id = #{1,typeHandler=idHandler} and shop_id = #{0,typeHandler=idHandler})
+		and a.product_id = b.product_id and a.product_id != #{1,typeHandler=idHandler}
+		and p.archive = 0 and p.status = 'ONSALE'
+		group by a.product_id
+		order by count(*) desc) c
+		join vdlm_product d on c.product_id = d.id 
+		where d.shop_id = #{0,typeHandler=idHandler} and d.id != #{1,typeHandler=idHandler} and archive = 0 and status = 'ONSALE'
+		order by c desc, onsale_at desc
+		limit 5
+	</select>
+	
+	<select id="countProductsByStatus" resultType="Long">
+		select count(*) as c 
+		from vdlm_product
+		where status = #{status} and shop_id = #{shopId, typeHandler=idHandler} and archive = false 
+	</select>
+	
+	<select id="countProductsByOutofStock" resultType="Long">
+		select count(*) as c 
+		from vdlm_product
+		where status = 'ONSALE' and amount = 0 and shop_id = #{shopId, typeHandler=idHandler} and archive = false 
+	</select>	
+	
+  
+    <!-- 商品搜索  by zzd 新增分页对象的判断-->
+	<select id="listProductsBySearch" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+				,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where shop_id = #{shopId, typeHandler=idHandler}
+		and name like #{kwd, jdbcType=VARCHAR}
+		and archive = false 
+		order by onsale_at desc 
+		<if test="page != null" >
+		 limit  #{page.offset}, #{page.size}
+		</if>
+	</select>
+	
+	<select id="CountTotalByName" resultType="Long">
+	    select count(*)  from vdlm_product 
+	 	where shop_id = #{shopId, typeHandler=idHandler}
+		and name like #{kwd, jdbcType=VARCHAR}
+		and archive = false 
+	</select>
+	
+	<!-- 草稿商品列表 -->
+	<sql id="ondraft_cond">
+		and shop_id = #{shopId,typeHandler=idHandler} and
+		status = 'DRAFT'
+		and archive = false
+	</sql>
+	
+	<select id="listProductsByStatusDraft" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+				,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1
+		<include refid="ondraft_cond"/>
+		order by updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<!-- 根据活动取商品列表 -->
+	<select id="listProductsByActId" resultMap="BaseResultMap">
+		select p.id, p.name, p.img, p.img_width, p.img_height, p.price, p.discount, p.sales, p.fake_sales, p.description, p.commission_rate
+		from vdlm_product p join vdlm_activity_product ap on p.id = ap.product_id
+		where ap.activity_id = #{actId,typeHandler=idHandler} and
+		p.archive = false
+		<if test="sort != null" >
+        order by ${sort}
+        </if>
+	</select>
+
+	<!-- 根据活动取商品列表 -->
+	<select id="listActivityProducts" resultMap="BaseResultMap">
+		select p.id, p.name, p.img, p.img_width, p.img_height, p.price, p.discount, p.sales,  p.fake_sales, p.description, p.commission_rate
+		from vdlm_product p join vdlm_activity_product ap on p.id = ap.product_id
+		where p.archive = false
+        <if test="sort != null" >
+	    order by ${sort}
+	    </if>
+		limit #{pager.offset}, #{pager.size}
+	</select>
+	
+	<!-- 计划发布列表 -->
+	<sql id="onforsale_cond">
+		and shop_id = #{shopId,typeHandler=idHandler} and
+		status = 'FORSALE'
+		and archive = false
+	</sql>
+	
+	<select id="listProductsByForSale" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1
+		<include refid="onforsale_cond"/>
+		order by forsale_at asc, updated_at asc
+		limit #{page.offset}, #{page.size}
+	</select>
+
+	<!-- 缺货列表 -->
+	<sql id="onoutofstock_cond">
+		and shop_id = #{shopId,typeHandler=idHandler} and
+		status = 'ONSALE' and amount = 0 and archive = false
+	</sql>
+	
+	<select id="listProductsByOutOfStock" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+	    ,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where 1=1
+		<include refid="onoutofstock_cond"/>
+		order by onsale_at desc, updated_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<!-- 取最近days有发布的商品日期和每天发布商品中的数量 -->
+	<select id="listProductByRecently" resultType="java.util.Map">
+		select DATE_FORMAT( onsale_at , "%Y-%m-%d" ) date, count(*) amount 
+		from vdlm_product t 
+		where onsale_at &lt; #{date}
+		and archive = false
+		and status = 'ONSALE'
+		and shop_id = #{shopId, typeHandler=idHandler}
+		group by DATE_FORMAT( onsale_at , "%Y-%m-%d" )
+		order by DATE_FORMAT( onsale_at , "%Y-%m-%d" ) desc
+		limit #{days}
+	</select>
+	<!--  and shop_id = #{shopId, typeHandler=idHandler} -->
+	
+	<!-- 逻辑删除 -->
+	<update id="updateForArchive">
+		update vdlm_product set archive=true,updated_at = now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+	
+	<update id="updateForUnArchive">
+		update vdlm_product set archive=false,updated_at = now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+	
+	<update id="updateForSaleToOnSale">
+		update vdlm_product set status = 'ONSALE', onsale_at
+		= now(),updated_at = now()
+		where forsale_at &lt; now() and status =
+		'FORSALE' and archive=false
+	</update>
+	
+	<update id="updateForForsale">
+		update vdlm_product set status = 'FORSALE',
+		forsale_at = #{1,jdbcType=TIMESTAMP}, updated_at = now()
+		where id =
+		#{0,typeHandler=idHandler} and archive=false
+	</update>
+	
+	<update id="updateForInstock">
+		update vdlm_product set status = 'INSTOCK',
+		instock_at = now(),updated_at = now()
+		where id = #{id,typeHandler=idHandler} and archive=false
+	</update>
+	
+	<update id="updateForOnsale">
+		update vdlm_product set status = 'ONSALE', onsale_at = now(), updated_at = now()
+		where id = #{id,typeHandler=idHandler} and
+		archive=false
+	</update>
+	<!-- 增加更新时间戳 -->
+	<update id="updateFakeSales">
+        update vdlm_product set
+        <if test="count!=null">
+            fake_sales =
+            #{count,jdbcType=BIGINT} ,
+        </if>
+        <if test="count==null">
+            fake_sales = 0 ,
+        </if>
+         updated_at = now()
+        where id = #{id, typeHandler=idHandler}
+    </update>
+	
+	<insert id="insert" parameterType="com.vdlm.dal.model.Product">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_product (name, img, img_width, img_height, user_id, shop_id, status, amount,
+		sales, market_price, price,postage, recommend, recommend_at, commission_rate,
+		forsale_at, onsale_at, created_at, updated_at,
+		description, isDelay, delayDays, third_item_id
+		)
+		values (#{name,jdbcType=VARCHAR}, #{img,jdbcType=VARCHAR},
+		#{imgWidth,jdbcType=INTEGER}, #{imgHeight,jdbcType=INTEGER},
+		#{userId,jdbcType=BIGINT, typeHandler=idHandler},
+		#{shopId,jdbcType=BIGINT, typeHandler=idHandler},
+		#{status,jdbcType=VARCHAR}, #{amount,jdbcType=VARCHAR}, 0,
+		#{marketPrice,jdbcType=DECIMAL}, #{price,jdbcType=DECIMAL},  #{postage,jdbcType=DECIMAL},
+		#{recommend,jdbcType=BIT}, #{recommendAt,jdbcType=TIMESTAMP},
+		#{commissionRate,jdbcType=DECIMAL}, 
+		#{forsaleAt,jdbcType=TIMESTAMP}, #{onsaleAt,jdbcType=TIMESTAMP},
+		now(),now(), #{description,jdbcType=LONGVARCHAR}, #{delayed,jdbcType=BIT}, #{delayAt},
+		#{thirdItemId, jdbcType=VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.Product">
+		update vdlm_product
+		<set>
+			<if test="name != null">
+				name = #{name,jdbcType=VARCHAR},
+			</if>
+			<if test="code != null">
+				code = #{code,jdbcType=VARCHAR},
+			</if>
+			<if test="img != null">
+				img = #{img,jdbcType=VARCHAR},
+			</if>
+			<if test="imgWidth != null">
+				img_width = #{imgWidth,jdbcType=INTEGER},
+			</if>
+			<if test="imgHeight != null">
+				img_height = #{imgHeight,jdbcType=INTEGER},
+			</if>
+			<if test="status != null">
+				status = #{status,jdbcType=VARCHAR},
+			</if>
+			<if test="price != null">
+				price = #{price,jdbcType=DECIMAL},
+			</if>
+			
+			<if test="postage != null">
+				postage = #{postage,jdbcType=DECIMAL},
+			</if>
+			<if test="1==1">
+				market_price = #{marketPrice,jdbcType=DECIMAL},
+			</if>
+			<if test="amount != null">
+				amount = #{amount,jdbcType=INTEGER},
+			</if>
+			<if test="sales != null">
+				sales = #{sales,jdbcType=INTEGER},
+			</if>
+			<if test="recommend != null">
+				recommend = #{recommend,jdbcType=BIT},
+			</if>
+			<if test="recommendAt != null">
+				recommend_at = #{recommendAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="forsaleAt != null">
+				forsale_at = #{forsaleAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="onsaleAt != null">
+				onsale_at = #{onsaleAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="instockAt != null">
+				instock_at = #{instockAt,jdbcType=TIMESTAMP},
+			</if>
+			<if test="description != null">
+				description = #{description,jdbcType=LONGVARCHAR},
+			</if>
+			<if test="delayed != null">
+				isDelay = #{delayed,jdbcType=BIT},
+			</if>
+			<if test="delayAt != null">
+				delayDays = #{delayAt},
+			</if>
+			updated_at = now()
+		</set>
+		where id = #{id,typeHandler=idHandler} and archive=false
+	</update>
+	
+ 	<update id="updateAmountAndSales" >
+    	update vdlm_product set amount = amount - #{1,jdbcType=INTEGER},updated_at = now()
+    	where id = #{0,typeHandler=idHandler} and amount - #{1,jdbcType=INTEGER} &gt;= 0
+  	</update>
+	 <update id="updateSaleByProductId" >
+    	update vdlm_product set sales = sales + #{sale,jdbcType=INTEGER},fake_sales=IF(fake_sales=NULL,NULL,fake_sales + #{sale,jdbcType=INTEGER}),updated_at = now()
+    	where id = #{productId,typeHandler=idHandler}
+  	</update>
+  	<select id="getForsaleNow"  resultMap = "BaseResultMap">
+  		select
+  		<include refid="Base_Column_List" />
+  		from vdlm_product
+  		where status = 'FORSALE' AND archive=false and forsale_at &lt; now()
+  	</select>
+  	
+  	<!-- 自动上架 -->
+  	<update id="autoOnSaleByTask" >
+    	update vdlm_product set status = 'ONSALE',  onsale_at = now(), updated_at = now()
+    	where status = 'FORSALE' AND archive=false and forsale_at &lt; now()
+  	</update>
+  	
+  	<!-- 用于后台管理 -->
+  		<select id="selectByAdmin" resultMap="ResultMapWithBLOBs">
+		select
+		<include refid="Base_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where code = #{code}
+	</select>
+	
+	<select id="listProductsByAdmin" resultMap="AdminMap">
+		select p.id,p.shop_id ,p.name, p.description, p.status, p.price, p.amount, p.sales, p.onsale_at, p.code,
+		p.created_at, p.updated_at,s.name as shop_name, u.phone, p.img, p.commission_rate
+		from vdlm_product p join vdlm_shop s on p.shop_id = s.id join vdlm_user u on p.user_id = u.id
+		where 1 = 1
+		<if test="params.archive != null">
+			and p.archive = #{params.archive}
+		</if>
+		<if test="params.productName != null">
+			and p.name like #{params.productName}
+		</if>		
+		<if test="params.shopName != null">
+			and s.name like #{params.shopName}
+		</if>
+		<if test="params.productStatus != null">
+			and p.status = #{params.productStatus}
+		</if>
+		<if test="params.createdFrom != null">
+			and p.created_at >= #{params.createdFrom}
+		</if>
+		<if test="params.createdTo != null">
+			<![CDATA[
+			and p.created_at <= #{params.createdTo}
+			]]>
+		</if>
+		<if test="params.updatedFrom != null">
+			and p.updated_at >= #{params.updatedFrom}
+		</if>
+		<if test="params.updatedTo != null">
+			<![CDATA[
+			and p.updated_at <= #{params.updatedTo}
+			]]>
+		</if>
+		<if test="params.containCloseShop == false">
+			and s.archive = false
+		</if>
+		order by p.updated_at desc
+		<if test="page!=null">
+	    	limit #{page.offset}, #{page.size}
+		</if>
+	</select>
+	
+	<select id="countProductsByAdmin" resultType="Long">
+		select count(*) as c
+		from vdlm_product p join vdlm_shop s on p.shop_id = s.id join vdlm_user u on p.user_id = u.id
+		where 1 = 1
+		<if test="params.archive != null">
+			and p.archive = #{params.archive}
+		</if>
+		<if test="params.productName != null">
+			and p.name like #{params.productName}
+		</if>		
+		<if test="params.shopName != null">
+			and s.name like #{params.shopName}
+		</if>
+		<if test="params.productStatus != null">
+			and p.status = #{params.productStatus}
+		</if>
+		<if test="params.createdFrom != null">
+			and p.created_at >= #{params.createdFrom}
+		</if>
+		<if test="params.createdTo != null">
+			<![CDATA[
+			and p.created_at <= #{params.createdTo}
+			]]>
+		</if>
+		<if test="params.updatedFrom != null">
+			and p.updated_at >= #{params.updatedFrom}
+		</if>
+		<if test="params.updatedTo != null">
+			<![CDATA[
+			and p.updated_at <= #{params.updatedTo}
+			]]>
+		</if>
+		<if test="params.containCloseShop == false">
+			and s.archive = false
+		</if>
+	</select>
+		
+	<select id="selectLastCnt"  resultType="Long">
+		select count(*) from vdlm_product
+		where 1=1
+			<choose>
+				<when test="catType == 'sales'">
+					<include refid="onsales_cond"/>
+				</when>
+				<when test="catType == 'amount'">
+					<include refid="onamount_cond"/>
+				</when>
+				<when test="catType == 'soldout'">
+					<include refid="onsoldout_cond"/>
+				</when>
+				<when test="catType == 'statusDraft'">
+					<include refid="ondraft_cond"/>
+				</when>
+				<when test="catType == 'outofstock'">
+					<include refid="onoutofstock_cond"/>
+				</when>
+				<when test="catType == 'forsale'">
+					<include refid="onforsale_cond"/>
+				</when>
+				<otherwise>
+					<include refid="onstock_cond"/>
+				</otherwise>
+			</choose>
+	</select>
+	
+	<select id="countDelayProduct" resultType="Long">
+		select
+		count(1)
+		from vdlm_product
+		where isDelay=true and shop_id=#{shopId,typeHandler=idHandler} and status = 'ONSALE' and archive = false
+	</select>
+	
+	<select id="listDelayProduct" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product
+		where isDelay=true and shop_id=#{shopId,typeHandler=idHandler} and status = 'ONSALE' and archive = false
+		order by onsale_at desc
+		limit #{page.offset}, #{page.size}
+	</select>
+	
+	<select id="listUnCategoriedProductsInShop" resultMap="BaseResultMap">
+    select
+    p.id, p.shop_id, p.name, p.sales, p.fake_sales, p.amount, p.img, p.img_width, p.img_height, p.price, p.status, p.discount, p.onsale_at, p.forsale_at, p.created_at, p.updated_at
+    from vdlm_product p
+    left join vdlm_term_relationship r on r.obj_type = 'product' and r.obj_id = p.id
+    where p.shop_id = #{shopId, typeHandler=idHandler} and r.id is null and p.archive = 0
+    limit #{pager.offset}, #{pager.size}
+   </select>
+  
+   <select id="countUnCategoriedProductsInShop" resultType="long">
+    select count(1)
+    from vdlm_product p
+    left join vdlm_term_relationship r on r.obj_type = 'product' and r.obj_id = p.id
+    where p.shop_id = #{shopId, typeHandler=idHandler} and r.id is null and p.archive = 0
+  </select>
+  
+  <update id="updatePriceDiscountByShop">
+  update vdlm_product
+  set market_price = price, price = price * #{discount}, update_lock = 1
+  where shop_id = #{shopId,typeHandler=idHandler} and archive = 0
+  </update>
+  
+  <update id="updatePriceDiscount">
+  update vdlm_product
+  set market_price = price, price = if(price * #{discount} &lt; 0.01, 0.01, price * #{discount}), update_lock = 1
+  where id = #{id,typeHandler=idHandler} and update_lock = 0 and archive = 0 
+  </update>
+  
+  <update id="updatePriceReduction">
+  update vdlm_product
+  set market_price = price, price = if(price - #{reduction} &lt; 0.01, 0.01, price - #{reduction}), update_lock = 1
+  where id = #{id,typeHandler=idHandler} and update_lock = 0 and archive = 0 
+  </update>
+  
+  <update id="updatePriceFromMarketPriceByShop">
+  update vdlm_product
+  set price = if(market_price is null or market_price &lt; price, price, market_price), update_lock = 0
+  where shop_id = #{shopId,typeHandler=idHandler} and archive = 0 
+  </update>
+  
+  <update id="updatePriceFromMarketPrice">
+  update vdlm_product
+  set price = if (market_price is null or market_price &lt; price, price, market_price), update_lock = 0
+  where id = #{id,typeHandler=idHandler} and archive = 0
+  </update>
+  
+  <update id="synchronousSource">
+  	update vdlm_product
+  		set synchronousFlag = #{sourceVal,jdbcType=VARCHAR}, updated_at = now()
+  	where id = #{id,typeHandler=idHandler}
+  </update>
+  
+	<select id="obtainDbSynchronous" resultType="String">
+		select
+		synchronousFlag
+		from vdlm_product
+		where id in <foreach collection="ids" item="item" index="index"
+		open="(" separator="," close=")">#{item, typeHandler=idHandler}</foreach>
+	</select>
+	
+	<select id="listProductByActivityId" resultMap="BaseResultMap">
+		select 
+		*
+		from vdlm_product p join vdlm_campaign_product cp on p.id = cp.product_id
+		where cp.activity_id = #{activityId} and
+		p.archive = false
+	</select>
+  
+  <!-- 可供选择的活动商品，需要过滤活动中的商品 -->
+  <select id="listProductsAvailableByChannel" resultMap="BaseResultMap">
+		select
+		<include refid="List_Column_List" />
+		,
+		<include refid="Blob_Column_List" />
+		from vdlm_product p
+		left join (
+	        select product_id
+	        from vdlm_campaign_product cp
+	        join vdlm_activity_ticket at on cp.ticket_id = at.id
+	        join vdlm_activity a on a.id = at.activity_id
+	        where a.id = #{activityId} and at.audit_status='APPROVED') t on p.id = t.product_id
+		where p.archive = false and p.shop_id = #{shopId, typeHandler=idHandler} and p.status = 'ONSALE' and t.product_id is null
+		<if test="channel != null">
+			<if test="channel == 'XIANGQU'">
+				and synchronousFlag like '%1'
+			</if>
+			<if test="channel == 'MOGUJIE'">
+				and synchronousFlag like '%1_'
+			</if>
+		</if>
+		order by onsale_at desc
+		limit #{pager.offset}, #{pager.size}
+  </select>
+  
+  <select id="countProductsAvailableByChannel" resultType="Long">
+  	select count(1) 
+  	from vdlm_product p
+  	left join (
+            select product_id
+            from vdlm_campaign_product cp
+            join vdlm_activity_ticket at on cp.ticket_id = at.id
+            join vdlm_activity a on a.id = at.activity_id
+            where a.id = #{activityId}) t on p.id = t.product_id
+  	where p.shop_id = #{shopId, typeHandler=idHandler} and p.status = 'ONSALE' and t.product_id is null
+	<if test="channel != null">
+		<if test="channel == 'XIANGQU'">
+			and synchronousFlag like '%1'
+		</if>
+		<if test="channel == 'MOGUJIE'">
+			and synchronousFlag like '%1_'
+		</if>
+	</if>
+  </select>
+  
+  	<select id="selectProductIdByThirdItemId" resultType="Long">
+		select id from vdlm_product
+		where third_item_id = #{thirdItemId} limit 1
+	</select>
+	
+	<select id="listNoCodeProducts" resultMap="BaseResultMap">
+		select p.id
+		from vdlm_product p
+		where p.code is null or p.code=''
+    </select>
+    
+    <update id="addCode" parameterType="String">
+		update vdlm_product set code = #{id, jdbcType=VARCHAR},updated_at = now()
+		where id =#{id, typeHandler=idHandler}
+	</update>
+	
+	<select id="selectSimilarProduct" resultMap="BaseResultMap">
+        select
+            <include refid="List_Column_List" />
+        from vdlm_product
+        where 
+            shop_id=#{shopId,typeHandler=idHandler} 
+            and status = 'ONSALE' 
+            and archive = false
+            and code != #{excludeCode}
+        order by created_at desc
+        limit #{page.offset}, #{page.size}
+    </select>
+    
+     <insert id="insertExt">
+        insert into vdlm_product_ext (product_id, column1, column2, column3, column4, column5, column6, 
+        column7,column8, column9, column10,created_at, updated_at)
+		values (#{productId,typeHandler=idHandler}, 
+		#{map.column1,jdbcType=VARCHAR},
+		#{map.column2,jdbcType=VARCHAR},
+		#{map.column3,jdbcType=VARCHAR},
+		#{map.column4,jdbcType=VARCHAR},
+		#{map.column5,jdbcType=VARCHAR},
+		#{map.column6,jdbcType=VARCHAR}, 
+		#{map.column7,jdbcType=VARCHAR},
+		#{map.column8,jdbcType=VARCHAR}, 
+		#{map.column9,jdbcType=VARCHAR}, 
+		#{map.column10,jdbcType=VARCHAR},
+		now(),now()
+		)
+    </insert>
+
+    <insert id="insertInfo">
+        insert into vdlm_product_info (product_id, property, ms_price, start_time, 
+        end_time, short_intro, short_name, total_count,comment_count, badges, 
+        presale_text,presale_jump_label,presale_jump_data,verify,need_mcode,
+        mcode_tip,buy_limit_count,vtalk_id,appraisal_vtalk_id,appraisal_text,
+        coin_limit,distrib_status,post_mode, created_at, updated_at)
+		values (#{productId,typeHandler=idHandler}, 
+		#{map.property,jdbcType=BIGINT},
+		#{map.ms_price,jdbcType=DECIMAL},
+		#{map.start_time,jdbcType=TIMESTAMP},
+		#{map.end_time,jdbcType=TIMESTAMP},
+		#{map.short_intro,jdbcType=VARCHAR},
+		#{map.short_name,jdbcType=VARCHAR}, 
+		#{map.total_count,jdbcType=BIGINT},
+		#{map.comment_count,jdbcType=BIGINT}, 
+		#{map.badges,jdbcType=VARCHAR}, 
+		#{map.presale_text,jdbcType=VARCHAR},
+		#{map.presale_jump_label,jdbcType=VARCHAR},
+		#{map.presale_jump_data,jdbcType=VARCHAR},
+		#{map.verify,jdbcType=INTEGER},
+		#{map.need_mcode,jdbcType=INTEGER},
+		#{map.mcode_tip,jdbcType=VARCHAR},
+		#{map.buy_limit_count,jdbcType=INTEGER},
+		#{map.vtalk_id,jdbcType=INTEGER},
+		#{map.appraisal_vtalk_id,jdbcType=INTEGER},
+		#{map.appraisal_text,jdbcType=VARCHAR},
+		#{map.coin_limit,jdbcType=INTEGER},
+		#{map.distrib_status,jdbcType=INTEGER},
+		#{map.post_mode,jdbcType=INTEGER},
+		now(),now()
+		)
+    </insert>
+    
+    <select id="loadExt" resultType="java.util.Map">
+      select * from vdlm_product_ext  pe 
+      where pe.product_id=#{productId,typeHandler=idHandler} 
+    </select>
+    
+    <select id="loadInfo" resultType="java.util.Map">
+      select * from vdlm_product_info  pe 
+      where pe.product_id=#{productId,typeHandler=idHandler} 
+    </select>
+    
+    <insert id="updateInfo">
+        update vdlm_product_info set 
+        property = #{map.property,jdbcType=BIGINT},
+        ms_price =#{map.ms_price,jdbcType=DECIMAL}, 
+        start_time = #{map.start_time,jdbcType=TIMESTAMP}, 
+        end_time = #{map.end_time,jdbcType=TIMESTAMP},
+        short_intro = #{map.short_intro,jdbcType=VARCHAR}, 
+        short_name = #{map.short_name,jdbcType=VARCHAR}, 
+        total_count = #{map.total_count,jdbcType=BIGINT},
+        comment_count = #{map.comment_count,jdbcType=BIGINT}, 
+        badges = #{map.badges,jdbcType=VARCHAR}, 
+        presale_text = #{map.presale_text,jdbcType=VARCHAR},
+        presale_jump_label = #{map.presale_jump_label,jdbcType=VARCHAR},
+        presale_jump_data = #{map.presale_jump_data,jdbcType=VARCHAR},
+        verify = #{map.verify,jdbcType=INTEGER},
+        need_mcode = #{map.need_mcode,jdbcType=INTEGER},
+        mcode_tip = #{map.mcode_tip,jdbcType=VARCHAR},
+        buy_limit_count = #{map.buy_limit_count,jdbcType=INTEGER},
+        vtalk_id = #{map.vtalk_id,jdbcType=INTEGER},
+        appraisal_vtalk_id = #{map.appraisal_vtalk_id,jdbcType=INTEGER},
+        appraisal_text = #{map.appraisal_text,jdbcType=VARCHAR},
+        coin_limit =#{map.coin_limit,jdbcType=INTEGER},
+        distrib_status = #{map.distrib_status,jdbcType=INTEGER},
+        post_mode = #{map.post_mode,jdbcType=INTEGER},
+		updated_at = now()
+		where product_id = #{productId, typeHandler=idHandler}
+    </insert>
+    
+    <update id="updateExt">
+        update vdlm_product_ext 
+        set column1 = #{map.column1,jdbcType=VARCHAR},
+        column2 = #{map.column2,jdbcType=VARCHAR}, 
+        column3 = #{map.column3,jdbcType=VARCHAR},
+        column4 = #{map.column4,jdbcType=VARCHAR},
+        column5 = #{map.column5,jdbcType=VARCHAR},
+        column6 = #{map.column6,jdbcType=VARCHAR}, 
+        column7 = #{map.column7,jdbcType=VARCHAR},
+        column8 = #{map.column8,jdbcType=VARCHAR},
+        column9 = #{map.column9,jdbcType=VARCHAR},
+        column10 = #{map.column10,jdbcType=VARCHAR},
+        updated_at = now()
+		where product_id = #{productId, typeHandler=idHandler}
+    </update>
+        
+    <select id="selectByIdList" resultMap="ResultMapWithBLOBs">
+        select
+        <include refid="Base_Column_List" />
+        from vdlm_product
+        where id in 
+            <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                #{id, typeHandler=idHandler}
+            </foreach> 
+        and archive = false
+    </select>
+</mapper>

@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.SubAccountMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.SubAccount">
+		<id column="id" property="id" typeHandler="idHandler" />
+		<result column="account_id" property="accountId" typeHandler="idHandler" />
+		<result column="account_type" property="accountType" jdbcType="VARCHAR" />
+		<result column="balance" property="balance" jdbcType="DECIMAL" />
+		<result column="lock" property="lock" jdbcType="TINYINT" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<resultMap id="SubAccountVOMap" type="com.vdlm.dal.vo.SubAccountVO" extends="BaseResultMap">
+  		<result column="user_id" property="userId" typeHandler="idHandler" />
+  		<result column="withdraw_type" property="withdrawType"/>
+  	</resultMap>
+  
+	<sql id="Base_Column_List">
+		id, account_id, account_type, balance, created_at,
+		updated_at
+	</sql>
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_sub_account
+		where id = #{id,typeHandler=idHandler}
+	</select>
+	<select id="selectByAccountIdAndType" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_sub_account
+		where account_id =
+		#{accountId,typeHandler=idHandler}
+		and account_type =
+		#{accountType,jdbcType=VARCHAR}
+	</select>
+	<insert id="insert" parameterType="com.vdlm.dal.model.SubAccount">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+		insert into vdlm_sub_account (account_id, account_type,
+		balance,
+		created_at, updated_at
+		)
+		values (#{accountId,typeHandler=idHandler},
+		#{accountType,jdbcType=VARCHAR},
+		#{balance,jdbcType=DECIMAL}, now(),
+		now()
+		)
+	</insert>
+	<update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.SubAccount">
+		update vdlm_sub_account
+		<set>
+			<if test="accountId != null">
+				account_id = #{accountId,typeHandler=idHandler},
+			</if>
+			<if test="accountType != null">
+				account_type = #{accountType,jdbcType=VARCHAR},
+			</if>
+			<if test="balance != null">
+				balance = #{balance,jdbcType=DECIMAL},
+			</if>
+			updated_at = now()
+		</set>
+		where id = #{id, typeHandler=idHandler}
+	</update>
+
+	<update id="addBalance">
+		update vdlm_sub_account
+		set balance = balance + #{amount,jdbcType=DECIMAL},
+		updated_at = now()
+		where id = #{id,typeHandler=idHandler}
+	</update>
+
+	<!-- 锁定账户，不能使用 -->
+	<update id="lockSubAccount">
+		update vdlm_sub_account set lock = true, updated_at =
+		now() where id = #{id,
+		typeHandler=idHandler}
+	</update>
+	
+	<select id="listByAccountId" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List" /> 
+		from vdlm_sub_account where account_id = #{accountId, typeHandler=idHandler} 
+	</select>
+
+	<!-- 可以提现的账号列表，用于自动提现 -->
+	<select id="listByCanWithdraw" resultMap="SubAccountVOMap">
+		select a.user_id,s.balance,u.withdraw_type
+		from vdlm_sub_account s,vdlm_account a,vdlm_user u
+		where s.account_id=a.id
+		and a.archive=false
+		and s.lock =false 
+		and s.balance>0
+		and u.id = a.user_id and u.archive = false and u.withdraw_type>=1
+		and s.account_type=#{accountType,jdbcType=VARCHAR}
+	</select>
+	<!-- <select id="listByCanWithdraw" resultMap="SubAccountVOMap">
+		select a.user_id,s.balance 
+		from vdlm_sub_account s,vdlm_account a
+		where s.account_id=a.id
+		and a.archive=false
+		and s.lock =false 
+		and s.balance>0
+		and exists (select 1 from vdlm_user_bank b where b.user_id = a.user_id and b.archive = false)
+		and s.account_type=#{accountType,jdbcType=VARCHAR}
+	</select> -->
+	
+	<!-- 查询用户账户信息 -->
+	<select id="selectBalanceByUser" resultMap="BaseResultMap">
+		select s.id, s.account_id, s.account_type, s.balance, s.created_at, s.updated_at
+		from vdlm_account a,vdlm_sub_account s
+		where a.id=s.account_id
+		and a.archive=false and s.lock=false
+		and a.user_id=#{userId,typeHandler=idHandler}
+	</select>
+	
+	<!-- 查询用户余额 -->
+	<select id="selectBalanceByUserAndType" resultType="DECIMAL">
+		select sum(s.balance) as balance
+		from vdlm_account a,vdlm_sub_account s
+		where a.id=s.account_id
+		and a.archive=false and s.lock=false
+		and a.user_id=#{userId,typeHandler=idHandler}
+		and account_type=#{accountType,jdbcType=VARCHAR}
+	</select>
+	
+	
+	
+</mapper>

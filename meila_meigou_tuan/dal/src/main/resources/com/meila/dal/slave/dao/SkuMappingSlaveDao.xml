@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.SkuMappingSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.SkuMapping" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="product_id" property="productId" typeHandler="idHandler" />
+    <result column="spec_key" property="specKey" jdbcType="VARCHAR" />
+    <result column="spec_name" property="specName" jdbcType="VARCHAR" />
+    <result column="spec_order" property="order" jdbcType="INTEGER" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, product_id, spec_key, spec_name, spec_order, archive, created_at
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku_mapping
+    where id = #{id,typeHandler=idHandler} and archive = false
+    order by spec_order
+  </select>
+  <select id="selectByProductId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku_mapping
+    where product_id = #{productId,typeHandler=idHandler} and archive = false
+     order by spec_order, spec_name
+  </select>  
+</mapper>

@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderExtMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderExt" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="express_company_no" property="expressCompanyNo" jdbcType="INTEGER" />
+    <result column="mcode" property="mcode" jdbcType="VARCHAR" />
+    <result column="coin" property="coin" jdbcType="INTEGER" />
+    <result column="coin_price" property="coinPrice" jdbcType="DECIMAL" />
+    <result column="refund_status" property="refundStatus" jdbcType="SMALLINT" />
+    <result column="utm_channel" property="utmChannel" jdbcType="VARCHAR" />
+    <result column="utm_user_id" property="utmUserId" jdbcType="INTEGER" />
+    <result column="status_update_time" property="statusUpdateTime" jdbcType="TIMESTAMP" />
+    <result column="settlement_status" property="settlementStatus" jdbcType="SMALLINT" />
+    <result column="source" property="source" jdbcType="VARCHAR" />
+     <result column="tuan_flag" property="tuanFlag" jdbcType="BIT" />
+     <result column="tuan_no" property="tuanNo" jdbcType="VARCHAR" />
+     <result column="utm_activity" property="utm_activity" jdbcType="VARCHAR" />
+     <result column="in_channel" property="inChannel" jdbcType="VARCHAR" />
+    
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.orderIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.orderIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, order_id, express_company_no, mcode, coin, coin_price, refund_status, utm_channel, 
+    utm_user_id, status_update_time, settlement_status, source,tuan_flag,tuan_no
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.vdlm.dal.model.OrderExtExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from vdlm_order_ext
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_ext
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="String" >
+    delete from vdlm_order_ext
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.vdlm.dal.model.OrderExtExample" >
+    delete from vdlm_order_ext
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderExt" >
+    insert into vdlm_order_ext (id, order_id, 
+      express_company_no, mcode, coin, 
+      coin_price, refund_status, utm_channel, 
+      utm_user_id, status_update_time, settlement_status, 
+      source,utm_activity,in_channel)
+    values (#{id,jdbcType=BIGINT,typeHandler=idHandler}, #{orderId,jdbcType=BIGINT,typeHandler=idHandler}, 
+      #{expressCompanyNo,jdbcType=INTEGER}, #{mcode,jdbcType=VARCHAR}, #{coin,jdbcType=INTEGER}, 
+      #{coinPrice,jdbcType=DECIMAL}, #{refundStatus,jdbcType=SMALLINT}, #{utmChannel,jdbcType=VARCHAR}, 
+      #{utmUserId,jdbcType=INTEGER}, #{statusUpdateTime,jdbcType=TIMESTAMP}, #{settlementStatus,jdbcType=SMALLINT}, 
+      #{source,jdbcType=VARCHAR}, #{utmActivity,jdbcType=VARCHAR},#{inChannel,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.vdlm.dal.model.OrderExt" >
+    insert into vdlm_order_ext
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="orderId != null" >
+        order_id,
+      </if>
+      <if test="expressCompanyNo != null" >
+        express_company_no,
+      </if>
+      <if test="mcode != null" >
+        mcode,
+      </if>
+      <if test="coin != null" >
+        coin,
+      </if>
+      <if test="coinPrice != null" >
+        coin_price,
+      </if>
+      <if test="refundStatus != null" >
+        refund_status,
+      </if>
+      <if test="utmChannel != null" >
+        utm_channel,
+      </if>
+      <if test="utmUserId != null" >
+        utm_user_id,
+      </if>
+      <if test="statusUpdateTime != null" >
+        status_update_time,
+      </if>
+      <if test="settlementStatus != null" >
+        settlement_status,
+      </if>
+      <if test="source != null" >
+        source,
+      </if>
+       <if test="tuanFlag != null" >
+        tuan_flag,
+      </if>
+      <if test="tuanNo != null" >
+        tuan_no,
+      </if>
+       <if test="utmActivity != null" >
+        utm_activity,
+      </if>
+      <if test="inChannel != null" >
+        in_channel,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="orderId != null" >
+        #{orderId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="expressCompanyNo != null" >
+        #{expressCompanyNo,jdbcType=INTEGER},
+      </if>
+      <if test="mcode != null" >
+        #{mcode,jdbcType=VARCHAR},
+      </if>
+      <if test="coin != null" >
+        #{coin,jdbcType=INTEGER},
+      </if>
+      <if test="coinPrice != null" >
+        #{coinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="refundStatus != null" >
+        #{refundStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="utmChannel != null" >
+        #{utmChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="utmUserId != null" >
+        #{utmUserId,jdbcType=INTEGER},
+      </if>
+      <if test="statusUpdateTime != null" >
+        #{statusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settlementStatus != null" >
+        #{settlementStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="source != null" >
+        #{source,jdbcType=VARCHAR},
+      </if>
+       <if test="tuanFlag != null" >
+        #{tuanFlag,jdbcType=BIT},
+      </if>
+       <if test="tuanNo != null" >
+       #{tuanNo,jdbcType=VARCHAR},
+      </if>
+         <if test="utmActivity != null" >
+        #{utmActivity,jdbcType=VARCHAR},
+      </if>
+      <if test="inChannel != null" >
+        #{inChannel,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.vdlm.dal.model.OrderExtExample" resultType="java.lang.Integer" >
+    select count(*) from vdlm_order_ext
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update vdlm_order_ext
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.orderId != null" >
+        order_id = #{record.orderId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.expressCompanyNo != null" >
+        express_company_no = #{record.expressCompanyNo,jdbcType=INTEGER},
+      </if>
+      <if test="record.mcode != null" >
+        mcode = #{record.mcode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.coin != null" >
+        coin = #{record.coin,jdbcType=INTEGER},
+      </if>
+      <if test="record.coinPrice != null" >
+        coin_price = #{record.coinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="record.refundStatus != null" >
+        refund_status = #{record.refundStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.utmChannel != null" >
+        utm_channel = #{record.utmChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="record.utmUserId != null" >
+        utm_user_id = #{record.utmUserId,jdbcType=INTEGER},
+      </if>
+      <if test="record.statusUpdateTime != null" >
+        status_update_time = #{record.statusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.settlementStatus != null" >
+        settlement_status = #{record.settlementStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="record.source != null" >
+        source = #{record.source,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update vdlm_order_ext
+    set id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      order_id = #{record.orderId,jdbcType=BIGINT,typeHandler=idHandler},
+      express_company_no = #{record.expressCompanyNo,jdbcType=INTEGER},
+      mcode = #{record.mcode,jdbcType=VARCHAR},
+      coin = #{record.coin,jdbcType=INTEGER},
+      coin_price = #{record.coinPrice,jdbcType=DECIMAL},
+      refund_status = #{record.refundStatus,jdbcType=SMALLINT},
+      utm_channel = #{record.utmChannel,jdbcType=VARCHAR},
+      utm_user_id = #{record.utmUserId,jdbcType=INTEGER},
+      status_update_time = #{record.statusUpdateTime,jdbcType=TIMESTAMP},
+      settlement_status = #{record.settlementStatus,jdbcType=SMALLINT},
+      source = #{record.source,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.OrderExt" >
+    update vdlm_order_ext
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="expressCompanyNo != null" >
+        express_company_no = #{expressCompanyNo,jdbcType=INTEGER},
+      </if>
+      <if test="mcode != null" >
+        mcode = #{mcode,jdbcType=VARCHAR},
+      </if>
+      <if test="coin != null" >
+        coin = #{coin,jdbcType=INTEGER},
+      </if>
+      <if test="coinPrice != null" >
+        coin_price = #{coinPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="refundStatus != null" >
+        refund_status = #{refundStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="utmChannel != null" >
+        utm_channel = #{utmChannel,jdbcType=VARCHAR},
+      </if>
+      <if test="utmUserId != null" >
+        utm_user_id = #{utmUserId,jdbcType=INTEGER},
+      </if>
+      <if test="statusUpdateTime != null" >
+        status_update_time = #{statusUpdateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="settlementStatus != null" >
+        settlement_status = #{settlementStatus,jdbcType=SMALLINT},
+      </if>
+      <if test="source != null" >
+        source = #{source,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.OrderExt" >
+    update vdlm_order_ext
+    set order_id = #{orderId,jdbcType=BIGINT,typeHandler=idHandler},
+      express_company_no = #{expressCompanyNo,jdbcType=INTEGER},
+      mcode = #{mcode,jdbcType=VARCHAR},
+      coin = #{coin,jdbcType=INTEGER},
+      coin_price = #{coinPrice,jdbcType=DECIMAL},
+      refund_status = #{refundStatus,jdbcType=SMALLINT},
+      utm_channel = #{utmChannel,jdbcType=VARCHAR},
+      utm_user_id = #{utmUserId,jdbcType=INTEGER},
+      status_update_time = #{statusUpdateTime,jdbcType=TIMESTAMP},
+      settlement_status = #{settlementStatus,jdbcType=SMALLINT},
+      source = #{source,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  
+  
+   <select id="selectOrderExtByOrderIdList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_ext
+    where 
+    order_id in
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+    	#{id,typeHandler=idHandler}
+    </foreach> 
+  </select>
+</mapper>

@@ -1,0 +1,679 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ShopExtMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ShopExt" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="shop_id" property="shopId" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result column="pay_type" property="payType" jdbcType="SMALLINT" />
+    <result column="pay_account" property="payAccount" jdbcType="VARCHAR" />
+    <result column="short_intro" property="shortIntro" jdbcType="VARCHAR" />
+    <result column="seller_type" property="sellerType" jdbcType="SMALLINT" />
+    <result column="is_real_seller" property="isRealSeller" jdbcType="BIT" />
+    <result column="total_revenue" property="totalRevenue" jdbcType="DECIMAL" />
+    <result column="balance" property="balance" jdbcType="DECIMAL" />
+    <result column="shipment_count" property="shipmentCount" jdbcType="INTEGER" />
+    <result column="distrib_type" property="distribType" jdbcType="SMALLINT" />
+    <result column="verify_status" property="verifyStatus" jdbcType="VARCHAR" />
+    <result column="submit_check_time" property="submitCheckTime" jdbcType="TIMESTAMP" />
+    <result column="video_url" property="videoUrl" jdbcType="VARCHAR" />
+    <result column="video_img" property="videoImg" jdbcType="VARCHAR" />
+    <result column="video_slug" property="videoSlug" jdbcType="VARCHAR" />
+    <result column="display_order" property="displayOrder" jdbcType="INTEGER" />
+    <result column="delivery_type" property="deliveryType" jdbcType="VARCHAR" />
+    <result column="balance_type" property="balanceType" jdbcType="VARCHAR" />
+    <result column="balance_bank_id" property="balanceBankId" jdbcType="TINYINT" />
+    <result column="balance_account" property="balanceAccount" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="qq" property="qq" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.shopIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.idCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+            <foreach collection="criteria.shopIdCriteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value,typeHandler=idHandler} and #{criterion.secondValue,typeHandler=idHandler}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem,typeHandler=idHandler}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, shop_id, pay_type, pay_account, short_intro, seller_type, is_real_seller, total_revenue, 
+    balance, shipment_count, distrib_type, verify_status, submit_check_time, video_url, 
+    video_img, video_slug, display_order, delivery_type, balance_type, balance_bank_id, 
+    balance_account, phone, qq
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.vdlm.dal.model.ShopExtExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from vdlm_shop_ext
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop_ext
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="String" >
+    delete from vdlm_shop_ext
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.vdlm.dal.model.ShopExtExample" >
+    delete from vdlm_shop_ext
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.vdlm.dal.model.ShopExt" >
+    insert into vdlm_shop_ext (id, shop_id, pay_type, 
+      pay_account, short_intro, seller_type, 
+      is_real_seller, total_revenue, balance, 
+      shipment_count, distrib_type, verify_status, 
+      submit_check_time, video_url, video_img, 
+      video_slug, display_order, delivery_type, 
+      balance_type, balance_bank_id, balance_account, 
+      phone, qq)
+    values (#{id,jdbcType=BIGINT,typeHandler=idHandler}, #{shopId,jdbcType=BIGINT,typeHandler=idHandler}, #{payType,jdbcType=SMALLINT}, 
+      #{payAccount,jdbcType=VARCHAR}, #{shortIntro,jdbcType=VARCHAR}, #{sellerType,jdbcType=SMALLINT}, 
+      #{isRealSeller,jdbcType=BIT}, #{totalRevenue,jdbcType=DECIMAL}, #{balance,jdbcType=DECIMAL}, 
+      #{shipmentCount,jdbcType=INTEGER}, #{distribType,jdbcType=SMALLINT}, #{verifyStatus,jdbcType=VARCHAR}, 
+      #{submitCheckTime,jdbcType=TIMESTAMP}, #{videoUrl,jdbcType=VARCHAR}, #{videoImg,jdbcType=VARCHAR}, 
+      #{videoSlug,jdbcType=VARCHAR}, #{displayOrder,jdbcType=INTEGER}, #{deliveryType,jdbcType=VARCHAR}, 
+      #{balanceType,jdbcType=VARCHAR}, #{balanceBankId,jdbcType=TINYINT}, #{balanceAccount,jdbcType=VARCHAR}, 
+      #{phone,jdbcType=VARCHAR}, #{qq,jdbcType=VARCHAR})
+  </insert>
+    <insert id="insertAutoKey" parameterType="com.vdlm.dal.model.ShopExt" >
+        <selectKey resultType="long" keyProperty="id">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        insert into vdlm_shop_ext
+        <trim prefix="(" suffix=")" suffixOverrides="," >
+            <if test="shopId != null" >
+                shop_id,
+            </if>
+            <if test="payType != null" >
+                pay_type,
+            </if>
+            <if test="payAccount != null" >
+                pay_account,
+            </if>
+            <if test="shortIntro != null" >
+                short_intro,
+            </if>
+            <if test="sellerType != null" >
+                seller_type,
+            </if>
+            <if test="isRealSeller != null" >
+                is_real_seller,
+            </if>
+            <if test="totalRevenue != null" >
+                total_revenue,
+            </if>
+            <if test="balance != null" >
+                balance,
+            </if>
+            <if test="shipmentCount != null" >
+                shipment_count,
+            </if>
+            <if test="distribType != null" >
+                distrib_type,
+            </if>
+            <if test="verifyStatus != null" >
+                verify_status,
+            </if>
+            <if test="submitCheckTime != null" >
+                submit_check_time,
+            </if>
+            <if test="videoUrl != null" >
+                video_url,
+            </if>
+            <if test="videoImg != null" >
+                video_img,
+            </if>
+            <if test="videoSlug != null" >
+                video_slug,
+            </if>
+            <if test="displayOrder != null" >
+                display_order,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides="," >
+            <if test="shopId != null" >
+                #{shopId,jdbcType=BIGINT,typeHandler=idHandler},
+            </if>
+            <if test="payType != null" >
+                #{payType,jdbcType=SMALLINT},
+            </if>
+            <if test="payAccount != null" >
+                #{payAccount,jdbcType=VARCHAR},
+            </if>
+            <if test="shortIntro != null" >
+                #{shortIntro,jdbcType=VARCHAR},
+            </if>
+            <if test="sellerType != null" >
+                #{sellerType,jdbcType=SMALLINT},
+            </if>
+            <if test="isRealSeller != null" >
+                #{isRealSeller,jdbcType=BIT},
+            </if>
+            <if test="totalRevenue != null" >
+                #{totalRevenue,jdbcType=DECIMAL},
+            </if>
+            <if test="balance != null" >
+                #{balance,jdbcType=DECIMAL},
+            </if>
+            <if test="shipmentCount != null" >
+                #{shipmentCount,jdbcType=INTEGER},
+            </if>
+            <if test="distribType != null" >
+                #{distribType,jdbcType=SMALLINT},
+            </if>
+            <if test="verifyStatus != null" >
+                #{verifyStatus,jdbcType=VARCHAR},
+            </if>
+            <if test="submitCheckTime != null" >
+                #{submitCheckTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="videoUrl != null" >
+                #{videoUrl,jdbcType=VARCHAR},
+            </if>
+            <if test="videoImg != null" >
+                #{videoImg,jdbcType=VARCHAR},
+            </if>
+            <if test="videoSlug != null" >
+                #{videoSlug,jdbcType=VARCHAR},
+            </if>
+            <if test="displayOrder != null" >
+                #{displayOrder,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+  <insert id="insertSelective" parameterType="com.vdlm.dal.model.ShopExt" >
+    insert into vdlm_shop_ext
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="shopId != null" >
+        shop_id,
+      </if>
+      <if test="payType != null" >
+        pay_type,
+      </if>
+      <if test="payAccount != null" >
+        pay_account,
+      </if>
+      <if test="shortIntro != null" >
+        short_intro,
+      </if>
+      <if test="sellerType != null" >
+        seller_type,
+      </if>
+      <if test="isRealSeller != null" >
+        is_real_seller,
+      </if>
+      <if test="totalRevenue != null" >
+        total_revenue,
+      </if>
+      <if test="balance != null" >
+        balance,
+      </if>
+      <if test="shipmentCount != null" >
+        shipment_count,
+      </if>
+      <if test="distribType != null" >
+        distrib_type,
+      </if>
+      <if test="verifyStatus != null" >
+        verify_status,
+      </if>
+      <if test="submitCheckTime != null" >
+        submit_check_time,
+      </if>
+      <if test="videoUrl != null" >
+        video_url,
+      </if>
+      <if test="videoImg != null" >
+        video_img,
+      </if>
+      <if test="videoSlug != null" >
+        video_slug,
+      </if>
+      <if test="displayOrder != null" >
+        display_order,
+      </if>
+      <if test="deliveryType != null" >
+        delivery_type,
+      </if>
+      <if test="balanceType != null" >
+        balance_type,
+      </if>
+      <if test="balanceBankId != null" >
+        balance_bank_id,
+      </if>
+      <if test="balanceAccount != null" >
+        balance_account,
+      </if>
+      <if test="phone != null" >
+        phone,
+      </if>
+      <if test="qq != null" >
+        qq,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="shopId != null" >
+        #{shopId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="payType != null" >
+        #{payType,jdbcType=SMALLINT},
+      </if>
+      <if test="payAccount != null" >
+        #{payAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="shortIntro != null" >
+        #{shortIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerType != null" >
+        #{sellerType,jdbcType=SMALLINT},
+      </if>
+      <if test="isRealSeller != null" >
+        #{isRealSeller,jdbcType=BIT},
+      </if>
+      <if test="totalRevenue != null" >
+        #{totalRevenue,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="shipmentCount != null" >
+        #{shipmentCount,jdbcType=INTEGER},
+      </if>
+      <if test="distribType != null" >
+        #{distribType,jdbcType=SMALLINT},
+      </if>
+      <if test="verifyStatus != null" >
+        #{verifyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="submitCheckTime != null" >
+        #{submitCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoUrl != null" >
+        #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoImg != null" >
+        #{videoImg,jdbcType=VARCHAR},
+      </if>
+      <if test="videoSlug != null" >
+        #{videoSlug,jdbcType=VARCHAR},
+      </if>
+      <if test="displayOrder != null" >
+        #{displayOrder,jdbcType=INTEGER},
+      </if>
+      <if test="deliveryType != null" >
+        #{deliveryType,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceType != null" >
+        #{balanceType,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceBankId != null" >
+        #{balanceBankId,jdbcType=TINYINT},
+      </if>
+      <if test="balanceAccount != null" >
+        #{balanceAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        #{qq,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.vdlm.dal.model.ShopExtExample" resultType="java.lang.Integer" >
+    select count(*) from vdlm_shop_ext
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update vdlm_shop_ext
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.shopId != null" >
+        shop_id = #{record.shopId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="record.payType != null" >
+        pay_type = #{record.payType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.payAccount != null" >
+        pay_account = #{record.payAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.shortIntro != null" >
+        short_intro = #{record.shortIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="record.sellerType != null" >
+        seller_type = #{record.sellerType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.isRealSeller != null" >
+        is_real_seller = #{record.isRealSeller,jdbcType=BIT},
+      </if>
+      <if test="record.totalRevenue != null" >
+        total_revenue = #{record.totalRevenue,jdbcType=DECIMAL},
+      </if>
+      <if test="record.balance != null" >
+        balance = #{record.balance,jdbcType=DECIMAL},
+      </if>
+      <if test="record.shipmentCount != null" >
+        shipment_count = #{record.shipmentCount,jdbcType=INTEGER},
+      </if>
+      <if test="record.distribType != null" >
+        distrib_type = #{record.distribType,jdbcType=SMALLINT},
+      </if>
+      <if test="record.verifyStatus != null" >
+        verify_status = #{record.verifyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.submitCheckTime != null" >
+        submit_check_time = #{record.submitCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.videoUrl != null" >
+        video_url = #{record.videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="record.videoImg != null" >
+        video_img = #{record.videoImg,jdbcType=VARCHAR},
+      </if>
+      <if test="record.videoSlug != null" >
+        video_slug = #{record.videoSlug,jdbcType=VARCHAR},
+      </if>
+      <if test="record.displayOrder != null" >
+        display_order = #{record.displayOrder,jdbcType=INTEGER},
+      </if>
+      <if test="record.deliveryType != null" >
+        delivery_type = #{record.deliveryType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.balanceType != null" >
+        balance_type = #{record.balanceType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.balanceBankId != null" >
+        balance_bank_id = #{record.balanceBankId,jdbcType=TINYINT},
+      </if>
+      <if test="record.balanceAccount != null" >
+        balance_account = #{record.balanceAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="record.phone != null" >
+        phone = #{record.phone,jdbcType=VARCHAR},
+      </if>
+      <if test="record.qq != null" >
+        qq = #{record.qq,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update vdlm_shop_ext
+    set id = #{record.id,jdbcType=BIGINT,typeHandler=idHandler},
+      shop_id = #{record.shopId,jdbcType=BIGINT,typeHandler=idHandler},
+      pay_type = #{record.payType,jdbcType=SMALLINT},
+      pay_account = #{record.payAccount,jdbcType=VARCHAR},
+      short_intro = #{record.shortIntro,jdbcType=VARCHAR},
+      seller_type = #{record.sellerType,jdbcType=SMALLINT},
+      is_real_seller = #{record.isRealSeller,jdbcType=BIT},
+      total_revenue = #{record.totalRevenue,jdbcType=DECIMAL},
+      balance = #{record.balance,jdbcType=DECIMAL},
+      shipment_count = #{record.shipmentCount,jdbcType=INTEGER},
+      distrib_type = #{record.distribType,jdbcType=SMALLINT},
+      verify_status = #{record.verifyStatus,jdbcType=VARCHAR},
+      submit_check_time = #{record.submitCheckTime,jdbcType=TIMESTAMP},
+      video_url = #{record.videoUrl,jdbcType=VARCHAR},
+      video_img = #{record.videoImg,jdbcType=VARCHAR},
+      video_slug = #{record.videoSlug,jdbcType=VARCHAR},
+      display_order = #{record.displayOrder,jdbcType=INTEGER},
+      delivery_type = #{record.deliveryType,jdbcType=VARCHAR},
+      balance_type = #{record.balanceType,jdbcType=VARCHAR},
+      balance_bank_id = #{record.balanceBankId,jdbcType=TINYINT},
+      balance_account = #{record.balanceAccount,jdbcType=VARCHAR},
+      phone = #{record.phone,jdbcType=VARCHAR},
+      qq = #{record.qq,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.ShopExt" >
+    update vdlm_shop_ext
+    <set >
+      <if test="shopId != null" >
+        shop_id = #{shopId,jdbcType=BIGINT,typeHandler=idHandler},
+      </if>
+      <if test="payType != null" >
+        pay_type = #{payType,jdbcType=SMALLINT},
+      </if>
+      <if test="payAccount != null" >
+        pay_account = #{payAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="shortIntro != null" >
+        short_intro = #{shortIntro,jdbcType=VARCHAR},
+      </if>
+      <if test="sellerType != null" >
+        seller_type = #{sellerType,jdbcType=SMALLINT},
+      </if>
+      <if test="isRealSeller != null" >
+        is_real_seller = #{isRealSeller,jdbcType=BIT},
+      </if>
+      <if test="totalRevenue != null" >
+        total_revenue = #{totalRevenue,jdbcType=DECIMAL},
+      </if>
+      <if test="balance != null" >
+        balance = #{balance,jdbcType=DECIMAL},
+      </if>
+      <if test="shipmentCount != null" >
+        shipment_count = #{shipmentCount,jdbcType=INTEGER},
+      </if>
+      <if test="distribType != null" >
+        distrib_type = #{distribType,jdbcType=SMALLINT},
+      </if>
+      <if test="verifyStatus != null" >
+        verify_status = #{verifyStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="submitCheckTime != null" >
+        submit_check_time = #{submitCheckTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="videoUrl != null" >
+        video_url = #{videoUrl,jdbcType=VARCHAR},
+      </if>
+      <if test="videoImg != null" >
+        video_img = #{videoImg,jdbcType=VARCHAR},
+      </if>
+      <if test="videoSlug != null" >
+        video_slug = #{videoSlug,jdbcType=VARCHAR},
+      </if>
+      <if test="displayOrder != null" >
+        display_order = #{displayOrder,jdbcType=INTEGER},
+      </if>
+      <if test="deliveryType != null" >
+        delivery_type = #{deliveryType,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceType != null" >
+        balance_type = #{balanceType,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceBankId != null" >
+        balance_bank_id = #{balanceBankId,jdbcType=TINYINT},
+      </if>
+      <if test="balanceAccount != null" >
+        balance_account = #{balanceAccount,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="qq != null" >
+        qq = #{qq,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.vdlm.dal.model.ShopExt" >
+    update vdlm_shop_ext
+    set shop_id = #{shopId,jdbcType=BIGINT,typeHandler=idHandler},
+      pay_type = #{payType,jdbcType=SMALLINT},
+      pay_account = #{payAccount,jdbcType=VARCHAR},
+      short_intro = #{shortIntro,jdbcType=VARCHAR},
+      seller_type = #{sellerType,jdbcType=SMALLINT},
+      is_real_seller = #{isRealSeller,jdbcType=BIT},
+      total_revenue = #{totalRevenue,jdbcType=DECIMAL},
+      balance = #{balance,jdbcType=DECIMAL},
+      shipment_count = #{shipmentCount,jdbcType=INTEGER},
+      distrib_type = #{distribType,jdbcType=SMALLINT},
+      verify_status = #{verifyStatus,jdbcType=VARCHAR},
+      submit_check_time = #{submitCheckTime,jdbcType=TIMESTAMP},
+      video_url = #{videoUrl,jdbcType=VARCHAR},
+      video_img = #{videoImg,jdbcType=VARCHAR},
+      video_slug = #{videoSlug,jdbcType=VARCHAR},
+      display_order = #{displayOrder,jdbcType=INTEGER},
+      delivery_type = #{deliveryType,jdbcType=VARCHAR},
+      balance_type = #{balanceType,jdbcType=VARCHAR},
+      balance_bank_id = #{balanceBankId,jdbcType=TINYINT},
+      balance_account = #{balanceAccount,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      qq = #{qq,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT,typeHandler=idHandler}
+  </update>
+</mapper>

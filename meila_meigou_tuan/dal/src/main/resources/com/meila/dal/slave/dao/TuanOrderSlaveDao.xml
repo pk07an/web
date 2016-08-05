@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.TuanOrderSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.TuanOrder" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="tuan_id" property="tuanId" jdbcType="BIGINT" />
+    <result column="tuan_no" property="tuanNo" jdbcType="VARCHAR" />
+    <result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+    <result column="pay_no" property="payNo" jdbcType="VARCHAR" />
+    <result column="role" property="role" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="status" property="orderStatus" jdbcType="VARCHAR" />
+    <result column="paid_at" property="paidAt" jdbcType="TIMESTAMP" />
+    <result column="total_fee" property="totalFee" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="tuanOrderStatusMap" type="com.vdlm.dal.model.TuanOrder" extends="BaseResultMap">
+        <association property="tuanStatus"  columnPrefix="st_" resultMap="com.meila.dal.slave.dao.TuanStatusSlaveDao.BaseResultMap" ></association>
+    </resultMap>
+    
+  <sql id="Base_Column_List" >
+    id, tuan_id, tuan_no, order_no, pay_no, role, user_id, created_at, updated_at, archive
+  </sql>
+  
+ <select id="countValidTuanOrderByTuanNo" resultType="int">
+ 	select 
+ 		count(1)
+ 	from 
+ 		vdlm_tuan_order  t 
+ 	left join 
+ 		vdlm_order o 
+ 	on 
+ 		t.order_no=o.order_no 
+ 	where 
+ 		o.status not in('CANCELLED','REFUNDING','SUBMITTED','CLOSED') 
+ 	and 
+ 		t.tuan_no=#{tuanNo,jdbcType=VARCHAR}
+ </select>
+
+
+  <select id="findOrderByUser" resultMap="BaseResultMap">
+      select
+      t.id, t.tuan_id, t.tuan_no, t.order_no, t.pay_no, t.role, t.user_id, t.created_at, t.updated_at, t.archive,o.status
+      from vdlm_tuan_order t
+      left join
+      vdlm_order o
+      on
+      t.order_no=o.order_no
+      where
+      t.tuan_id=#{tuanId}
+      AND
+      t.user_id=#{userId}
+      ORDER BY o.created_at DESC
+      limit 1
+  </select>
+
+	<select id="findOrderByUserNotInCancelled" resultMap="BaseResultMap">
+		select
+		t.id, t.tuan_id, t.tuan_no, t.order_no, t.pay_no, t.role, t.user_id, t.created_at, t.updated_at, t.archive,o.status
+		from vdlm_tuan_order t
+		left join
+		vdlm_order o
+		on
+		t.order_no=o.order_no
+		where
+		t.tuan_id=#{tuanId}
+		and
+		o.status not in('CANCELLED')
+		and
+		t.user_id=#{userId}
+		ORDER BY o.created_at DESC
+		limit 1
+	</select>
+
+  <select id="findTuanOrder" resultMap="BaseResultMap" parameterType="java.lang.Long">
+		select
+		 t.id, t.tuan_id, t.tuan_no, t.order_no, t.pay_no, t.role, t.user_id, t.created_at, t.updated_at, t.archive,o.status,o.paid_at
+		from vdlm_tuan_order t
+		left join
+			 vdlm_order o 
+		on
+			 t.order_no=o.order_no
+		where
+			 t.tuan_id=#{tuanId}
+		and
+			  o.status NOT IN('CANCELLED','SUBMITTED')
+  </select>
+  
+  <select id="selectUserTuanOrder" resultMap="tuanOrderStatusMap">
+   	select 
+   		 t.id, t.tuan_id, t.tuan_no, t.order_no, t.pay_no, t.role, t.user_id, t.created_at, t.updated_at, t.archive,o.status,o.total_fee,
+     st.id as st_id,  st.tuan_no as st_tuan_no,  st.user_id as st_user_id,  st.act_id as st_act_id,  st.sku_id as st_sku_id,  st.product_id as st_product_id,  
+     st.status as st_status,  st.member_num as st_member_num,  st.start_time as st_start_time, 
+     st.alive_time as st_alive_time,  st.created_at as st_created_at,  st.updated_at as st_updated_at,  st.archive as st_archive,st.tuan_type as st_tuan_type
+   	from 
+ 		vdlm_tuan_order  t 
+ 	left join
+        vdlm_tuan_status st
+    on 
+        t.tuan_no=st.tuan_no
+ 	left join 
+ 		vdlm_order o 
+ 	on 
+ 		t.order_no=o.order_no 
+ 	where 
+ 		t.archive=false
+ 	and
+ 	    t.user_id=#{userId,jdbcType=BIGINT}
+ 	order by 
+ 		t.created_at desc 
+ 	limit #{pageNo},#{pageSize}
+  </select>
+  
+  <select id="countUserTuanOrder" resultType="long">
+  		select 
+  			count(1) 
+  		from 
+ 			vdlm_tuan_order 
+ 		where 
+ 			archive=false
+ 		and
+ 	    	user_id=#{userId,jdbcType=BIGINT}
+  </select>
+  
+  <select id="countValidTuanOrderByTuanNoAndUserId" resultType="int">
+ 	select 
+ 		count(1)
+ 	from 
+ 		vdlm_tuan_order  t 
+ 	left join 
+ 		vdlm_order o 
+ 	on 
+ 		t.order_no=o.order_no 
+ 	where 
+ 		o.status not in('CANCELLED') 
+ 	and 
+ 		t.tuan_no=#{tuanNo,jdbcType=VARCHAR}
+ 	and
+ 		 t.user_id=#{userId,jdbcType=BIGINT}
+ </select>
+  
+    <select id="selectUserTuanOrderByActId" resultMap="tuanOrderStatusMap">
+    select 
+        t.id, t.tuan_id, t.tuan_no, t.order_no, t.pay_no, t.role, t.user_id, t.created_at, t.updated_at, t.archive,o.status,o.total_fee,
+     st.id as st_id,  st.tuan_no as st_tuan_no,  st.user_id as st_user_id,  st.act_id as st_act_id,  st.sku_id as st_sku_id,  st.product_id as st_product_id,  
+     st.status as st_status,  st.member_num as st_member_num,  st.start_time as st_start_time, 
+     st.alive_time as st_alive_time,  st.created_at as st_created_at,  st.updated_at as st_updated_at,  st.archive as st_archive,st.tuan_type as st_tuan_type
+    from 
+        vdlm_tuan_order  t 
+    left join
+        vdlm_tuan_status st
+    on 
+        t.tuan_no=st.tuan_no
+    left join 
+        vdlm_order o 
+    on 
+        t.order_no=o.order_no 
+    where 
+        t.archive=false
+    and
+        t.user_id=#{userId,jdbcType=BIGINT}
+     and
+        st.act_id=#{actId}
+     order by 
+        t.created_at desc 
+  </select>
+  
+  <select id="findTuanOrderByTuanNo" resultMap="tuanOrderStatusMap" >
+        select
+         t.id, t.tuan_id, t.tuan_no, t.order_no, t.pay_no, t.role, t.user_id, t.created_at, t.updated_at, t.archive,o.status,o.paid_at,
+         st.id as st_id,  st.tuan_no as st_tuan_no,  st.user_id as st_user_id,  st.act_id as st_act_id,  st.sku_id as st_sku_id,  st.product_id as st_product_id,  
+        st.status as st_status,  st.member_num as st_member_num,  st.start_time as st_start_time, 
+        st.alive_time as st_alive_time,  st.created_at as st_created_at,  st.updated_at as st_updated_at,  st.archive as st_archive,st.tuan_type as st_tuan_type
+        from 
+            vdlm_tuan_order t
+        left join
+            vdlm_tuan_status st
+        on 
+             t.tuan_no=st.tuan_no
+        left join
+             vdlm_order o 
+        on
+             t.order_no=o.order_no
+        where
+             t.tuan_no=#{tuanNo}
+        and
+              o.status NOT IN('CANCELLED','SUBMITTED')
+         and
+             t.archive=false
+  </select>
+</mapper>

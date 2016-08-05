@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ApiVisitorLogMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ApiVisitorLog" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="user_id" property="userId" typeHandler="idHandler" />
+    <result column="url" property="url" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, user_id, url, created_at, updated_at
+  </sql>
+  <insert id="insert">
+  	<selectKey resultType="string" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+  	INSERT INTO vdlm_apivisitor_log (user_id, url, created_at, updated_at)
+  	select #{userId, typeHandler=idHandler}, #{url}, now(), now() 
+  	from vdlm_apivisitor_log
+  	where not exists (select 1 from vdlm_apivisitor_log where user_id=#{userId, typeHandler=idHandler} and url=#{url}) limit 1
+  </insert>
+  <update id="visit">
+  	UPDATE vdlm_apivisitor_log SET updated_at = now() WHERE id = #{id, typeHandler=idHandler}
+  </update>
+  <select id="findByUserAndUrl" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_apivisitor_log
+  	where user_id=#{userId, typeHandler=idHandler} and url=#{url}
+  </select>
+</mapper>

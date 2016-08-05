@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ZoneMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Zone" >
+    <id column="id" property="id" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="zip_code" property="zipCode" jdbcType="VARCHAR" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="parent_id" property="parentId" jdbcType="BIGINT" />
+    <result column="zone_tag" property="zoneTag" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <resultMap id="PostConfMap" type="com.vdlm.dal.model.PostConf" >
+    <id column="id" property="id" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="associate_id" property="associateId" jdbcType="BIGINT" />
+    <result column="region_type" property="regionType" jdbcType="INTEGER" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+  
+  <sql id="Post_Free_List">
+    id, name, associate_id, region_type, archive, created_at, updated_at
+  </sql>
+
+  <sql id="Base_Column_List">
+    id, name, zip_code, path, parent_id, zone_tag, archive, created_at, updated_at
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_zone
+    where id = #{id} and archive = false
+  </select>
+  
+  <select id="listRoots" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_zone
+    where parent_id = 0 and archive = false
+  </select>
+
+  <select id="listChildren" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_zone
+    where parent_id = #{0} and archive = false
+  </select>
+  
+  <select id="listSiblings" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_zone
+    where path = (select path from vdlm_zone where id = #{0})
+  </select>
+  
+  <select id="listPostAgeArea" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+  	from vdlm_zone
+  	where parent_id in (1) and id != 1
+  </select>
+  
+  <select id="findParent" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_zone
+    where id = (
+      select parent_id from vdlm_zone where id = #{0}
+    ) and archive = false
+  </select>
+  
+  <select id="findByName"  resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from vdlm_zone
+  	where name like #{0} and archive = false
+  </select>
+
+   <select id="findPostArea"  resultMap="PostConfMap">
+  	select
+  	<include refid="Post_Free_List" />
+  	from vdlm_postconf
+  	where name = #{0} and archive = false
+  </select>
+  
+  <select id="selectPostConf"  resultMap="PostConfMap">
+  	select
+  	<include refid="Post_Free_List" />
+  	from vdlm_postconf
+  	where 1=1 and archive = false
+  	order by region_type
+  </select>
+
+  <select id="isDescendant" resultType="Boolean">
+  	select 1
+  	from vdlm_zone t1, vdlm_zone t2
+  	where t1.id = #{10 and t2.id = #{1} and t2.path like CONCAT(t1.path,'%')
+  </select>
+  
+  <select id="selectCity4PostAge" resultMap="BaseResultMap">
+  	select
+  	<include refid="Base_Column_List" />
+  	from vdlm_zone
+  	where 1=1 
+  	and id in (1985, 630, 2507, 516, 2275, 2183, 1260, 2730, 1122, 1074, 1487, 1050, 2833, 1024, 1364, 882, 1499, 1304, 501, 926, 1037, 895, 1855, 3070, 1275, 1660, 2276, 2135, 2161, 1009, 40, 708)
+  	and archive = false
+  </select>
+  
+  <update id="updatePath">
+    update vdlm_zone
+    set path = #{1}
+    where id = #{0}
+  </update>
+
+</mapper>

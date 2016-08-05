@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.OrderItemPromotionSlaveDao">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderItemPromotion">
+		<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="order_item_id" property="orderItemId" jdbcType="BIGINT"
+			typeHandler="idHandler" />
+		<result column="activity_idstr" property="activityIdstr"
+			jdbcType="VARCHAR" />
+		<result column="discount_fee" property="discountFee" jdbcType="DECIMAL" />
+	</resultMap>
+
+	<select id="selectDiscountFeeMapByOrderItemIds" resultType="java.util.HashMap">
+		select
+			order_Item_id as orderItemId,
+			discount_fee as discountFee
+		from
+			vdlm_order_item_promotion
+		where
+		order_item_id in
+		<foreach collection="orderItemIds" open="(" close=")" separator="," item="orderItemId">
+			#{orderItemId,typeHandler=idHandler}
+		</foreach>
+	</select>
+</mapper>

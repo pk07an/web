@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.SkuMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Sku" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="product_id" property="productId" typeHandler="idHandler" />
+    <result column="spec" property="spec" jdbcType="VARCHAR" />
+    <result column="spec1" property="spec1" jdbcType="VARCHAR" />
+    <result column="spec2" property="spec2" jdbcType="VARCHAR" />
+    <result column="spec3" property="spec3" jdbcType="VARCHAR" />
+    <result column="spec4" property="spec4" jdbcType="VARCHAR" />
+    <result column="spec5" property="spec5" jdbcType="VARCHAR" />
+    <result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="sku_order" property="order" jdbcType="INTEGER" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="sales" property="sales" jdbcType="INTEGER"/>
+    <result column="code" property="code" jdbcType="VARCHAR"/>
+    <result column="is_display" property="isDisplay" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, product_id, spec, spec1, spec2, spec3, spec4, spec5, market_price, price, amount, sku_order, created_at, updated_at, sales, code, is_display
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku
+    where id = #{id,typeHandler=idHandler} and archive=false
+  </select>
+  <select id="selectByIdList" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku
+    where archive=false and
+    	id in 
+    <foreach collection="ids" item="id" open="(" close=")" separator=",">
+    	#{id,typeHandler=idHandler}
+    </foreach>
+  </select>
+  
+   <select id="selectOriginalById" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku
+    where id = #{id,typeHandler=idHandler}
+  </select>
+  
+   <select id="selectByCode" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku
+    where code = #{code} and archive=false
+  </select>
+
+  <select id="selectByProductId" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku
+    where product_id = #{id,typeHandler=idHandler} and archive=false
+    order by sku_order
+  </select>
+
+  <select id="select" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_sku
+    where product_id = #{0,typeHandler=idHandler} and id = #{1,typeHandler=idHandler} and archive=false
+  </select>
+
+  <delete id="updateForArchive">
+    update vdlm_sku set archive=true, updated_at = now()
+    where id = #{id,typeHandler=idHandler}
+  </delete>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Sku" >
+	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+    insert into vdlm_sku (product_id, spec, spec1, spec2, spec3, spec4, spec5, market_price, price, amount, sku_order, created_at, updated_at)
+    values (#{productId,typeHandler=idHandler}, #{spec,jdbcType=VARCHAR}, #{spec1,jdbcType=VARCHAR}, 
+    #{spec2,jdbcType=VARCHAR}, #{spec3,jdbcType=VARCHAR}, #{spec4,jdbcType=VARCHAR}, #{spec5,jdbcType=VARCHAR}, 
+    #{marketPrice,jdbcType=DECIMAL}, #{price,jdbcType=DECIMAL}, #{amount,jdbcType=INTEGER}, #{order,jdbcType=INTEGER}, now(), now())
+  </insert>
+  
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.Sku" >
+    update vdlm_sku
+    <set>
+      <if test="spec != null" >
+        spec = #{spec,jdbcType=VARCHAR},
+      </if>
+	  <if test="spec1 != null" >
+        spec1 = #{spec1,jdbcType=VARCHAR},
+      </if>
+      <if test="spec2 != null" >
+        spec2 = #{spec2,jdbcType=VARCHAR},
+      </if>
+      <if test="spec3 != null" >
+        spec3 = #{spec3,jdbcType=VARCHAR},
+      </if>
+      <if test="spec4 != null" >
+        spec4 = #{spec4,jdbcType=VARCHAR},
+      </if>
+      <if test="spec5 != null" >
+        spec5 = #{spec5,jdbcType=VARCHAR},
+      </if>
+      <if test="marketPrice != null" >
+        market_price = #{marketPrice,jdbcType=DECIMAL},
+      </if>
+      <if test="price != null" >
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=INTEGER},
+      </if>
+      <if test="sales != null">
+      	sales = #{sales,jdbcType=INTEGER},
+      </if>
+	  <if test="order != null" >
+        sku_order = #{order,jdbcType=INTEGER},
+      </if>      
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  <!-- 减库存 -->
+  <update id="updateAmount">
+    update vdlm_sku set amount = amount - #{1,jdbcType=INTEGER},updated_at = now()
+    where id = #{0,typeHandler=idHandler} and amount - #{1,jdbcType=INTEGER} &gt;= 0
+  </update>
+  
+  <!-- 不减库存，增加sku销量-->
+  <update id="updateSaleBySkuId">
+    update vdlm_sku set sales = sales + #{sale,jdbcType=INTEGER},updated_at = now()
+    where id = #{skuId,typeHandler=idHandler}
+  </update>
+  <!-- 无调用 by charon -->
+  <!-- <update id="deductAmountByOrderId">
+    update vdlm_sku vs
+    set amount = amount - (select amount from vdlm_order_item voi where voi.sku_id = vs.id),
+    	sales = sales + (select amount from vdlm_order_item voi where voi.sku_id = vs.id),
+      updated_at = now()
+    where voi.order_id = #{orderId, typeHandler=idHandler}
+  </update> -->
+
+  <!-- 无调用 by charon -->
+  <!-- <update id="restoreAmountByOrderId">
+    update vdlm_sku set amount = amount + #{1,jdbcType=INTEGER},updated_at = now()
+    where id = #{0,typeHandler=idHandler} and amount - #{1,jdbcType=INTEGER} &gt;= 0
+  </update> -->
+  
+  <update id="updatePriceDiscountByShop">
+  update vdlm_sku s, vdlm_product p
+  set s.market_price = s.price, s.price = s.price * #{discount}
+  where s.product_id = p.id 
+  and p.update_lock = 0
+  and p.shop_id = #{shopId,typeHandler=idHandler} 
+  and p.archive = 0
+  </update>
+  
+  <update id="updatePriceDiscount">
+  update vdlm_sku s, vdlm_product p
+  set s.market_price = s.price, s.price = if (s.price * #{discount} &lt; 0.01, 0.01, s.price * #{discount})
+  where s.product_id = p.id 
+  and p.update_lock = 0
+  and p.id = #{productId,typeHandler=idHandler} 
+  and p.archive = 0
+  </update>
+  
+  <update id="updatePriceReduction">
+  update vdlm_sku s, vdlm_product p
+  set s.market_price = s.price, s.price = if(s.price - #{reduction} &lt; 0.01, 0.01, s.price - #{reduction})
+  where s.product_id = p.id 
+  and p.update_lock = 0
+  and p.id = #{productId,typeHandler=idHandler} 
+  and p.archive = 0
+  </update>
+  
+  <update id="updatePriceFromMarketPriceByShop">
+  update vdlm_sku s, vdlm_product p
+  set s.price = if(s.market_price is null or s.market_price &lt; s.price, s.price, s.market_price)
+  where s.product_id = p.id 
+  and p.shop_id = #{shopId,typeHandler=idHandler} 
+  and p.archive = 0
+  </update>
+  
+  <update id="updatePriceFromMarketPrice">
+  update vdlm_sku s, vdlm_product p
+  set s.price = if(s.market_price is null or s.market_price &lt; s.price, s.price, s.market_price)
+  where s.product_id = p.id
+  and p.id = #{productId,typeHandler=idHandler} 
+  </update>
+  
+  <update id="addCode">
+		update vdlm_sku set code = #{id, jdbcType=VARCHAR}
+		where id =#{id, typeHandler=idHandler}
+	</update>
+  
+</mapper>

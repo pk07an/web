@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ShopAccessMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.ShopAccess">
+		<id column="id" property="id" jdbcType="BIGINT" />
+		<result column="date" property="date" jdbcType="DATE" />
+		<result column="hour" property="hour" jdbcType="TINYINT" />
+		<result column="pv" property="pv" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" jdbcType="BIGINT" typeHandler="idHandler" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		id, date, hour, pv, user_id, shop_id
+	</sql>
+	<resultMap id="BaseResultVOMap" type="com.vdlm.dal.vo.ShopAccessEx"
+		extends="BaseResultMap">
+		<result column="uv" property="uv" jdbcType="INTEGER" />
+	</resultMap>	
+	<insert id="insert" parameterType="com.vdlm.dal.model.ShopAccess">
+		insert into vdlm_shop_access (id, date, hour,
+		pv, user_id, shop_id)
+		values (#{id,jdbcType=BIGINT}, #{date,jdbcType=DATE},
+		#{hour,jdbcType=TINYINT},
+		#{pv,jdbcType=INTEGER}, #{userId,typeHandler=idHandler}, #{shopId,typeHandler=idHandler}
+		)
+	</insert>
+	<update id="updatePvByPrimaryKey" parameterType="com.vdlm.dal.model.ShopAccess">
+		update vdlm_shop_access
+		set pv = pv+1
+		where date = #{date,jdbcType=DATE}
+		and hour = #{hour,jdbcType=TINYINT}
+		
+		<if test="userId != null">
+			and user_id = #{userId, typeHandler=idHandler}
+		</if>
+		<if test="userId == null">
+			and user_id is null
+		</if>
+		and shop_id = #{shopId, typeHandler=idHandler}
+	</update>
+	<select id="selectShopAccessByShopId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from vdlm_shop_access
+		where shop_id = #{shopId, typeHandler=idHandler}
+		and date = #{date, jdbcType=DATE}
+	</select>
+	<select id="selectAccessUvByShopId" resultMap="BaseResultVOMap">
+		select count(1) as uv, shop_id, hour 
+		from vdlm_shop_access
+		where date = #{date} and shop_id = #{shopId, typeHandler=idHandler}
+		group by hour, shop_id
+		order by hour
+	</select>
+	
+ <select id="countByShopId" resultType="Integer">
+    select count(*) as c
+	from vdlm_shop_access 
+	where date = #{date} and shop_id = #{shopId, typeHandler=idHandler} 
+  </select>
+</mapper>

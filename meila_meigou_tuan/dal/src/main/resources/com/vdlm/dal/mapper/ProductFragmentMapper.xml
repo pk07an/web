@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ProductFragmentMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProductFragment" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="product_id" property="productId" typeHandler="idHandler"/>
+    <result column="fragment_id" property="fragmentId" typeHandler="idHandler"/>
+    <result column="idx" property="idx" jdbcType="INTEGER"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, product_id, fragment_id, idx
+  </sql>
+  <insert id="insert">
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+  	INSERT INTO vdlm_product_fragment (product_id, fragment_id, idx)
+  	VALUES (#{productId, typeHandler=idHandler}, #{fragmentId, typeHandler=idHandler}, #{idx})
+  </insert>
+  
+  <delete id="deleteById">
+  	delete from vdlm_product_fragment where id=#{id, typeHandler=idHandler}
+  </delete>
+  
+  <select id="selectMaxByProductId" resultType="Integer">
+  	select max(idx) from vdlm_product_fragment
+  	where product_id = #{productId, typeHandler=idHandler}
+  </select>
+  
+  <delete id="deleteByProductId">
+  	delete from vdlm_product_fragment
+  	where product_id = #{productId, typeHandler=idHandler}
+  </delete>
+  
+  <select id="selectByProductId" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_product_fragment
+  	where product_id = #{productId, typeHandler=idHandler}
+  	order by idx asc
+  </select>
+  
+  <select id="selectById" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List"/>
+  	from vdlm_product_fragment
+  	where product_id = #{id, typeHandler=idHandler}
+  	order by idx asc
+  </select>
+  
+  <update id="incAllBeforeDest">
+    update vdlm_product_fragment
+    set idx = idx + #{increment}
+    where idx >= #{idx} and product_id = #{productId, typeHandler=idHandler}
+  </update>
+  
+  <update id="decAllAfterDest">
+  	<![CDATA[
+    update vdlm_product_fragment
+    set idx = idx + #{increment}
+    where idx <= #{idx} and product_id = #{productId, typeHandler=idHandler}
+    ]]>
+  </update>
+  
+  <update id="updateSrcIdx">
+    update vdlm_product_fragment
+    set idx = #{idx}, updated_at = now()
+    where id = #{id, typeHandler=idHandler}
+  </update>
+</mapper>

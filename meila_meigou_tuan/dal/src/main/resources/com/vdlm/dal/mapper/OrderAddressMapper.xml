@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OrderAddressMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OrderAddress" >
+    <id column="id" property="id" typeHandler="idHandler"/>
+    <result column="order_id" property="orderId" typeHandler="idHandler" />
+    <result column="zone_id" property="zoneId" jdbcType="BIGINT" />
+    <result column="street" property="street" jdbcType="VARCHAR" />
+    <result column="consignee" property="consignee" jdbcType="VARCHAR" />
+    <result column="phone" property="phone" jdbcType="VARCHAR" />
+    <result column="weixin_id" property="weixinId" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="id_card" property="idCard" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, zone_id, street, consignee, phone, weixin_id, created_at, updated_at,id_card
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_address
+    where id = #{0,typeHandler=idHandler}
+  </select>
+  <select id="selectByOrderId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_order_address
+    where order_id = #{0,typeHandler=idHandler}
+  </select>
+  <insert id="insert" parameterType="com.vdlm.dal.model.OrderAddress" >
+  	<selectKey resultType="long" keyProperty="idRaw">
+		SELECT LAST_INSERT_ID() AS id
+	</selectKey>
+	insert into vdlm_order_address (order_id, zone_id, street, consignee, phone, weixin_id,
+      created_at, updated_at,id_card
+     )
+    values (#{orderId,typeHandler=idHandler}, #{zoneId,jdbcType=BIGINT}, 
+      #{street,jdbcType=VARCHAR}, #{consignee,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{weixinId,jdbcType=VARCHAR}, 
+      now(),now(),#{idCard,jdbcType=VARCHAR}
+      )
+  </insert>
+   <update id="update" parameterType="com.vdlm.dal.model.OrderAddress" >
+    update vdlm_order_address
+    <set >
+      <if test="zoneId != null" >
+        zone_id = #{zoneId},
+      </if>
+      <if test="street != null" >
+        street = #{street},
+      </if>
+      <if test="consignee != null" >
+        consignee = #{consignee},
+      </if>
+      <if test="phone != null" >
+        phone = #{phone},
+      </if>
+      <if test="weixinId != null">
+      	weixin_id = #{weixinId},
+      </if>
+      <if test="idCard != null">
+      	id_card = #{idCard,jdbcType=VARCHAR},
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id,typeHandler=idHandler}
+  </update>
+  
+  
+  
+  <select id="selectfullAddressByOrderId" resultMap="BaseResultMap"  >
+	  select 
+		a.order_id,
+        a.consignee,
+        a.phone,
+	  concat(
+	        z.pp_name,
+	        z.p_name,
+	        z.NAME,
+	        a.street
+	        ) as street
+	
+	from vdlm_order_address a join tmp_zone z on a.zone_id = z.id 
+	where a.order_id  in   		
+	<foreach collection="orderIds" index="index" item="id" open="(" separator="," close=")">  
+       #{id,typeHandler=idHandler}
+  	</foreach>
+  </select>
+  
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.ShopStyleMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.ShopStyle" >
+    <id column="shop_id" property="shopId" typeHandler="idHandler" />
+    <result column="bg_color" property="backgroundColor" />
+    <result column="font_family" property="fontFamily" />
+    <result column="font_color" property="fontColor" />
+    <result column="avatar_style" property="avatarStyle" />
+    <result column="list_view" property="listView" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    shop_id, bg_color, font_family, font_color, avatar_style, list_view, created_at, updated_at
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_shop_style
+    where shop_id = #{0, typeHandler=idHandler}
+  </select>
+
+  <insert id="insert" parameterType="com.vdlm.dal.model.ShopStyle">
+    insert into vdlm_shop_style (shop_id, bg_color, font_family, font_color, avatar_style, list_view, created_at, updated_at)
+    values (#{shopId, typeHandler=idHandler}, #{backgroundColor}, #{fontFamily}, #{fontColor}, 
+        #{avatarStyle}, #{listView}, now(), now())
+  </insert>
+  
+  <update id="update">
+   	update vdlm_shop_style set 
+   	  bg_color = #{backgroundColor},
+   	  font_family = #{fontFamily},
+   	  font_color = #{fontColor},
+   	  avatar_style = #{avatarStyle},
+   	  list_view = #{listView},
+   	  updated_at = now()
+   	where shop_id = #{shopId, typeHandler=idHandler}
+  </update>
+  
+</mapper>

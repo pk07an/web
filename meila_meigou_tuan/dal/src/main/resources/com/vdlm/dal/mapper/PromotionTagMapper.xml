@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PromotionTagMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.promotion.PromotionTag" >
+    <id column="id" property="id" />
+    <result  column="desc" property="desc" jdbcType="VARCHAR" />
+    <result  column="pro_id" property="proId" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+</resultMap>
+
+<sql id="Base_Column_List">id,`desc`,pro_id,created_at,updated_at</sql>
+
+  <insert id="insert">
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT
+			LAST_INSERT_ID() AS id
+		</selectKey>
+    insert into vdlm_promotion_tag(`desc`,archive,created_at)values(#{tagObj.desc},false,now())
+  </insert>
+  
+  <update id="del">
+       update vdlm_promotion_tag set archive=true where id=#{id}
+  </update>
+  <update id="update" >
+      update vdlm_promotion_tag set `desc`=#{tagObj.desc} where id=#{id}
+  </update>
+    <select id="getAllList"  resultMap="BaseResultMap">
+       select 
+       <include refid="Base_Column_List"></include> 
+       from vdlm_promotion_tag 
+       where archive = false 
+        <if test="params.desc!=null">
+           and `desc` like #{params.desc}
+        </if>
+        
+       order by created_at desc  
+       limit #{page.offset}, #{page.size}
+  </select>
+    <select id="countTagList" resultType="Long">
+		select count(*) as c 
+		from vdlm_promotion_tag  
+		where archive = false 
+	</select>
+	<update id="bindPromotion">
+	   update vdlm_promotion_tag set pro_id=#{proId,typeHandler=idHandler} where id=#{id}
+	</update>
+	<select id="findTagByProId" resultMap="BaseResultMap">
+	  select <include refid="Base_Column_List"></include> from  vdlm_promotion_tag where pro_id=#{proId,typeHandler=idHandler}
+	</select>
+ </mapper>

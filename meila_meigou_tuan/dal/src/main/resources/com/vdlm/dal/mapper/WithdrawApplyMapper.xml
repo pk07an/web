@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.WithdrawApplyMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.WithdrawApply" >
+    <id column="id" property="id" typeHandler="idHandler" />
+    <result column="apply_no" property="applyNo" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" typeHandler="idHandler" />
+    <result column="bank_id" property="bankId" typeHandler="idHandler" />
+    <result column="account_number" property="accountNumber" jdbcType="VARCHAR" />
+    <result column="account_name" property="accountName" jdbcType="VARCHAR" />
+    <result column="opening_bank" property="openingBank" jdbcType="VARCHAR" />
+    <result column="apply_money" property="applyMoney" jdbcType="DECIMAL" />
+    <result column="confirm_money" property="confirmMoney" jdbcType="DECIMAL" />
+    <result column="pay_at" property="payAt" jdbcType="TIMESTAMP" />
+    <result column="pay_op_user" property="payOpUser" typeHandler="idHandler" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="type" property="type"/>
+    <result column="op_remark" property="opRemark" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, apply_no, user_id, bank_id, account_number, account_name, opening_bank, apply_money, confirm_money, status, 
+    pay_at, created_at, updated_at, type, op_remark
+  </sql>
+  <resultMap id="AdminMap" type="com.vdlm.dal.vo.WithdrawAdmin" extends="BaseResultMap">
+    <result column="phone" property="phone" jdbcType="VARCHAR"  />
+  </resultMap>
+  
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_withdraw_apply
+    where id = #{id, typeHandler=idHandler} and archive = false 
+  </select>
+  <select id="listWithdrawApply" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_withdraw_apply 
+   <where>
+   	  and archive = false 
+   	  <if test="userId != null" >
+		and user_id = #{userId, typeHandler=idHandler}
+	  </if>
+      <if test="status != null" >
+		 and status = #{status, jdbcType=VARCHAR}
+	  </if>
+    </where>
+	 order by updated_at desc
+	 limit #{page.offset}, #{page.size}
+  </select>
+  <select id="totalWithdrawApplyByStatus" resultType="DECIMAL">
+  	select sum(apply_money) as money
+  	from vdlm_withdraw_apply 
+  	where user_id = #{userId, typeHandler=idHandler} 
+  	and status = #{status} and archive = false 
+  </select>
+  <select id="listWithdrawApplyByAdmin" resultMap="AdminMap">
+    select w.id, w.apply_no, u.phone, w.bank_id, w.account_number, w.account_name, w.opening_bank, w.apply_money, w.user_id,
+    w.confirm_money, w.status, w.pay_at, w.pay_op_user, w.created_at, w.updated_at, w.type, w.op_remark
+    from vdlm_withdraw_apply w join vdlm_user u on w.user_id = u.id
+   <where>
+    <if test="params.phone != null" >
+		and u.phone like #{params.phone}
+	  </if>
+	  <if test="params.sellerName != null" >
+		and w.account_name like #{params.sellerName}
+	  </if>
+      <if test="params.status != null" >
+		 and w.status = #{params.status}
+	  </if>
+	  <if test="params.type != null" >
+		 and w.type = #{params.type}
+	  </if>
+	  <if test="params.feeOperator != null">
+  		and w.apply_money 
+  	 <choose>  
+        <when test="params.feeOperator=='gt'"> > </when>
+        <when test="params.feeOperator=='gt='">>=</when>
+        <when test="params.feeOperator=='lt'">&lt;</when>
+        <when test="params.feeOperator=='lt='">&lt;=</when>
+        <otherwise>=</otherwise>
+       </choose>
+  		 #{params.minimumFee,jdbcType=DECIMAL}
+  	</if>
+  	<if test="params.startDate != null">
+  		and w.created_at >= #{params.startDate}
+  	</if>
+  	<if test="params.endDate != null">
+  		 <![CDATA[and w.created_at <= #{params.endDate}]]>
+  	</if>
+  	<if test="params.payDateFrom != null">
+  		and w.pay_at >= #{params.payDateFrom}
+  	</if>
+  	<if test="params.payDateTo != null">
+  		 <![CDATA[and w.pay_at <= #{params.payDateTo}]]>
+  	</if>
+    </where>
+	 order by updated_at desc
+	 <if test="page !=null">
+		limit #{page.offset}, #{page.size}
+	</if>
+   	<if test="page ==null">
+		limit 0, 50000
+	</if>
+  </select>
+  
+  <select id="countWithdrawApplyByAdmin" resultType="HashMap">
+    select count(1) as totalCount,sum(apply_money) as totalAmount
+    from vdlm_withdraw_apply w join vdlm_user u on w.user_id = u.id
+   <where>
+    <if test="params.phone != null" >
+		and u.phone like #{params.phone}
+	  </if>
+	  <if test="params.sellerName != null" >
+		and w.account_name like #{params.sellerName}
+	  </if>
+      <if test="params.status != null" >
+		 and w.status = #{params.status}
+	  </if>
+	  <if test="params.type != null" >
+		 and w.type = #{params.type}
+	  </if>
+	  <if test="params.feeOperator != null">
+  			and w.apply_money 
+  	 	<choose>  
+        <when test="params.feeOperator=='gt'"> > </when>
+        <when test="params.feeOperator=='gt='">>=</when>
+        <when test="params.feeOperator=='lt'">&lt;</when>
+        <when test="params.feeOperator=='lt='">&lt;=</when>
+        <otherwise>=</otherwise>
+       	</choose>
+  			#{params.minimumFee,jdbcType=DECIMAL}
+  		</if>
+  	<if test="params.startDate != null">
+  		and w.created_at >= #{params.startDate}
+  	</if>
+  	<if test="params.endDate != null">
+  		 <![CDATA[and w.created_at <= #{params.endDate}]]>
+  	</if>
+  	<if test="params.payDateFrom != null">
+  		and w.pay_at >= #{params.payDateFrom}
+  	</if>
+  	<if test="params.payDateTo != null">
+  		 <![CDATA[and w.pay_at <= #{params.payDateTo}]]>
+  	</if>
+    </where>
+  </select>  
+    <update id="updateForArchive">
+		update vdlm_withdraw_apply set archive=true,updated_at = now()
+		where id = #{id, typeHandler=idHandler}
+	</update>
+	<update id="updateForUnArchive">
+		update vdlm_withdraw_apply set archive=false,updated_at = now()
+		where id = #{id, typeHandler=idHandler}
+	</update>
+	<update id="cancel">
+		update vdlm_withdraw_apply set status = 'CLOSE', op_remark = #{opRemark}, updated_at = now()
+		where id = #{id, typeHandler=idHandler} and status = 'NEW'
+	</update>
+	
+	
+	<update id="pay">
+		update vdlm_withdraw_apply set status = 'SUCCESS', confirm_money = #{confirmMoney}, updated_at = now(), pay_at = now()
+		where id = #{id, typeHandler=idHandler} and archive = false and status = 'NEW'
+	</update>
+  <insert id="insert" parameterType="com.vdlm.dal.model.WithdrawApply" >
+		<selectKey resultType="long" keyProperty="idRaw">
+			SELECT LAST_INSERT_ID() AS id
+		</selectKey>
+    insert into vdlm_withdraw_apply (apply_no, user_id, bank_id, account_number, account_name, opening_bank, 
+      apply_money, status, created_at, updated_at, type)
+    values (#{applyNo,jdbcType=VARCHAR}, #{userId,typeHandler=idHandler}, #{bankId,typeHandler=idHandler}, 
+    #{accountNumber,jdbcType=VARCHAR},#{accountName,jdbcType=VARCHAR},#{openingBank,jdbcType=VARCHAR},
+      #{applyMoney,jdbcType=DECIMAL}, #{status,jdbcType=VARCHAR}, 
+      now(), now(), #{type})
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.WithdrawApply" >
+    update vdlm_withdraw_apply
+    <set >
+      <if test="applyNo != null" >
+        apply_no = #{applyNo,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="bankId != null" >
+        bank_id = #{bankId,jdbcType=BIGINT},
+      </if>
+      <if test="accountNumber != null" >
+        account_number = #{accountNumber,jdbcType=BIGINT},
+      </if>
+      <if test="accountName != null" >
+        account_name = #{accountName,jdbcType=BIGINT},
+      </if>
+      <if test="openingBank != null" >
+        opening_bank = #{openingBank,jdbcType=BIGINT},
+      </if>                  
+      <if test="applyMoney != null" >
+        apply_money = #{applyMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="confirmMoney != null" >
+        confirm_money = #{confirmMoney,jdbcType=DECIMAL},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="type !=null">
+      	type = #{type}
+      </if>
+      updated_at = now()
+    </set>
+    where id = #{id} and status != 'SUCCESS'
+  </update>
+  <update id="withdrawSuccessByNo">
+  	update vdlm_withdraw_apply set status='SUCCESS', confirm_money = #{confirmFee}, updated_at = now(),pay_at = now()
+  	where apply_no=#{applyNo,jdbcType=VARCHAR} and status='PENDING' and archive = false
+  </update>
+  <update id="withdrawPendingByApplyNo">
+  	update vdlm_withdraw_apply set status='PENDING',updated_at = now()
+  	where apply_no=#{applyNo,jdbcType=VARCHAR} and (status='NEW' or status='FAILED') and archive = false
+  </update>
+  <update id="withdrawFailedByApplyNo">
+  	update vdlm_withdraw_apply set status='FAILED',updated_at = now()
+  	where apply_no=#{applyNo,jdbcType=VARCHAR} and status='PENDING' and archive = false
+  </update>
+  <select id="loadByApplyNo" resultMap="BaseResultMap">
+  	 select 
+    <include refid="Base_Column_List"/>
+    from vdlm_withdraw_apply
+    where apply_no=#{applyNo,jdbcType=VARCHAR} 
+  </select>
+  <update id="synchronousWithdrawByBank">
+  	<![CDATA[
+	update vdlm_withdraw_apply p right join 
+	(select a.id from vdlm_withdraw_apply a join vdlm_user_alipay b on a.bank_id = b.id 
+	join vdlm_user c on a.user_id = c.id 
+	left join vdlm_user_bank d on a.bank_id = d.id
+	where (a.status = 'NEW' or a.status = 'FAILED') and c.withdraw_type = 1 and (a.account_number <> d.account_number or a.account_name <> d.account_name or a.opening_bank <> d.opening_bank)) q on p.id = q.id 
+	left join vdlm_user_bank r on p.user_id = r.user_id
+	set p.bank_id = r.id, p.account_number = r.account_number,p.account_name = r.account_name,p.opening_bank = r.opening_bank
+  	]]> 
+  </update>
+  <update id="synchronousWithdrawByAliPay">
+  	<![CDATA[
+	update vdlm_withdraw_apply p right join 
+	(select a.id from vdlm_withdraw_apply a join vdlm_user_bank b on a.bank_id = b.id 
+	join vdlm_user c on a.user_id = c.id 
+	left join vdlm_user_alipay d on a.bank_id = d.id
+	where (a.status = 'NEW' or a.status = 'FAILED') and c.withdraw_type = 2 and (a.account_number <> d.account_no or a.account_name <> d.account_name)) q on p.id = q.id 
+	left join vdlm_user_alipay r on p.user_id = r.user_id
+	set p.bank_id = r.id, p.account_number = r.account_no,p.account_name = r.account_name,p.opening_bank = '支付宝'
+  	]]> 
+  </update>
+
+</mapper>

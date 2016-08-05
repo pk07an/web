@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.PromotionSlaveDao" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.promotion.PromotionTag" >
+    <id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+    <result  column="desc" property="desc" jdbcType="VARCHAR" />
+    <result  column="pro_id" property="proId" jdbcType="VARCHAR" />
+    <result column="archive" property="archive" jdbcType="BIT" />
+	<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+	<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	<result  column="icon_text" property="iconText" jdbcType="VARCHAR" />
+	<result  column="icon_type" property="iconType" jdbcType="VARCHAR" />
+	<result  column="jump_url" property="jumpUrl" jdbcType="VARCHAR" />
+</resultMap>
+	
+	<resultMap id="PromotionTagVOMap" type="com.vdlm.dal.vo.PromotionTagVO" extends="BaseResultMap">
+		<result column="shop_id" property="shopId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="product_id" property="productId" jdbcType="BIGINT" typeHandler="idHandler" />
+	</resultMap>
+	<sql id="Base_Column_List">id,`desc`,pro_id,created_at,updated_at</sql>
+	
+	<select id="selectTagByProductId" resultMap="PromotionTagVOMap">
+	  select distinct t.`desc`,t.`icon_text`,t.`icon_type`,t.`jump_url`,t1.`product_id` from vdlm_promotion_model m  left join 
+	  vdlm_promotion_tag t on m.id=t.pro_id left join vdlm_promotion_protag  t1 on t.id=t1.tag_id
+	   where t.archive=0 and  t1.product_id in
+	   <foreach collection="productIdList" item="productId" separator="," open="(" close=")">
+	   		#{productId, typeHandler=idHandler}
+	   </foreach>
+	   <![CDATA[
+		   and m.`start`<=NOW() AND m.`end`>=NOW()
+	   ]]>
+	   and t.`icon_text` is not null and t.`icon_text`!=''
+	</select>
+
+	<select id="selectLastTagByProductId" resultMap="PromotionTagVOMap">
+		select distinct
+			t.`desc`,t.`icon_text`,t.`icon_type`,t.`jump_url`,t1.`product_id` 
+		from
+			vdlm_promotion_model m 
+		left join
+			vdlm_promotion_tag t 
+		on 
+			m.id=t.pro_id 
+		left join 
+			vdlm_promotion_protag t1 
+		on
+			t.id=t1.tag_id
+		where 
+			t.archive=0 
+		and 
+			t1.product_id = #{productId, typeHandler=idHandler}
+	   <![CDATA[
+		   and m.`start`<=NOW() AND m.`end`>=NOW()
+	   ]]>
+		order by m.`created_at` asc limit 1
+	</select>
+</mapper>
+

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="10 minutes">
+	<contextName>webapp</contextName>
+
+	<appender name="ROOT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+	    <file>/ouer/logs/tuan.${web_port:-0000}.log</file>
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<FileNamePattern>/ouer/logs/%d{yyyy-MM-dd}/tuan.${web_port:-0000}.%i.log</FileNamePattern>
+			<MaxHistory>100</MaxHistory>
+			<timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!-- or whenever the file size reaches 100MB -->
+                <maxFileSize>100MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<!-- 格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符 -->
+			<pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+		</encoder>
+		<!--  
+		<triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<MaxFileSize>100MB</MaxFileSize>
+		</triggeringPolicy>
+		-->
+	</appender>
+	<appender name="REPORT_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>/ouer/logs/report/tuan/${web_port:-0000}/%d{yyyyMMddHH}.log</FileNamePattern>
+             <!-- <MaxHistory>100</MaxHistory> -->
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <jmxConfigurator />
+	<logger name="org.apache.ibatis" level="DEBUG" /> 
+    <logger name="com.vdlm" level="${log.level.vdlm:-DEBUG}" />
+    <logger name="com.meila" level="${log.level.meila:-DEBUG}" />
+    <!-- 
+	    <root level="${log.level.common:-INFO}">
+	        <appender-ref ref="ROOT_FILE" />
+	    </root> 
+    -->
+    <logger name="com.vdlm.meila.client.ReportLogUtils" level="DEBUG" >
+        <appender-ref ref="REPORT_FILE" />
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="ROOT_FILE" />
+    </root>
+</configuration>

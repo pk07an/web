@@ -1,0 +1,42 @@
+<th:block layout:decorator="/layout/meila_mobile_base">
+
+    <!--/* head */-->
+    <th:block layout:fragment="page_title">
+        <title>出错啦</title>
+    </th:block>
+    <th:block layout:fragment="page_css">
+        <style type="text/css">
+            .error-rabbit-img{display: block; margin: 0.80rem auto 0.16rem;width: 2.80rem;height: 2.8rem;}
+            p{display: block;text-align: center;font-size: 0.28rem;;color: rgba(0,0,0,0.65);}
+        </style>
+    </th:block>
+    <!--/* head end */-->
+    
+    <!--/* page header */-->
+    <th:block layout:fragment="header_title">出错啦</th:block>
+    <th:block layout:fragment="app_button"></th:block>
+    <!--/* page header end */-->
+    
+    <!--/* page body */-->
+    <th:block layout:fragment="page_body">
+        <div>
+            <img class="error-rabbit-img"  th:src="${'/ptuan/resources/images/error/error-rabbit.png'}" />
+            <p id="p1"> </p>
+            <p >泡个澡，买个面膜美一下~</p>
+        </div>
+    </th:block>
+    <!--/* page body end */-->
+    
+    <!--/* page js */-->
+    <th:block layout:fragment="page_js">
+        <script type="text/javascript" th:inline="javascript">
+            (function(){
+                var errorCode=[[ ${statusCode} ]];	
+                var msg = errorCode == 404 ? '页面找不到了' : '糟糕~网页无法访问~'; 
+                $('#p1').html(msg);
+            })();
+        </script>
+    </th:block>
+    <!--/* page js end */-->
+  
+</th:block>

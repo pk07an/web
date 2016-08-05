@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OutpayMapper" >
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.OutPay" >
+    <id column="id" property="id"  typeHandler="idHandler"/>
+    <result column="p_outpay_id" property="pOutpayId"  typeHandler="idHandler" />
+    <result column="request_id" property="requestId"  typeHandler="idHandler" />
+    <result column="for_outpay_id" property="forOutpayId"  typeHandler="idHandler"  />
+    <result column="user_id" property="userId"  typeHandler="idHandler" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="outpay_type" property="outpayType" jdbcType="VARCHAR" />
+    <result column="outpay_type_ex" property="outpayTypeEx" jdbcType="VARCHAR" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="out_id" property="outId" jdbcType="VARCHAR" />
+    <result column="out_account_id" property="outAccountId" jdbcType="VARCHAR" />
+    <result column="out_account_name" property="outAccountName" jdbcType="VARCHAR" />
+    <result column="out_status" property="outStatus" jdbcType="VARCHAR" />
+    <result column="out_status_ex" property="outStatusEx" jdbcType="VARCHAR" />
+    <result column="bill_no" property="billNo" jdbcType="VARCHAR" />
+    <result column="trade_no" property="tradeNo" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="pay_detail_type" property="payDetailType" jdbcType="VARCHAR" />
+    <result column="partner" property="partner" jdbcType="VARCHAR" />
+  </resultMap>
+  
+  <resultMap id="ResultMapWithBLOBs" type="com.vdlm.dal.model.OutPay" extends="BaseResultMap" >
+    <result column="detail" property="detail" jdbcType="LONGVARBINARY" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, p_outpay_id, request_id, for_outpay_id, user_id, status, outpay_type, outpay_type_ex, 
+    amount, out_id, out_account_id, out_account_name, out_status, out_status_ex, bill_no, trade_no, created_at, 
+    updated_at,pay_detail_type,partner
+  </sql>
+  
+  <sql id="Blob_Column_List" >
+    detail
+  </sql>
+  
+  <select id="selectByPrimaryKey" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from vdlm_outpay
+    where id = #{id, typeHandler=idHandler}
+  </select>
+  
+    <select id="selectByUserId" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay
+    where user_id = #{userId, typeHandler=idHandler}
+    order by created_at desc
+  </select>
+  
+   <select id="selectByBillNO" resultMap="BaseResultMap" >
+    select 
+   <include refid="Base_Column_List" />
+    from vdlm_outpay
+    where bill_no = #{0}
+    order by created_at desc
+  </select>
+  
+  <select id="selectByTradeNo" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay
+    where trade_no = #{0}
+    order by created_at desc
+  </select>
+  
+   <select id="selectByAccountName" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay
+    where out_account_name = #{0}
+    order by created_at desc
+  </select>
+  
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from vdlm_outpay
+    where id = #{id,typeHandler=idHandler}
+  </delete>
+
+  <insert id="insert" parameterType="com.vdlm.dal.model.OutPay" >
+    insert into vdlm_outpay (id, p_outpay_id, request_id, 
+      for_outpay_id, user_id, status, 
+      outpay_type, outpay_type_ex, amount, 
+      out_id, out_account_id, out_account_name, 
+      out_status, out_status_ex, created_at, 
+      updated_at, detail, bill_no, trade_no,pay_detail_type,partner)
+    values (#{id, typeHandler=idHandler}, #{pOutpayId, typeHandler=idHandler}, #{requestId, typeHandler=idHandler}, 
+      #{forOutpayId, typeHandler=idHandler}, #{userId, typeHandler=idHandler}, #{status,jdbcType=VARCHAR}, 
+      #{outpayType,jdbcType=VARCHAR}, #{outpayTypeEx,jdbcType=VARCHAR}, #{amount,jdbcType=DECIMAL}, 
+      #{outId,jdbcType=VARCHAR}, #{outAccountId,jdbcType=VARCHAR}, #{outAccountName,jdbcType=VARCHAR}, 
+      #{outStatus,jdbcType=VARCHAR}, #{outStatusEx,jdbcType=VARCHAR}, #{createdAt,jdbcType=TIMESTAMP}, 
+      #{updatedAt,jdbcType=TIMESTAMP}, #{detail,jdbcType=LONGVARBINARY},  #{billNo,jdbcType=VARCHAR},
+      #{tradeNo,jdbcType=VARCHAR},
+      #{payDetailType,jdbcType=VARCHAR},
+      #{partner,jdbcType=VARCHAR})
+  </insert>
+  
+  <insert id="insertSelective" parameterType="com.vdlm.dal.model.OutPay" >
+    insert into vdlm_outpay
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="pOutpayId != null" >
+        p_outpay_id,
+      </if>
+      <if test="requestId != null" >
+        request_id,
+      </if>
+      <if test="forOutpayId != null" >
+        for_outpay_id,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="status != null" >
+        status,
+      </if>
+      <if test="outpayType != null" >
+        outpay_type,
+      </if>
+      <if test="outpayTypeEx != null" >
+        outpay_type_ex,
+      </if>
+      <if test="amount != null" >
+        amount,
+      </if>
+      <if test="outId != null" >
+        out_id,
+      </if>
+      <if test="outAccountId != null" >
+        out_account_id,
+      </if>
+      <if test="outAccountName != null" >
+        out_account_name,
+      </if>
+      <if test="outStatus != null" >
+        out_status,
+      </if>
+      <if test="outStatusEx != null" >
+        out_status_ex,
+      </if>
+      <if test="createdAt != null" >
+        created_at,
+      </if>
+      <if test="updatedAt != null" >
+        updated_at,
+      </if>
+      <if test="detail != null" >
+        detail,
+      </if>
+      <if test="billNo != null">
+      	bill_no,
+      </if>
+      <if test="tradeNo!= null">
+      	trade_no,
+      </if>
+       <if test="payDetailType!= null">
+      	pay_detail_type,
+      </if>
+       <if test="partner!= null">
+      	partner,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id, typeHandler=idHandler},
+      </if>
+      <if test="pOutpayId != null" >
+        #{pOutpayId, typeHandler=idHandler},
+      </if>
+      <if test="requestId != null" >
+        #{requestId, typeHandler=idHandler},
+      </if>
+      <if test="forOutpayId != null" >
+        #{forOutpayId, typeHandler=idHandler},
+      </if>
+      <if test="userId != null" >
+        #{userId, typeHandler=idHandler},
+      </if>
+      <if test="status != null" >
+        #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="outpayType != null" >
+        #{outpayType,jdbcType=VARCHAR},
+      </if>
+      <if test="outpayTypeEx != null" >
+        #{outpayTypeEx,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="outId != null" >
+        #{outId,jdbcType=VARCHAR},
+      </if>
+      <if test="outAccountId != null" >
+        #{outAccountId,jdbcType=VARCHAR},
+      </if>
+      <if test="outAccountName != null" >
+        #{outAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="outStatus != null" >
+        #{outStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="outStatusEx != null" >
+        #{outStatusEx,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null" >
+        #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="detail != null" >
+        #{detail,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="billNo != null">
+      	#{billNo, jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo!= null">
+      	#{tradeNo, jdbcType=VARCHAR},
+      </if>
+       <if test="payDetailType!= null">
+      	#{payDetailType, jdbcType=VARCHAR},
+      </if>
+       <if test="partner!= null">
+      	#{partner, jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.vdlm.dal.model.OutPay" >
+    update vdlm_outpay
+    <set >
+      <if test="pOutpayId != null" >
+        p_outpay_id = #{pOutpayId, typeHandler=idHandler},
+      </if>
+      <if test="requestId != null" >
+        request_id = #{requestId, typeHandler=idHandler},
+      </if>
+      <if test="forOutpayId != null" >
+        for_outpay_id = #{forOutpayId, typeHandler=idHandler},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId, typeHandler=idHandler},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="outpayType != null" >
+        outpay_type = #{outpayType,jdbcType=VARCHAR},
+      </if>
+      <if test="outpayTypeEx != null" >
+        outpay_type_ex = #{outpayTypeEx,jdbcType=VARCHAR},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="outId != null" >
+        out_id = #{outId,jdbcType=VARCHAR},
+      </if>
+      <if test="outAccountId != null" >
+        out_account_id = #{outAccountId,jdbcType=VARCHAR},
+      </if>
+      <if test="outAccountName != null" >
+        out_account_name = #{outAccountName,jdbcType=VARCHAR},
+      </if>
+      <if test="outStatus != null" >
+        out_status = #{outStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="outStatusEx != null" >
+        out_status_ex = #{outStatusEx,jdbcType=VARCHAR},
+      </if>
+      <if test="createdAt != null" >
+        created_at = #{createdAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updatedAt != null" >
+        updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      </if>
+      <if test="detail != null" >
+        detail = #{detail,jdbcType=LONGVARBINARY},
+      </if>
+      <if test="billNo != null">
+      	bill_no = #{billNo, jdbcType=VARCHAR},
+      </if>
+      <if test="tradeNo!= null">
+      	trade_no = #{tradeNo, jdbcType=VARCHAR},
+      </if>
+      <if test="payDetailType!= null">
+      	pay_detail_type = #{payDetailType, jdbcType=VARCHAR},
+      </if>
+      <if test="partner!= null">
+      	partner = #{partner, jdbcType=VARCHAR},
+      </if>
+      
+    </set>
+    where id = #{id, typeHandler=idHandler}
+  </update>
+  
+  <update id="finishOutPay" parameterType="com.vdlm.dal.model.OutPay">
+  	update vdlm_outpay
+  	set detail = #{detail,jdbcType=LONGVARBINARY},
+  	out_status = #{outStatus,jdbcType=VARCHAR},
+  	trade_no = #{tradeNo, jdbcType=VARCHAR}
+  	where request_id = #{requestId, typeHandler=idHandler}
+  </update>
+  <select id="findByOrderNo4Refund" resultMap="BaseResultMap">
+  	select 
+    <include refid="Base_Column_List" />
+    from vdlm_outpay
+    where bill_no = #{payNo, jdbcType=VARCHAR} and outpay_type='ORDER' and outpay_type_ex='USER_PAY'
+    and status= 'SUCCESS' and out_id= #{payType, jdbcType=VARCHAR}
+  </select>
+  <select id="findOutPayByTradeNo" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+    from vdlm_outpay n
+    where status='SUCCESS' and out_status='SUCCESS' and outpay_type='ORDER' 
+    and out_id= #{payType, jdbcType=VARCHAR}
+    and trade_no=#{tradeNo, jdbcType=VARCHAR}
+  </select>
+  
+  
+   <select id="selectOutPaysBypayOns" resultMap="BaseResultMap" >
+    select 
+   <include refid="Base_Column_List" />
+    from vdlm_outpay
+    where status='SUCCESS' and bill_no in   
+    <foreach collection="payOns" index="index" item="payNo" open="(" separator="," close=")">  
+       #{payNo, jdbcType=VARCHAR}
+    </foreach> 
+  </select>
+  
+  
+  
+</mapper>

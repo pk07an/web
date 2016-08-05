@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.meila.dal.slave.dao.ProductInfoSlaveDao">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.ProductInfo">
+		<id column="id" property="id"  jdbcType="VARCHAR" />
+		<result column="product_id" property="product_id" jdbcType="BIGINT" />
+		<result column="property" property="property" jdbcType="INTEGER" />
+		<result column="ms_price" property="ms_price" jdbcType="DECIMAL" />
+		<result column="start_time" property="start_time" jdbcType="TIMESTAMP" />
+		<result column="end_time" property="end_time" jdbcType="TIMESTAMP" />
+		<result column="buy_limit_count" property="buy_limit_count" jdbcType="INTEGER" />
+		<result column="created_at" property="created_at" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updated_at" jdbcType="TIMESTAMP" />
+        <result column="purchase_source" property="purchaseSource" jdbcType="VARCHAR" />
+        <result column="storage_type" property="storageType" jdbcType="VARCHAR" />
+        <result column="product_prepare_days" property="productPrepareDays" jdbcType="TINYINT" />
+        <result column="logistics_interna_days" property="logisticsInternaDays" jdbcType="TINYINT" /> 
+        <result column="delivery_type" property="deliveryType" jdbcType="VARCHAR" />
+        <result column="warehouse" property="wareHouse" jdbcType="VARCHAR" />
+	</resultMap>
+ 
+	<resultMap id="AdminMap" type="com.vdlm.dal.vo.ProductExtAdmin" extends="BaseResultMap">
+ 		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="code" property="code" jdbcType="VARCHAR" />
+		<result column="img" property="img" jdbcType="VARCHAR" />
+		<result column="img_width" property="imgWidth" jdbcType="INTEGER" />
+		<result column="img_height" property="imgHeight" jdbcType="INTEGER" />
+		<result column="user_id" property="userId" typeHandler="idHandler" />
+		<result column="shop_id" property="shopId" typeHandler="idHandler" />
+		<result column="status" property="status" jdbcType="VARCHAR" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="sales" property="sales" jdbcType="BIGINT" />
+		<result column="fake_sales" property="fakeSales" jdbcType="BIGINT" />
+		<result column="amount" property="amount" jdbcType="BIGINT" />
+		<result column="market_price" property="marketPrice" jdbcType="DECIMAL" />
+		<result column="price" property="price" jdbcType="DECIMAL" />
+		<result column="postage" property="postage" jdbcType="DECIMAL" />
+		<result column="recommend" property="recommend" jdbcType="BIT" />
+		<result column="recommend_at" property="recommendAt" jdbcType="TIMESTAMP" />
+		<result column="discount" property="discount" jdbcType="DECIMAL" />
+		<result column="commission_rate" property="commissionRate" jdbcType="DECIMAL" />
+		<result column="forsale_at" property="forsaleAt" jdbcType="TIMESTAMP" />
+		<result column="onsale_at" property="onsaleAt" jdbcType="TIMESTAMP" />
+		<result column="instock_at" property="instockAt" jdbcType="TIMESTAMP" /> 
+		<result column="isDelay" property="delayed" jdbcType="BIT" />
+		<result column="delayDays" property="delayAt" jdbcType="INTEGER" />
+		<result column="update_lock" property="updateLock" jdbcType="BIT" />
+		<result column="synchronousFlag" property="synchronousFlag" jdbcType="VARCHAR" />
+		<result column="third_item_id" property="thirdItemId" jdbcType="BIGINT" />
+		<result column="shop_name" property="shopName" jdbcType="VARCHAR"  />
+  	</resultMap>
+	 
+    <sql id="Base_Column_List">
+        id, product_id, property,ms_price, start_time, end_time, buy_limit_count, created_at, 
+        updated_at, share_img, share_img_width, share_img_height,purchase_source, storage_type, product_prepare_days, logistics_interna_days,delivery_type,warehouse
+    </sql> 
+     
+    <select id="selectByProductId" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" /> 
+        from vdlm_product_info
+        where product_id = #{productId} 
+    </select>
+     <select id="selectProductInfoByProductIds" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List" /> 
+        from vdlm_product_info
+        where product_id in
+		<foreach collection="productIds" item="productId" open="(" close=")" separator=",">
+			#{productId} 
+		</foreach>        
+    </select>
+    
+    <select id="selectProductInfoJoinOrderItemByOrderIds" resultMap="BaseResultMap">
+    	select 
+    		 pinfo.id, pinfo.product_id, pinfo.property,pinfo.ms_price, pinfo.start_time, pinfo.end_time, pinfo.buy_limit_count, pinfo.created_at, 
+        	pinfo.updated_at, pinfo.share_img, pinfo.share_img_width, pinfo.share_img_height,pinfo.purchase_source, pinfo.storage_type, pinfo.product_prepare_days, pinfo.logistics_interna_days, pinfo.delivery_type,pinfo.warehouse
+    	 from 
+    	 	vdlm_product_info pinfo 
+    	 left join  
+    	 	vdlm_order_item i 
+    	 on 
+    	 	pinfo.product_id=i.product_id 
+    	 where 
+    	 	i.order_id in 
+    	 <foreach collection="orderIds" item="orderId" open="(" close=")" separator=",">
+			#{orderId,typeHandler=idHandler} 
+		</foreach>
+    </select>
+ 
+</mapper>

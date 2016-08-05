@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.PosterMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Poster" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="img_code" property="imgCode" />
+    <result column="url" property="url" />
+    <result column="creator_id" property="creatorId" />
+    <result column="created_at" property="createdAt" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, img_code, creator_id, created_at
+  </sql>
+  
+   <select id="load" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_poster
+    where id = #{id}
+  </select>
+  
+   <select id="selectAll" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_poster
+  </select>
+  
+  <insert id="insert" parameterType="com.vdlm.dal.model.Poster">
+    <selectKey resultType="String" keyProperty="id">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_poster (img_code, creator_id, created_at)
+    values (#{imgCode}, #{creatorId, typeHandler=idHandler}, now())
+  </insert>
+  
+  <select id="selectByTag" resultMap="BaseResultMap">
+    select 
+    p.id, p.img_code, p.url, p.creator_id, p.created_at
+    from vdlm_poster_tag pt
+    join vdlm_term t on t.id = pt.term_id
+    join vdlm_poster p on p.id = pt.poster_id
+    where t.name = #{tag}
+  </select>
+  
+  <delete id="delete">
+    delete from vdlm_poster 
+    where id = #{id}
+  </delete>
+  
+</mapper>

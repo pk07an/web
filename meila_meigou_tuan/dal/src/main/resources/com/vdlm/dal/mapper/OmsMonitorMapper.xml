@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.OmsMonitorMapper">
+	<resultMap id="BaseResultMap" type="com.vdlm.dal.model.OmsMonitor">
+		<id column="id" property="id" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="type" property="type" jdbcType="VARCHAR" />
+		<result column="order_id" property="orderId" jdbcType="BIGINT" typeHandler="idHandler" />
+		<result column="order_no" property="orderNo" jdbcType="VARCHAR" />
+		<result column="orderStr" property="order_str" jdbcType="VARCHAR" />
+		<result column="reason" property="reason" jdbcType="VARCHAR" />
+		<result column="isSms" property="is_sms" jdbcType="BIT" />
+		<result column="archive" property="archive" jdbcType="BIT" />
+		<result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+		<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+
+	<sql id="Base_Column_List">
+		id, type,order_id, order_no, order_str, reason, is_sms, archive,created_at, updated_at
+	</sql>
+
+
+	<insert id="insert" parameterType="com.vdlm.dal.model.OmsMonitor" >
+		insert into 
+		vdlm_oms_monitor  ( type,order_id, order_no,order_str, reason, created_at)
+		values (
+			#{type,jdbcType=VARCHAR},
+			#{orderId,typeHandler=idHandler},
+			#{orderNo,jdbcType=VARCHAR},
+			#{orderStr,jdbcType=VARCHAR},
+			#{reason,jdbcType=VARCHAR},
+			now()
+		)
+	</insert>
+
+
+</mapper>

@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.vdlm.dal.mapper.CommissionMapper" >
+
+  <resultMap id="BaseResultMap" type="com.vdlm.dal.model.Commission" >
+    <id column="id" property="id" />
+    <result column="order_item_id" property="orderItemId" typeHandler="idHandler"/>
+    <result column="sku_id" property="skuId" typeHandler="idHandler" />
+    <result column="price" property="price" jdbcType="DECIMAL" />
+    <result column="rate" property="rate" jdbcType="DECIMAL" />
+    <result column="amount" property="amount" jdbcType="INTEGER" />
+    <result column="fee" property="fee" jdbcType="DECIMAL"/>
+    <result column="withdrawn" property="withdrawn" jdbcType="BIT" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" typeHandler="idHandler"/>
+    <result column="status" property="status" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <resultMap type="com.vdlm.dal.vo.CommissionVO" id="CommissionsVOMap" extends="BaseResultMap">
+  	<result column="orderNo" property="orderNo" jdbcType="VARCHAR" />
+  	<result column="orderStatus" property="orderStatus" jdbcType="VARCHAR" />
+  	<result column="productName" property="productName" jdbcType="VARCHAR" />
+  	<result column="skuName" property="skuName" jdbcType="VARCHAR" />
+  	<result column="userName" property="userName" jdbcType="VARCHAR" />
+  	<result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+  	<result column="partner_type" property="partnerType" jdbcType="VARCHAR"/>
+  	<result column="userPhone" property="userPhone" jdbcType="VARCHAR"/>
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    id, order_item_id, sku_id, price, rate, amount, fee, withdrawn, user_id, status
+  </sql>
+
+  <select id="selectByOrderItem" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from vdlm_commission
+    where order_item_id = #{0, typeHandler=idHandler}
+  </select> 
+  
+  <select id="listByOrderId" resultMap="BaseResultMap">
+    select cm.id, cm.order_item_id, cm.sku_id, cm.price, cm.rate, cm.amount, cm.fee, cm.user_id, cm.status 
+    from vdlm_commission cm join vdlm_order_item oi on cm.order_item_id = oi.id
+    where oi.order_id = #{0, typeHandler=idHandler}
+  </select>
+  <select id="listCanWithdraw" resultMap="BaseResultMap">
+  	select 
+  	<include refid="Base_Column_List" />
+  	from vdlm_commission
+	where updated_at &lt; date_add(now(), interval -${day} day) and status = 'SUCCESS'
+  </select>
+  <insert id="insert" parameterType="com.vdlm.dal.model.Commission">
+    <selectKey resultType="long" keyProperty="idRaw">
+        SELECT LAST_INSERT_ID() AS id
+    </selectKey>
+    insert into vdlm_commission (order_item_id, sku_id, price, rate, amount, fee, user_id, status, created_at, updated_at)
+    values (#{orderItemId, typeHandler=idHandler}, #{skuId, typeHandler=idHandler}, #{price}, #{rate}, #{amount}, #{fee}, 
+        #{userId, typeHandler=idHandler}, #{status}, now(), now())
+  </insert>
+  
+  <update id="updateStatus">
+    update vdlm_commission
+    set status = #{status}, updated_at = now()
+    where order_item_id in(select id from vdlm_order_item where order_id = #{orderId, typeHandler=idHandler})
+    and status = 'NEW' and withdrawn = false
+  </update>
+  
+  <update id="update">
+  	update vdlm_commission set withdrawn = true
+  	where order_item_id in(select id from vdlm_order_item where order_id = #{orderId, typeHandler=idHandler})
+    and status = 'SUCCESS'
+  </update>
+  
+  <select id="countCommissionsByAdmin" resultType="Long">
+    select count(1)
+    from vdlm_commission c inner join vdlm_order_item oi on c.order_item_id = oi.id 
+    inner join vdlm_order o on oi.order_id = o.id
+    left join vdlm_user u on c.user_id = u.id
+	where 1=1 
+	<if test="params.orderNo != null" >
+		and o.order_no like CONCAT('%', #{params.orderNo,jdbcType=VARCHAR}, '%')   
+	</if>
+    <if test="params.status != null" >
+		and c.status = #{params.status}
+	</if>
+	<if test="params.partnerType != null" >
+		and o.partner_type = #{params.partnerType}
+	</if>
+	<if test="params.userPhone != null" >
+		and u.phone = #{params.userPhone}
+	</if>
+  </select>
+  
+  <select id="listCommissionsByAdmin" resultMap="CommissionsVOMap">
+    select c.id,c.order_item_id,c.sku_id,c.price,c.rate,c.amount,c.fee,c.user_id,c.status,c.withdrawn,c.created_at,c.updated_at,
+    o.order_no as orderNo,o.status as orderStatus,oi.product_name as productName,oi.sku_str as skuName,u.name as userName,o.partner_type,
+    u.phone as userPhone
+    from vdlm_commission c inner join vdlm_order_item oi on c.order_item_id = oi.id 
+    inner join vdlm_order o on oi.order_id = o.id
+    inner join vdlm_user u on c.user_id = u.id 
+	where 1=1 
+	<if test="params.orderNo != null" >
+		and o.order_no like CONCAT('%', #{params.orderNo,jdbcType=VARCHAR}, '%')   
+	</if>
+    <if test="params.status != null" >
+		and c.status = #{params.status}
+	</if>
+	<if test="params.partnerType != null" >
+		and o.partner_type = #{params.partnerType}
+	</if>
+	<if test="params.userPhone != null" >
+		and u.phone = #{params.userPhone}
+	</if>
+    order by c.updated_at desc
+    limit #{page.offset}, #{page.size} 
+  </select>
+  
+  <!-- 删除可能已存在的分佣记录 -->
+  <delete id="cleanCommissionByOrderId">
+  	delete from vdlm_commission where order_item_id in (select id from vdlm_order_item where order_id = #{orderId, typeHandler=idHandler})
+  </delete>
+</mapper>

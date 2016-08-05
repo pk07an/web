@@ -1,0 +1,108 @@
+<th:block layout:decorator="/layout/meila_mobile_base">
+    <th:block layout:fragment="page_title">
+        <title>编辑收货地址</title>
+    </th:block>
+
+    <th:block layout:fragment="common_css">
+        <link rel="stylesheet" type="text/css" th:href="${'/ptuan/resources/css/address_new.css'}" />
+    </th:block>
+
+    <th:block layout:fragment="meta">
+        <meta name="keywords" content="美啦 团购 订单 地址" />
+        <meta name="description" content="美啦 团购 订单 地址" />
+    </th:block>
+
+    <th:block layout:fragment="page_header">
+        <div class="new-header" th:if="${not isApp}">
+            <a class="back" th:href="@{'/address/list.xhtml?skuId='+${skuId} + '&amp;needIdCard=' + ${needIdCard}}"></a>
+            <span th:text="${title_label} ?: '我的收货地址'"></span>
+        </div>
+    </th:block>
+
+    <th:block layout:fragment="page_body">
+        <div class="address_edit_form">
+            <form class="address-form" id="submitForm" th:action="@{/address/save.json}" method="POST">
+                <input type="hidden" name="zoneId" id="zoneId" th:value="${zoneId}"/>
+                <input type="hidden" name="id" id="id" th:if="${address != null}" th:value="${address.id}"/>
+                <input type="hidden" name="skuId" id="skuIds" th:value="${skuId}"/>
+                <input type="hidden" name="slug" th:value="${slug}" />
+                <input type="hidden" name="needIdCard" th:value="${needIdCard}"/>
+                <input type="hidden" name="province" class="address-input" id="province-input" th:value="${(province != null and province.id != null) ? province.id : ''}" />
+                <input type="hidden" name="city" class="address-input" id="city-input" th:value="${(city != null and city.id != null) ? city.id : ''}" />
+                <input type="hidden" name="district" class="address-input" id="district-input" th:value="${(district != null and district.id != null) ? district.id : ''}" />
+                <div class="input_box g-border-b">
+                    <input id="consignee" name="consignee" type="text" placeholder="收货人姓名" required="required" th:value="${address != null ? address.consignee : ''}" autocomplete="off" />
+                </div>
+                <div class="input_box g-border-b">
+                    <input id="phone" name="phone" type="tel" placeholder="手机号码" required="required" th:value="${address != null ? address.phone : ''}"  autocomplete="off" />
+                </div>
+                <div class="select_box_outer g-border-b">
+                	<span class="address-arrow"></span>
+                	<ul th:class="'clearfix ' + ${address == null ? 'empty-address' : 'has-address'}">
+                		<li class="address-province" th:if="${address == null}">所在地区</li>
+                		<li class="address-province" th:if="${address != null}"></li>
+                		<li class="address-city"></li>
+                		<li class="address-district"></li>
+                	</ul>
+                </div>
+                <div class="textarea_box g-border-b">
+                    <textarea name="street" id="street" placeholder="详细地址" required="required" th:text="${address != null ? address.street : ''}" autocomplete="off"></textarea>
+                    <p class="textarea_p" id="textHide" th:text="${address != null ? address.street : ''}"></p>
+                </div>
+                <div class="set_default_address g-border-b" th:if="${address != null and !address.common}">设为默认地址<div th:class="${address.common ? 'set_default_btn set_default_on' : 'set_default_btn'}" th:attr="data-id=${address.id}"></div></div>
+                <th:block th:if="${needIdCard == '1' or (address != null and !#strings.isEmpty(address.idCard))}">
+                    <div class="input_box id_card_box">
+                        <input maxlength="18" id="idCard" name="idCard" type="text" placeholder="请输入身份证号" required="required" th:value="${address != null ? address.idCard : ''}" autocomplete="off" />
+                    </div>
+                    <p class="tips"><span>美啦提醒</span>：请您填写收货人的真实身份证号，否则将影响正常收货。身份证号仅用于海关清关，美啦保证您个人信息的安全。</p>
+                </th:block>
+                <div class="edit_bottom_outer">
+                    <ul th:class="${address != null ? 'edit_bottom_btn':'edit_bottom_btn edit_new_address'}">
+                        <li class="delete_btn_box" th:if="${address != null}"><a class="delete_btn g-border" href="javascript:;" th:attr="data-id=${address.id}" id='delete-address'>删除</a></li>
+                        <li class="add_btn_box"><a class="add_btn" href="javascript:;" id="address-save">保存</a></li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <form action="" id="addressForm">
+            <input type="hidden" name="addressId" th:value="${address != null ? address.id : ''}"/>
+            <input type="hidden" name="skuIds" th:value="${skuIds}"/>
+        </form>
+        <iframe id="app-jump-iframe" style="display:none;"></iframe>
+    <div class="backdrop">
+    	<div class="mask"></div>
+    	<ul class="address-box clearfix">
+    		<li>
+    			<div class="mark">省</div>
+    			<ul id="province" class="province address-list">
+    			</ul>
+    		</li>
+    		<li class="divider"></li>
+    		<li class="city-list ">
+    			<div class="mark">市</div>
+    			<ul id="city" class="city address-list">
+    			</ul>
+    		</li>
+    		<li class="divider"></li>
+    		<li>
+    			<div class="mark">区</div>
+    			<ul id="district" class="district address-list">
+    			</ul>
+    		</li>
+    	</ul>
+    </div>
+    </th:block>
+    <th:block layout:fragment="common_js">
+        <script type="text/javascript" th:src="${'/ptuan/resources/js/wx/jweixin-1.0.0.js'}"></script>
+        <script type="text/javascript" th:src="${'/ptuan/resources/js/utils.js'}"></script>
+        <script type="text/javascript" th:src="${'/ptuan/resources/js/meila_address_new.js'}"></script>
+        <script type="text/javascript"  th:inline="text">
+        /*<![CDATA[*/
+            // 隐藏微信分享按钮
+            M.is.inWechat && wxInit(['hideOptionMenu'], function() {
+                wx.hideOptionMenu();
+            });
+            /*]]>*/
+        </script>
+    </th:block>
+</th:block>

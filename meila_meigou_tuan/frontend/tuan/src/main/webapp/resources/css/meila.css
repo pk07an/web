@@ -1,0 +1,667 @@
+.layermbox,
+.layermmain,
+.laymshade {
+    left: 0;
+    right: 0;
+    width: 100%;
+    top: 0;
+    bottom: 0
+}
+
+article,
+aside,
+blockquote,
+body,
+button,
+code,
+dd,
+div,
+dl,
+dt,
+fieldset,
+figcaption,
+figure,
+footer,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+header,
+hgroup,
+input,
+legend,
+li,
+menu,
+nav,
+ol,
+p,
+pre,
+section,
+td,
+textarea,
+th,
+ul {
+    margin: 0;
+    padding: 0
+}
+
+body {
+    font-family: Helvetica, STHeiTi, Sans-serif;
+    line-height: 1.5;
+    font-size: .28rem;
+    color: #000;
+    -webkit-text-size-adjust: none;
+    -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
+    outline: 0
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-size: inherit;
+    font-weight: 400
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+fieldset,
+img {
+    border: 0
+}
+
+li {
+    list-style: none
+}
+
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    outline: 0;
+    -webkit-appearence: none;
+    -ms-appearence: none
+}
+
+button,
+html input[type=button],
+input[type=reset],
+input[type=submit] {
+    border: none;
+    background: 0 0;
+    -webkit-appearance: none;
+    outline: 0
+}
+
+a {
+    -webkit-touch-callout: none;
+    text-decoration: none;
+    outline: 0
+}
+
+em,
+i {
+    font-style: normal
+}
+
+#cnzz_stat_icon_1254190362,
+iframe {
+    display: none
+}
+
+::-webkit-input-placeholder {
+    color: #999
+}
+
+.layermbox {
+    position: absolute;
+    z-index: 19891014
+}
+
+.layermanim {
+    transition: all .18s;
+    -webkit-transition: all .18s
+}
+
+.layermmain,
+.laymshade {
+    position: fixed;
+    height: 100%;
+    z-index: 100
+}
+
+.layermbtn span,
+.layermchild {
+    position: relative;
+    display: inline-block
+}
+
+.laymshade {
+    background-color: rgba(0, 0, 0, .5);
+    pointer-events: auto
+}
+
+.layermmain {
+    display: table;
+    font-family: Helvetica, arial, sans-serif;
+    pointer-events: none
+}
+
+.layermmain .section {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center
+}
+
+.layermchild {
+    text-align: left;
+    background-color: #fff;
+    font-size: .28rem;
+    border-radius: 6px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, .1);
+    opacity: 0;
+    transform: scale(0);
+    -webkit-transform: scale(0);
+    pointer-events: auto
+}
+
+.layermborder {
+    border: 1px solid #999
+}
+
+.layermshow .layermchild {
+    opacity: 1;
+    transform: scale(1);
+    -webkit-transform: scale(1)
+}
+
+.layermbox0 .layermchild {
+    max-width: 5.2rem;
+    min-width: 3rem
+}
+
+.layermbox1 .layermchild {
+    border: none;
+    border-radius: 0
+}
+
+.layermbox2 .layermchild {
+    width: auto;
+    max-width: 5.2rem;
+    min-width: .8rem;
+    border: none;
+    background-color: rgba(0, 0, 0, .6);
+    color: #fff
+}
+
+.layermchild h3 {
+    height: 1rem;
+    line-height: 1rem;
+    font-size: .16rem;
+    font-weight: 400;
+    border-radius: 5px 5px 0 0;
+    border-bottom: 1px solid #EBEBEB
+}
+
+.layermbtn span,
+.layermchild h3 {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap
+}
+
+.layermcont {
+    padding: .4rem .3rem;
+    line-height: .44rem;
+    border-radius: 5px;
+    text-align: center
+}
+
+.layermbox1 .layermcont {
+    padding: 0
+}
+
+.layermbox2 .layermcont {
+    text-align: center;
+    padding: .6rem .6rem 0;
+    line-height: 0
+}
+
+.layermbox2 .layermcont i {
+    width: .5rem;
+    height: .5rem;
+    margin-left: .16rem;
+    display: inline-block;
+    background-color: #fff;
+    border-radius: 100%;
+    -webkit-animation: bouncedelay 1.4s infinite ease-in-out;
+    animation: bouncedelay 1.4s infinite ease-in-out;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both
+}
+
+@-webkit-keyframes bouncedelay {
+    0%,
+    100%,
+    80% {
+        -webkit-transform: scale(0)
+    }
+    40% {
+        -webkit-transform: scale(1)
+    }
+}
+
+@keyframes bouncedelay {
+    0%,
+    100%,
+    80% {
+        transform: scale(0);
+        -webkit-transform: scale(0)
+    }
+    40% {
+        transform: scale(1);
+        -webkit-transform: scale(1)
+    }
+}
+
+.layermbox2 .layermcont i:first-child {
+    margin-left: 0;
+    -webkit-animation-delay: -.32s;
+    animation-delay: -.32s
+}
+
+.layermbox2 .layermcont i.laymloadtwo {
+    -webkit-animation-delay: -.16s;
+    animation-delay: -.16s
+}
+
+.layermbox2 .layermcont>div {
+    line-height: .44rem;
+    padding-top: .14rem;
+    margin-bottom: .4rem;
+    font-size: .28rem
+}
+
+.layermbtn,
+.new-header {
+    line-height: .8rem;
+    text-align: center
+}
+
+.outer-footer,
+.wrapper {
+    margin: 0 auto;
+    width: 6.4rem
+}
+
+.layermbtn {
+    position: relative;
+    height: .8rem;
+    font-size: 0;
+    border-top: 1px solid #EBEBEB;
+    color: #ff7da8
+}
+
+.layermbtn span {
+    width: 50%;
+    text-align: center;
+    font-size: .28rem;
+    cursor: pointer;
+    border-radius: 0 5px 0 0;
+    vertical-align: top
+}
+
+.layermbtn span:first-child {
+    background-color: #fff;
+    border-radius: 0 0 0 5px;
+    height: .78rem
+}
+
+.layermbtn:before {
+    content: '\20';
+    position: absolute;
+    width: 1px;
+    height: .78rem;
+    left: 50%;
+    top: 0;
+    background-color: #EBEBEB
+}
+
+.layermend {
+    position: absolute;
+    right: .14rem;
+    top: .2rem;
+    width: .6rem;
+    height: .6rem;
+    border: 0;
+    font-weight: 400;
+    background: 0 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    font-size: .3rem
+}
+
+.layermend::after,
+.layermend::before {
+    position: absolute;
+    left: .1rem;
+    top: .26rem;
+    content: '';
+    width: .4rem;
+    height: .04rem;
+    background-color: rgba(0, 0, 0, .3);
+    transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    border-radius: 3px
+}
+
+.layermend::after {
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg)
+}
+
+.wrapper {
+    min-width: 320px
+}
+
+.outer-footer {
+    height: 1rem
+}
+
+.download-bar {
+    display: block;
+    width: 6.4rem;
+    height: 1rem;
+    position: fixed;
+    bottom: 0;
+    z-index: 99
+}
+
+.download-bar div {
+    position: relative;
+    background: url(/res_mgi/web/images/mobile/maoboli-f82c978b77.png) no-repeat;
+    background-size: 100% 100%
+}
+
+.download-bar img {
+    width: 4.45rem;
+    height: 1rem;
+    vertical-align: top
+}
+
+.download-bar a {
+    position: absolute;
+    width: 1.2rem;
+    height: .54rem;
+    left: 4.9rem;
+    top: 50%;
+    margin-top: -.27rem;
+    text-align: center;
+    color: #fff;
+    background: url(/res_mgi/web/images/mobile/downloadbar-btn-f164f09d17.png) no-repeat;
+    background-size: 1.2rem .54rem;
+    font-size: .24rem;
+    text-indent: -9999px
+}
+
+.download-bar .close-download-bar {
+    position: absolute;
+    width: .4rem;
+    height: .4rem;
+    top: 0;
+    left: 0;
+    background-color: transparent
+}
+
+.wechat-share-prompt {
+    z-index: 1;
+    position: fixed;
+    width: 100%;
+    max-width: 6.4rem;
+    min-width: 3.2rem;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, .82);
+    color: #fff;
+    font-size: .4rem;
+    text-align: center
+}
+
+.wechat-share-prompt p {
+    padding: .5rem .3rem;
+    clear: both
+}
+
+.wechat-share-prompt .point-share {
+    width: 1.49rem;
+    height: 1.64rem;
+    float: right;
+    margin-right: .2rem
+}
+
+.wechat-share-prompt .i-know {
+    width: 2.32rem;
+    height: 1.15rem
+}
+
+.copyright {
+    color: rgba(255, 255, 255, .6);
+    background-color: #332e2e;
+    font-size: .18rem;
+    padding: .25rem 0 .35rem;
+    text-align: center
+}
+
+.new-header {
+    background-color: #ff7da8;
+    height: .8rem;
+    width: 100%;
+    font-size: .3rem;
+    position: relative;
+    color: #fff
+}
+
+.new-header .view-in-app {
+    position: absolute;
+    width: .56rem;
+    height: .46rem;
+    top: .18rem;
+    right: .2rem;
+    background: url(/res_mgi/web/images/mobile/go-0125d70281.png) no-repeat;
+    background-size: contain;
+    border: 0;
+    text-indent: -1000rem;
+    cursor: pointer
+}
+
+.new-header .back {
+    position: absolute;
+    width: .5rem;
+    height: .35rem;
+    top: .23rem;
+    left: .2rem;
+    background: url(../images/back.png) left center no-repeat;
+    background-size: contain;
+    text-indent: -1000rem
+}
+
+.g-border-t {
+    border-top: 1px solid #d7d7d7
+}
+
+.g-border-b {
+    border-bottom: 1px solid #d7d7d7
+}
+
+.g-border-tb {
+    border-top: #d7d7d7 1px solid;
+    border-bottom: #d7d7d7 1px solid;
+    background-image: none
+}
+
+.g-border-l {
+    border-left: 1px solid #d7d7d7
+}
+
+.g-border-r {
+    border-right: 1px solid #d7d7d7
+}
+
+.g-border {
+    border: 1px solid #d7d7d7
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:2),
+screen and (-moz-min-device-pixel-ratio:2),
+screen and (-o-min-device-pixel-ratio:2),
+screen and (min-device-pixel-ratio:2) {
+    .g-border {
+        position: relative;
+        border: 0
+    }
+    .g-border-b,
+    .g-border-l,
+    .g-border-r,
+    .g-border-t,
+    .g-border-tb {
+        border: 0
+    }
+    .g-border:before {
+        content: "";
+        width: 200%;
+        height: 200%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        border: 1px solid #d7d7d7;
+        padding: 1px;
+        transform: scale(.5);
+        transform-origin: 0 0;
+        box-sizing: border-box;
+        -webkit-transform: scale(.5);
+        -webkit-transform-origin: 0 0;
+        -webkit-box-sizing: border-box;
+        -moz-transform: scale(.5);
+        -moz-transform-origin: 0 0;
+        -moz-box-sizing: border-box;
+        -o-transform: scale(.5);
+        -o-transform-origin: 0 0;
+        -o-box-sizing: border-box
+    }
+    .g-border-t {
+        background-position: left top;
+        background-image: gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -webkit-gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -moz-gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -o-gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7))
+    }
+    .g-border-b {
+        background-position: left bottom;
+        background-image: gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -webkit-gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -moz-gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -o-gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7))
+    }
+    .g-border-b,
+    .g-border-t {
+        background-repeat: repeat-x;
+        background-size: 100% 1px;
+        -webkit-background-size: 100% 1px;
+        -moz-background-size: 100% 1px;
+        -o-background-size: 100% 1px
+    }
+    .g-border-tb {
+        background: gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left top repeat-x, gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left bottom repeat-x;
+        background: -webkit-gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left top repeat-x, -webkit-gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left bottom repeat-x;
+        background: -moz-gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left top repeat-x, -moz-gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left bottom repeat-x;
+        background: -o-gradient(linear, left bottom, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left top repeat-x, -o-gradient(linear, left top, left bottom, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7)) left bottom repeat-x;
+        background-size: 100% 1px;
+        -webkit-background-size: 100% 1px;
+        -moz-background-size: 100% 1px;
+        -o-background-size: 100% 1px
+    }
+    .g-border-l {
+        background-position: left top;
+        background-image: gradient(linear, left top, right top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -webkit-gradient(linear, left top, right top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -moz-gradient(linear, left top, right top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -o-gradient(linear, left top, right top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7))
+    }
+    .g-border-r {
+        background-position: right top;
+        background-image: gradient(linear, right top, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -webkit-gradient(linear, right top, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -moz-gradient(linear, right top, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7));
+        background-image: -o-gradient(linear, right top, left top, color-stop(.5, transparent), color-stop(.5, #d7d7d7), to(#d7d7d7))
+    }
+    .g-border-l,
+    .g-border-r {
+        background-repeat: repeat-y;
+        background-size: 1px 100%;
+        -webkit-background-size: 1px 100%;
+        -moz-background-size: 1px 100%;
+        -o-background-size: 1px 100%
+    }
+}
+
+/* 底部自定义分享按钮 */
+.custom-share-container{
+	width: 100%;
+	max-width: 7.5rem;
+	margin: 0 auto;
+}
+.custom-share-container .share-wrapper{
+	position: fixed;
+	width: 100%;
+	max-width: 7.5rem;
+	top: 0;
+	bottom: 0;
+	background: rgba(0, 0, 0, 0.18);
+	z-index: 1000;
+}
+.custom-share-container .share-btn-list{
+	width: 100%;
+	height: 1rem;
+	-webkit-transform: translateY(0);
+    transform: translateY(0);    
+	padding: 0.2rem 0;
+	overflow: hidden;
+	background: #fff;
+	position: absolute;
+	bottom: -1.4rem;
+}
+.custom-share-container .share-btn-list.moveup{
+	-webkit-transform: translateY(-1.4rem);
+    
+    transform: translateY(-1.4rem);
+	-webkit-transition: all 0.4s;
+    transition: all 0.4s;
+	transition: all 0.4s;
+}
+.custom-share-container .share-btn{
+	float: left;
+	width: 15%;
+	text-align: center;
+	margin: 0 5%;
+	cursor: pointer;
+}
+.custom-share-container .share-btn-img{
+	width: 0.7rem; 
+	vertical-align: top;
+}
+.custom-share-container .share-btn-text{
+	font-size: 0.16rem;
+	margin-top: 0.1rem;
+	color: rgba(0,0,0,0.8);
+}
+/* end 底部自定义分享按钮 */
